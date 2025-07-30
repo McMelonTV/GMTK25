@@ -3,11 +3,7 @@ package ing.boykiss.gmtk25;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.CircleShape;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import lombok.Getter;
 
@@ -21,6 +17,8 @@ public class Player extends Actor {
     @Getter
     private boolean isOnFloor;
 
+    public int collisionCount = 0;
+
     private final World world;
 
     public Player(World world, Vector2 spawnPos) {
@@ -31,8 +29,9 @@ public class Player extends Actor {
         body = world.createBody(bodyDef);
 
         CircleShape circle = new CircleShape();
-        circle.setRadius(6f);
+        circle.setRadius(1f);
 
+        // Body fixture
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = circle;
         fixtureDef.density = 1f;
@@ -40,6 +39,22 @@ public class Player extends Actor {
         fixtureDef.restitution = 0f;
 
         body.createFixture(fixtureDef);
+
+        // Sensor fixture for floor detection
+        CircleShape sensorCircle = new CircleShape();
+        sensorCircle.setRadius(0.99f);
+        sensorCircle.setPosition(new Vector2(0, -0.1f)); // Position it below the player
+
+        FixtureDef sensorFixtureDef = new FixtureDef();
+        sensorFixtureDef.shape = sensorCircle;
+        sensorFixtureDef.isSensor = true; // Make it a sensor
+        sensorFixtureDef.density = 0f; // No density for sensor
+        sensorFixtureDef.friction = 0f;
+        sensorFixtureDef.restitution = 0f;
+
+        Fixture sensor = body.createFixture(sensorFixtureDef);
+        sensor.setUserData("player_sensor"); // Set user data for identification
+
         velocity = new Vector2();
 
         this.world = world;
@@ -49,27 +64,20 @@ public class Player extends Actor {
 
     @Override
     public void act(float deltaTime) {
-        isOnFloor = false;
-        world.rayCast(((fixture, point, normal, fraction) -> {
-            if (fixture.getBody() == body) {
-                return 1; // Ignore self
-            }
-            isOnFloor = true;
-            return 0; // Stop ray casting
-        }), body.getPosition(), body.getPosition().cpy().add(0, -8));
+        isOnFloor = collisionCount > 0; // update isOnFloor based on collision count
 
         velocity.y = body.getLinearVelocity().y;
 
         if (Gdx.input.isKeyPressed(Input.Keys.C) && isOnFloor) {
-            velocity.y = 150;
+            velocity.y = 7500 * deltaTime; // Jump force
         }
 
         velocity.x = 0;
         if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            velocity.x = -10000 * deltaTime;
+            velocity.x = -5000 * deltaTime;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            velocity.x = 10000 * deltaTime;
+            velocity.x = 5000 * deltaTime;
         }
 
         body.setLinearVelocity(velocity);

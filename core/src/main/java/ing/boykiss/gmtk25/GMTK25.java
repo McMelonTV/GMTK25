@@ -81,6 +81,8 @@ public class GMTK25 extends ApplicationAdapter {
         stage.addActor(level);
         stage.addActor(player);
 
+        WorldManager.world.setContactListener(new ListenerClass(player));
+
         tickThread.start();
     }
 
