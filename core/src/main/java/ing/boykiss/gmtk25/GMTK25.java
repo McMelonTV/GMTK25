@@ -23,16 +23,27 @@ import lombok.Getter;
  */
 public class GMTK25 extends ApplicationAdapter {
     private final Thread tickThread = new Thread(() -> {
-        long prevTime = System.nanoTime();
+        long eSleepTime = (long) (1_000f / Constants.TPS);
+        // declare variables in advance because perf
+        long startTime;
+        long elapsedTime;
+        long sleepTime;
         while (true) {
-            long currTime = System.nanoTime();
-            float time = (currTime - prevTime) / 1_000_000_000f;
-            if (time < 1.0f / Constants.TPS) {
-                continue;
-            }
-            prevTime = currTime;
+            try {
+                startTime = System.currentTimeMillis();
 
-            tick();
+                tick();
+
+                elapsedTime = System.currentTimeMillis() - startTime;
+
+                sleepTime = eSleepTime - elapsedTime;
+                if (sleepTime >= 0) {
+                    Thread.sleep(sleepTime);
+                }
+            } catch (InterruptedException e) {
+                // If the thread is interrupted, we stop ticking
+                return;
+            }
         }
     });
 
