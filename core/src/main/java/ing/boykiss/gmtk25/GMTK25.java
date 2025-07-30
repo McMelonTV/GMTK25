@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import ing.boykiss.gmtk25.input.Input;
 import lombok.Getter;
 
 /**
@@ -86,6 +87,8 @@ public class GMTK25 extends ApplicationAdapter {
     @Override
     public void render() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        Input.update();
 
         backStage.draw();
         stage.draw();
