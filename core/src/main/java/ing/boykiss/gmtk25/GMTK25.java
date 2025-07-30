@@ -43,9 +43,7 @@ public class GMTK25 extends ApplicationAdapter {
     private OrthographicCamera camera;
     private Viewport viewport;
     private Stage stage;
-
-    private TiledMap map;
-    private TiledMapRenderer mapRenderer;
+    private Level level;
 
     @Getter
     private Player player;
@@ -67,14 +65,13 @@ public class GMTK25 extends ApplicationAdapter {
 
         camera.translate(Constants.VIEWPORT_WIDTH / 2.0f, Constants.VIEWPORT_HEIGHT / 2.0f);
 
-        map = new TmxMapLoader().load("tiledmaps/dev_map.tmx");
-        mapRenderer = new OrthogonalTiledMapRenderer(map);
+        level = new Level(WorldManager.world, new TmxMapLoader().load("tiledmaps/dev_map.tmx"), camera);
+        player = new Player(WorldManager.world, new Vector2(30, 50));
+
+        stage.addActor(level);
+        stage.addActor(player);
 
         tickThread.start();
-
-        Floor floor = new Floor(WorldManager.world);
-
-        player = new Player(WorldManager.world, new Vector2(10, 50));
     }
 
     @Override
@@ -82,8 +79,6 @@ public class GMTK25 extends ApplicationAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         backStage.draw();
-        mapRenderer.setView(camera);
-        mapRenderer.render();
         stage.draw();
 
         WorldManager.debugRenderer.render(WorldManager.world, camera.combined);
@@ -110,6 +105,5 @@ public class GMTK25 extends ApplicationAdapter {
 
         backStage.dispose();
         stage.dispose();
-        map.dispose();
     }
 }
