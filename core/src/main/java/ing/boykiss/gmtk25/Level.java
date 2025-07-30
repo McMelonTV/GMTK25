@@ -29,16 +29,20 @@ public class Level extends Actor {
     public Level(World world, TiledMap map, OrthographicCamera camera) {
         this.map = map;
         this.camera = camera;
-        this.renderer = new OrthogonalTiledMapRenderer(map);
+        this.renderer = new OrthogonalTiledMapRenderer(map, Constants.UNIT_SCALE);
 
         for (MapLayer layer : this.map.getLayers()) {
             for (MapObject o : layer.getObjects()) {
                 if (o instanceof PolygonMapObject po) {
                     PolygonShape shape = new PolygonShape();
-                    shape.set(po.getPolygon().getVertices());
+                    float[] vertices = po.getPolygon().getVertices();
+                    for (int i = 0; i < vertices.length; i++) {
+                        vertices[i] = vertices[i] * Constants.UNIT_SCALE;
+                    }
+                    shape.set(vertices);
                     float x = (float)po.getProperties().get("x");
                     float y = (float)po.getProperties().get("y");
-                    this.shapes.put(shape, new Vector2(x, y));
+                    this.shapes.put(shape, new Vector2(x * Constants.UNIT_SCALE, y * Constants.UNIT_SCALE));
                 }
             }
         }
