@@ -9,26 +9,36 @@ import com.badlogic.gdx.utils.ScreenUtils;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class GMTK25 extends ApplicationAdapter {
-    private SpriteBatch batch;
-    private Texture image;
+    private final Thread tickThread = new Thread(() -> {
+        long prevTime = System.nanoTime();
+        while (true) {
+            long currTime = System.nanoTime();
+            float time = (currTime - prevTime) / 1_000_000_000f;
+            if (time < 1.0f / Constants.TPS) {
+                continue;
+            }
+            prevTime = currTime;
+
+            tick();
+        }
+    });
 
     @Override
     public void create() {
-        batch = new SpriteBatch();
-        image = new Texture("libgdx.png");
+        tickThread.start();
     }
 
     @Override
     public void render() {
-        ScreenUtils.clear(0.15f, 0.15f, 0.2f, 1f);
-        batch.begin();
-        batch.draw(image, 140, 210);
-        batch.end();
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+    }
+
+    public void tick() {
+
     }
 
     @Override
     public void dispose() {
-        batch.dispose();
-        image.dispose();
+        tickThread.interrupt();
     }
 }
