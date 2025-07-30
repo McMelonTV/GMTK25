@@ -60,7 +60,7 @@ public class Player extends Actor {
 
         velocity.y = body.getLinearVelocity().y;
 
-        if (Gdx.input.isKeyPressed(Input.Keys.C) && velocity.y == 0.0f) {
+        if (Gdx.input.isKeyPressed(Input.Keys.C) && isOnFloor) {
             velocity.y = 150;
         }
 
