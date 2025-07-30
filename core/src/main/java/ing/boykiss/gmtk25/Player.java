@@ -2,6 +2,8 @@ package ing.boykiss.gmtk25;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.BoxShapeBuilder;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -18,6 +20,8 @@ public class Player extends Actor {
     @Getter
     private boolean isOnFloor;
 
+    private Sprite sprite = new Sprite(TextureRegistry.PLAYER_TEXTURE);
+
     public int collisionCount = 0;
 
     private final World world;
@@ -28,6 +32,8 @@ public class Player extends Actor {
         bodyDef.position.set(spawnPos);
 
         body = world.createBody(bodyDef);
+
+
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(6.0f * Constants.UNIT_SCALE, 8.0f * Constants.UNIT_SCALE);
@@ -61,6 +67,17 @@ public class Player extends Actor {
         this.world = world;
 
         shape.dispose();
+    }
+
+    private final float spriteHeightOffset = (sprite.getHeight() * Constants.UNIT_SCALE) * 0.25f;
+    private final float spriteWidthOffset = (sprite.getWidth() * Constants.UNIT_SCALE) * 0.5f;
+    private final float spriteHeightScaled = sprite.getHeight() * Constants.UNIT_SCALE;
+    private final float spriteWidthScaled = sprite.getWidth() * Constants.UNIT_SCALE;
+
+    public void draw(SpriteBatch spriteBatch) {
+        spriteBatch.draw(sprite, body.getPosition().x - spriteWidthOffset,
+                body.getPosition().y - spriteHeightOffset,
+            spriteWidthScaled, spriteHeightScaled);
     }
 
     @Override

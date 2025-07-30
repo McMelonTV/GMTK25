@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -55,11 +56,15 @@ public class GMTK25 extends ApplicationAdapter {
     private Stage stage;
     private Level level;
 
+    SpriteBatch spriteBatch;
+
     @Getter
     private Player player;
 
     @Override
     public void create() {
+        spriteBatch = new SpriteBatch();
+
         backViewport = new ScreenViewport();
         backStage = new Stage();
         backStage.setViewport(backViewport);
@@ -100,6 +105,13 @@ public class GMTK25 extends ApplicationAdapter {
         stage.draw();
 
         WorldManager.debugRenderer.render(WorldManager.world, camera.combined);
+
+        spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
+        spriteBatch.begin();
+
+        player.draw(spriteBatch);
+
+        spriteBatch.end();
     }
 
     public void tick() {
