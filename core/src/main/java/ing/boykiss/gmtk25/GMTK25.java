@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -93,6 +94,16 @@ public class GMTK25 extends ApplicationAdapter {
         stage.draw();
 
         WorldManager.debugRenderer.render(WorldManager.world, camera.combined);
+
+        if (player.getIsOnFloore()) {
+            BitmapFont font = new BitmapFont();
+            font.setColor(Color.BLACK);
+            font.getData().setScale(1);
+            stage.getBatch().begin();
+            stage.getBatch().setProjectionMatrix(camera.combined);
+            font.draw(stage.getBatch(), "Player is on the floor", 10, 16);
+            stage.getBatch().end();
+        }
     }
 
     public void tick() {

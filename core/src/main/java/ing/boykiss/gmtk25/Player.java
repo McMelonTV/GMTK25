@@ -17,6 +17,10 @@ public class Player extends Actor {
     @Getter
     private boolean isOnFloor;
 
+    public boolean getIsOnFloore() {
+        return isOnFloor;
+    }
+
     private final World world;
 
     public Player(World world, Vector2 spawnPos) {
@@ -45,6 +49,15 @@ public class Player extends Actor {
 
     @Override
     public void act(float deltaTime) {
+        isOnFloor = false;
+        world.rayCast(((fixture, point, normal, fraction) -> {
+            if (fixture.getBody() == body) {
+                return 1; // Ignore self
+            }
+            isOnFloor = true;
+            return 0; // Stop ray casting
+        }), body.getPosition(), body.getPosition().cpy().add(0, -8));
+
         velocity.y = body.getLinearVelocity().y;
 
         if (Gdx.input.isKeyPressed(Input.Keys.C) && velocity.y == 0.0f) {
