@@ -2,6 +2,7 @@ package ing.boykiss.gmtk25;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.BoxShapeBuilder;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -28,25 +29,25 @@ public class Player extends Actor {
 
         body = world.createBody(bodyDef);
 
-        CircleShape circle = new CircleShape();
-        circle.setRadius(1f);
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(6.0f * Constants.UNIT_SCALE, 8.0f * Constants.UNIT_SCALE);
 
         // Body fixture
         FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = circle;
+        fixtureDef.shape = shape;
         fixtureDef.density = 1f;
         fixtureDef.friction = 0f;
         fixtureDef.restitution = 0f;
 
         body.createFixture(fixtureDef);
+        body.setFixedRotation(true);
 
         // Sensor fixture for floor detection
-        CircleShape sensorCircle = new CircleShape();
-        sensorCircle.setRadius(0.99f);
-        sensorCircle.setPosition(new Vector2(0, -0.1f)); // Position it below the player
+        PolygonShape sensorShape = new PolygonShape();
+        sensorShape.setAsBox(5.94f * Constants.UNIT_SCALE, 7.94f * Constants.UNIT_SCALE, new Vector2(0, -0.1f * Constants.UNIT_SCALE), 0);
 
         FixtureDef sensorFixtureDef = new FixtureDef();
-        sensorFixtureDef.shape = sensorCircle;
+        sensorFixtureDef.shape = sensorShape;
         sensorFixtureDef.isSensor = true; // Make it a sensor
         sensorFixtureDef.density = 0f; // No density for sensor
         sensorFixtureDef.friction = 0f;
@@ -59,7 +60,7 @@ public class Player extends Actor {
 
         this.world = world;
 
-        circle.dispose();
+        shape.dispose();
     }
 
     @Override

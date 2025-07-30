@@ -81,6 +81,8 @@ public class GMTK25 extends ApplicationAdapter {
         stage.addActor(level);
         stage.addActor(player);
 
+
+
         WorldManager.world.setContactListener(new ListenerClass(player));
 
         tickThread.start();
@@ -98,16 +100,6 @@ public class GMTK25 extends ApplicationAdapter {
         stage.draw();
 
         WorldManager.debugRenderer.render(WorldManager.world, camera.combined);
-
-        if (player.isOnFloor()) {
-            BitmapFont font = new BitmapFont();
-            font.setColor(Color.BLACK);
-            font.getData().setScale(Constants.UNIT_SCALE);
-            stage.getBatch().begin();
-            stage.getBatch().setProjectionMatrix(camera.combined);
-            font.draw(stage.getBatch(), "Player is on the floor", 1, 1);
-            stage.getBatch().end();
-        }
     }
 
     public void tick() {
