@@ -4,4 +4,7 @@ public class Constants {
     public static final int TPS = 60;
     public static final int VIEWPORT_WIDTH = 320;
     public static final int VIEWPORT_HEIGHT = 180;
+
+    public static final int VELOCITY_ITERATIONS = 10;
+    public static final int POSITION_ITERATIONS = 10;
 }

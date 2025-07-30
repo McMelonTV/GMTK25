@@ -7,6 +7,10 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
+import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.ScreenUtils;
@@ -38,6 +42,9 @@ public class GMTK25 extends ApplicationAdapter {
     private Viewport viewport;
     private Stage stage;
 
+    private TiledMap map;
+    private TiledMapRenderer mapRenderer;
+
     @Override
     public void create() {
         backViewport = new ScreenViewport();
@@ -53,6 +60,11 @@ public class GMTK25 extends ApplicationAdapter {
         stage = new Stage();
         stage.setViewport(viewport);
 
+        camera.translate(Constants.VIEWPORT_WIDTH / 2.0f, Constants.VIEWPORT_HEIGHT / 2.0f);
+
+        map = new TmxMapLoader().load("tiledmaps/dev_map.tmx");
+        mapRenderer = new OrthogonalTiledMapRenderer(map);
+
         tickThread.start();
     }
 
@@ -61,10 +73,16 @@ public class GMTK25 extends ApplicationAdapter {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         backStage.draw();
+        mapRenderer.setView(camera);
+        mapRenderer.render();
         stage.draw();
+
+        WorldManager.debugRenderer.render(WorldManager.world, camera.combined);
     }
 
     public void tick() {
+        WorldManager.world.step(Gdx.graphics.getDeltaTime(), Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS);
+
         backStage.act();
         stage.act();
     }
@@ -80,5 +98,9 @@ public class GMTK25 extends ApplicationAdapter {
     @Override
     public void dispose() {
         tickThread.interrupt();
+
+        backStage.dispose();
+        stage.dispose();
+        map.dispose();
     }
 }
