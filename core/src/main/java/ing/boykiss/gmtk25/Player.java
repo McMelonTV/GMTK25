@@ -2,9 +2,10 @@ package ing.boykiss.gmtk25;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g3d.utils.shapebuilders.BoxShapeBuilder;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -20,20 +21,23 @@ public class Player extends Actor {
     @Getter
     private boolean isOnFloor;
 
-    private Sprite sprite = new Sprite(TextureRegistry.PLAYER_TEXTURE);
+    private final Sprite sprite = new Sprite(TextureRegistry.PLAYER_TEXTURE);
+
+    private final Animation<TextureRegion> idleAnimation;
+    private float stateTime = 0f;
 
     public int collisionCount = 0;
 
     private final World world;
 
     public Player(World world, Vector2 spawnPos) {
+        idleAnimation = AnimationUtils.createAnimationSheet(TextureRegistry.PLAYER_SHEET, 2, 2, 0.5f);
+
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(spawnPos);
 
         body = world.createBody(bodyDef);
-
-
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(6.0f * Constants.UNIT_SCALE, 8.0f * Constants.UNIT_SCALE);
@@ -75,8 +79,10 @@ public class Player extends Actor {
     private final float spriteWidthScaled = sprite.getWidth() * Constants.UNIT_SCALE;
 
     public void draw(SpriteBatch spriteBatch) {
-        spriteBatch.draw(sprite, body.getPosition().x - spriteWidthOffset,
-                body.getPosition().y - spriteHeightOffset,
+        stateTime += Gdx.graphics.getDeltaTime();
+        TextureRegion currentFrame = idleAnimation.getKeyFrame(stateTime, true);
+        spriteBatch.draw(currentFrame, body.getPosition().x - spriteWidthOffset,
+            body.getPosition().y - spriteHeightOffset,
             spriteWidthScaled, spriteHeightScaled);
     }
 
