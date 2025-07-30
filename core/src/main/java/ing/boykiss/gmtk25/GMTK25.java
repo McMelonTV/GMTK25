@@ -6,19 +6,21 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import lombok.Getter;
 
-/** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
+/**
+ * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
+ */
 public class GMTK25 extends ApplicationAdapter {
     private final Thread tickThread = new Thread(() -> {
         long prevTime = System.nanoTime();
@@ -45,6 +47,9 @@ public class GMTK25 extends ApplicationAdapter {
     private TiledMap map;
     private TiledMapRenderer mapRenderer;
 
+    @Getter
+    private Player player;
+
     @Override
     public void create() {
         backViewport = new ScreenViewport();
@@ -66,6 +71,10 @@ public class GMTK25 extends ApplicationAdapter {
         mapRenderer = new OrthogonalTiledMapRenderer(map);
 
         tickThread.start();
+
+        Floor floor = new Floor(WorldManager.world);
+
+        player = new Player(WorldManager.world, new Vector2(10, 50));
     }
 
     @Override
