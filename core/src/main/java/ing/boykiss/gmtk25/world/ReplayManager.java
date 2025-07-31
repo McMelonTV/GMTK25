@@ -1,4 +1,4 @@
-package ing.boykiss.gmtk25;
+package ing.boykiss.gmtk25.world;
 
 import com.badlogic.gdx.math.Vector2;
 import ing.boykiss.gmtk25.actor.Player;

@@ -13,13 +13,13 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import ing.boykiss.gmtk25.AnimationUtils;
 import ing.boykiss.gmtk25.AssetRegistry;
 import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.GMTK25;
-import ing.boykiss.gmtk25.ReplayManager;
 import ing.boykiss.gmtk25.input.Input;
 import ing.boykiss.gmtk25.input.event.InputEvent;
+import ing.boykiss.gmtk25.utils.AnimationUtils;
+import ing.boykiss.gmtk25.world.ReplayManager;
 import lombok.Getter;
 
 public class Player extends Actor {
