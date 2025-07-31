@@ -13,9 +13,9 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import ing.boykiss.gmtk25.actor.level.Level;
+import ing.boykiss.gmtk25.actor.level.LevelBackground;
 import ing.boykiss.gmtk25.actor.player.DummyPlayer;
 import ing.boykiss.gmtk25.actor.player.Player;
-import ing.boykiss.gmtk25.actor.ui.Background;
 import ing.boykiss.gmtk25.actor.ui.PauseScreen;
 import ing.boykiss.gmtk25.input.Input;
 import ing.boykiss.gmtk25.input.event.InputEvent;
@@ -95,7 +95,7 @@ public class GMTK25 extends ApplicationAdapter {
         backStage = new Stage();
         backStage.setViewport(backViewport);
 
-        background = new Background(backViewport);
+        background = new LevelBackground(backViewport);
         backStage.addActor(background);
 
         Input.getEventHandler(InputEvent.class).addListener(event -> {
