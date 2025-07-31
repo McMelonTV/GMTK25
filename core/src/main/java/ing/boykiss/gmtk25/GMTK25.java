@@ -14,7 +14,6 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.utils.compression.rangecoder.BitTreeEncoder;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -22,7 +21,8 @@ import ing.boykiss.gmtk25.input.Input;
 import ing.boykiss.gmtk25.input.event.InputEvent;
 import lombok.Getter;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
@@ -133,11 +133,11 @@ public class GMTK25 extends ApplicationAdapter {
 
         level = new Level(WorldManager.world, new TmxMapLoader().load("tiledmaps/dev_map.tmx"), camera);
         player = new Player(WorldManager.world, new Vector2(30 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE));
-
+        
         stage.addActor(level);
         stage.addActor(player);
 
-        WorldManager.world.setContactListener(new ListenerClass(player));
+        WorldManager.world.setContactListener(new ListenerClass(player)); // Set the contact listener for onFloor detection
 
         tickThread.start();
     }
@@ -151,7 +151,7 @@ public class GMTK25 extends ApplicationAdapter {
         viewport.apply();
         stage.draw();
 
-        WorldManager.debugRenderer.render(WorldManager.world, camera.combined);
+        //WorldManager.debugRenderer.render(WorldManager.world, camera.combined);
 
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.begin();
