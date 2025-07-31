@@ -13,11 +13,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.GMTK25;
-import ing.boykiss.gmtk25.event.EventBus;
-import ing.boykiss.gmtk25.event.player.PlayerJumpOnDummyEvent;
-import ing.boykiss.gmtk25.registry.AnimationRegistry;
 import ing.boykiss.gmtk25.registry.AssetRegistry;
-import ing.boykiss.gmtk25.utils.AnimationUtils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -89,10 +85,10 @@ public class DummyPlayer {
         stateTime += Gdx.graphics.getDeltaTime();
         TextureRegion currentFrame = animation.getKeyFrame(stateTime, animationLooping);
         batch.draw(currentFrame,
-            body.getPosition().x - spriteWidthOffset * spriteScale.x,
-            body.getPosition().y - spriteHeightOffset * spriteScale.y,
-            spriteWidthScaled * spriteScale.x,
-            spriteHeightScaled * spriteScale.y
+                body.getPosition().x - spriteWidthOffset * spriteScale.x,
+                body.getPosition().y - spriteHeightOffset * spriteScale.y,
+                spriteWidthScaled * spriteScale.x,
+                spriteHeightScaled * spriteScale.y
         );
     }
 
@@ -102,7 +98,7 @@ public class DummyPlayer {
         }
         destroyed = true;
         GMTK25.renderStack.add(() -> {
-            GMTK25.getInstance().getRenderableDummies().remove(this);
+            GMTK25.getInstance().dummyPlayerRenderer.removeRenderableDummy(this);
             getBody().getWorld().destroyBody(getBody());
         });
     }

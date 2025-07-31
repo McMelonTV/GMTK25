@@ -5,10 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -17,6 +15,7 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 import ing.boykiss.gmtk25.actor.level.Level;
 import ing.boykiss.gmtk25.actor.level.LevelBackground;
 import ing.boykiss.gmtk25.actor.player.DummyPlayer;
+import ing.boykiss.gmtk25.actor.player.DummyPlayerRenderer;
 import ing.boykiss.gmtk25.actor.player.Player;
 import ing.boykiss.gmtk25.actor.ui.PauseScreen;
 import ing.boykiss.gmtk25.event.EventBus;
@@ -29,9 +28,7 @@ import ing.boykiss.gmtk25.level.replay.ReplayManager;
 import ing.boykiss.gmtk25.registry.MapRegistry;
 import lombok.Getter;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 
 /**
@@ -82,8 +79,7 @@ public class GMTK25 extends ApplicationAdapter {
     @Getter
     private Player player;
 
-    @Getter
-    private final List<DummyPlayer> renderableDummies = new ArrayList<>();
+    public DummyPlayerRenderer dummyPlayerRenderer;
 
     private boolean fullscreen = false;
 
@@ -135,7 +131,7 @@ public class GMTK25 extends ApplicationAdapter {
                 renderStack.add(() -> {
                     ReplayManager.INSTANCE.stopRecording();
                     DummyPlayer dummyPlayer = new DummyPlayer(WorldManager.world, new Vector2(30 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE));
-                    renderableDummies.add(dummyPlayer);
+                    dummyPlayerRenderer.addRenderableDummy(dummyPlayer);
                     ReplayManager.INSTANCE.replay(dummyPlayer);
 
                     EventBus.addListener(PlayerJumpOnDummyEvent.class, e -> {
@@ -144,7 +140,7 @@ public class GMTK25 extends ApplicationAdapter {
                         }
                         renderStack.add(() -> {
                             dummyPlayer.destroy();
-                            renderableDummies.remove(dummyPlayer);
+                            dummyPlayerRenderer.removeRenderableDummy(dummyPlayer);
                         });
                     });
                 });
@@ -165,19 +161,10 @@ public class GMTK25 extends ApplicationAdapter {
 
         level = new Level(WorldManager.world, MapRegistry.DEV_MAP, camera);
         player = new Player(WorldManager.world, new Vector2(30 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE));
+        dummyPlayerRenderer = new DummyPlayerRenderer();
 
         stage.addActor(level);
-        stage.addActor(new Actor() {
-            @Override
-            public void draw(Batch batch, float parentOpacity) {
-                batch.end();
-                batch.flush();
-                batch.begin();
-                for (DummyPlayer dummy : renderableDummies) {
-                    dummy.draw(batch);
-                }
-            }
-        });
+        stage.addActor(dummyPlayerRenderer);
         stage.addActor(player);
         uiStage.addActor(new PauseScreen());
 
