@@ -147,11 +147,10 @@ public class GMTK25 extends ApplicationAdapter {
         backStage.draw();
         viewport.apply();
         stage.draw();
-
-        //WorldManager.debugRenderer.render(WorldManager.world, camera.combined);
-
         uiViewport.apply();
         uiStage.draw();
+
+        //WorldManager.debugRenderer.render(WorldManager.world, camera.combined);
 
         synchronized (renderStack) {
             while (!renderStack.isEmpty()) {
@@ -181,10 +180,10 @@ public class GMTK25 extends ApplicationAdapter {
     @Override
     public void resize(int width, int height) {
         backViewport.update(width, height);
-        viewport.update(width, height);
-        uiViewport.update(width, height);
         background.setSize(viewport.getScreenWidth(), viewport.getScreenHeight());
         background.setPosition(-viewport.getScreenWidth() / 2.0f, -viewport.getScreenHeight() / 2.0f);
+        viewport.update(width, height);
+        uiViewport.update(width, height);
     }
 
     @Override
