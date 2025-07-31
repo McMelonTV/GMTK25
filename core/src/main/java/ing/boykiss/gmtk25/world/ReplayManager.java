@@ -1,7 +1,8 @@
 package ing.boykiss.gmtk25.world;
 
 import com.badlogic.gdx.math.Vector2;
-import ing.boykiss.gmtk25.actor.Player;
+import ing.boykiss.gmtk25.DummyPlayer;
+import ing.boykiss.gmtk25.ReplayFrame;
 import lombok.Getter;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public class ReplayManager {
 
     // Return the recorded replay data
     @Getter
-    private final List<Vector2> replayData = new java.util.ArrayList<>();
+    private final List<ReplayFrame> replayData = new java.util.ArrayList<>();
 
     public void startRecording() {
         // Logic to start recording the replay
@@ -25,11 +26,11 @@ public class ReplayManager {
         replayData.clear(); // Clear previous data if any
     }
 
-    public void recordFrame(Vector2 playerPosition) {
+    public void recordFrame(Vector2 playerPosition, Vector2 playerVelocity) {
         // Logic to record the player's position for the current frame
         if (!isRecording) return;
 
-        replayData.add(new Vector2(playerPosition));
+        replayData.add(new ReplayFrame(new Vector2(playerPosition), new Vector2(playerVelocity)));
     }
 
     public void stopRecording() {
@@ -40,20 +41,21 @@ public class ReplayManager {
     @Getter
     private boolean isReplaying = false;
     private int currentFrame = 0;
-    private Player player;
+    private DummyPlayer player;
 
     /**
      * Prepares the replay for a player.
      *
      * @param player
      */
-    public void replay(Player player) {
+    public void replay(DummyPlayer player) {
         if (replayData.isEmpty()) {
             return;
         }
         currentFrame = 0;
         this.player = player;
-        this.player.getBody().setTransform(replayData.get(currentFrame), 0);
+        this.player.getBody().setTransform(replayData.get(currentFrame).playerPosition, 0);
+        this.player.setVelocity(replayData.get(currentFrame).playerVelocity); // do animation based on this
         isReplaying = true;
     }
 
@@ -64,7 +66,8 @@ public class ReplayManager {
      */
     public boolean nextFrame() {
         currentFrame++;
-        this.player.getBody().setTransform(replayData.get(currentFrame), 0);
+        this.player.getBody().setTransform(replayData.get(currentFrame).playerPosition, 0);
+        this.player.setVelocity(replayData.get(currentFrame).playerVelocity); // do animation based on this
 
         // Check if there are more frames to replay
         if (currentFrame >= replayData.size() - 1) {

@@ -13,8 +13,8 @@ import ing.boykiss.gmtk25.Constants;
 public class Background extends Image {
     private final Viewport viewport;
     private final ShaderProgram shader = new ShaderProgram(
-        Gdx.files.internal("shaders/background.vsh"),
-        Gdx.files.internal("shaders/background.fsh")
+            Gdx.files.internal(AssetRegistry.BACKGROUND_VERTEX_SHADER_PATH),
+            Gdx.files.internal(AssetRegistry.BACKGROUND_FRAGMENT_SHADER_PATH)
     );
     private float time;
 
