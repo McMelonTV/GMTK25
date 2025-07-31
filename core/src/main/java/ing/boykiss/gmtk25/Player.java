@@ -20,8 +20,14 @@ public class Player extends Actor {
 
     @Getter
     private boolean isOnFloor;
+
     private static final int SPEED = 5000; // Speed of the player
     private static final int JUMP_FORCE = 7500; // Jump force of the player
+
+    private static final int COYOTE_TIME_DURATION = 6; // Duration of coyote time in ticks
+    private boolean CoyoteTimeActive = false;
+    private int coyoteTimeCounter = 0;
+
 
     private final Sprite sprite = new Sprite(TextureRegistry.PLAYER_TEXTURE);
 
@@ -117,6 +123,25 @@ public class Player extends Actor {
         body.setLinearVelocity(velocity);
     }
 
+    /**
+     * Ticks the coyote time counter.
+     */
+    private void tickCoyoteTime() {
+        if (isOnFloor) {
+            coyoteTimeCounter = 0;
+            CoyoteTimeActive = true; // Reset coyote time when on the floor
+        } else {
+            if (CoyoteTimeActive) {
+                coyoteTimeCounter++;
+                if (coyoteTimeCounter >= COYOTE_TIME_DURATION) {
+                    CoyoteTimeActive = false; // Deactivate coyote time after duration
+                }
+            } else {
+                coyoteTimeCounter = 0; // Reset counter if not active
+            }
+        }
+    }
+
 
     /**
      * Handles the input buffer and applies the actions.
@@ -128,8 +153,6 @@ public class Player extends Actor {
         }
 
         if (Input.keyPressed(Input.Keys.RIGHT)) {
-            velocity.x += 5000 * deltaTime;
-            spriteScale.x = 1;
             velocity.x += SPEED * deltaTime;
             spriteScale.x = 1; // Face right
         }
