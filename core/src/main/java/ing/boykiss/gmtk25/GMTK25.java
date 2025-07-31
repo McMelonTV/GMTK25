@@ -112,11 +112,12 @@ public class GMTK25 extends ApplicationAdapter {
             }
         });
 
+        camera = new OrthographicCamera();
+        viewport = new FitViewport(Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_HEIGHT, camera);
+
         background = new Background(viewport);
         backStage.addActor(background);
 
-        camera = new OrthographicCamera();
-        viewport = new FitViewport(Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_HEIGHT, camera);
         stage = new Stage();
         stage.setViewport(viewport);
 
