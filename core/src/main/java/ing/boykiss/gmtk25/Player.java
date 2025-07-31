@@ -6,12 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import ing.boykiss.gmtk25.input.Input;
 import ing.boykiss.gmtk25.input.event.InputEvent;
@@ -36,7 +31,7 @@ public class Player extends Actor {
     private int coyoteTimeCounter = 0;
 
     private int jumpBuffer = 0;
-    private static final int JUMP_BUFFER_DURATION = 5; // Duration of jump buffer in ticks
+    private static final int JUMP_BUFFER_DURATION = 8; // Duration of jump buffer in ticks
 
 
     private final Sprite sprite = new Sprite(TextureRegistry.PLAYER_TEXTURE);
@@ -93,6 +88,8 @@ public class Player extends Actor {
         Input.getEventHandler(InputEvent.class).addListener(this::onInputEvent);
 
         shape.dispose();
+
+        ReplayManager.INSTANCE.startRecording();
     }
 
     private final float spriteHeightOffset = (sprite.getHeight() * Constants.UNIT_SCALE) * 0.25f;
@@ -122,6 +119,7 @@ public class Player extends Actor {
 
     @Override
     public void act(float deltaTime) { // aka tick
+        ReplayManager.INSTANCE.recordFrame(body.getPosition());
         isOnFloor = collisionCount > 0; // update isOnFloor based on collision count
 
         tickCoyoteTime();

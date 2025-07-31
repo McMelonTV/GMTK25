@@ -110,6 +110,10 @@ public class GMTK25 extends ApplicationAdapter {
             if (event.released() && (event.key().equals(Input.Keys.ESCAPE) || event.key().equals(Input.Keys.P))) {
                 isPaused = !isPaused;
             }
+            if (event.released() && event.key().equals(Input.Keys.R)) {
+                ReplayManager.INSTANCE.stopRecording();
+                ReplayManager.INSTANCE.replay(player);
+            }
         });
 
         background = new Image(new Texture("textures/fill.png")) {
@@ -201,6 +205,12 @@ public class GMTK25 extends ApplicationAdapter {
     public void tick() {
         if (isPaused) return;
         WorldManager.world.step(Gdx.graphics.getDeltaTime(), Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS);
+
+        if (ReplayManager.INSTANCE.isReplaying()) {
+            if (!ReplayManager.INSTANCE.nextFrame()) {
+                ReplayManager.INSTANCE.stopRecording();
+            }
+        }
 
         backStage.act();
         stage.act();
