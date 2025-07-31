@@ -1,4 +1,4 @@
-package ing.boykiss.gmtk25;
+package ing.boykiss.gmtk25.registry;
 
 import com.badlogic.gdx.graphics.Texture;
 

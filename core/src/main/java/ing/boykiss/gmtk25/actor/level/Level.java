@@ -1,4 +1,4 @@
-package ing.boykiss.gmtk25.actor;
+package ing.boykiss.gmtk25.actor.level;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -12,7 +12,7 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import ing.boykiss.gmtk25.Constants;
+import ing.boykiss.gmtk25.utils.Constants;
 import lombok.Getter;
 
 import java.util.ArrayList;
