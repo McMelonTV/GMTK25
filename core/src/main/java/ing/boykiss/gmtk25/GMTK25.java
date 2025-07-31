@@ -84,7 +84,6 @@ public class GMTK25 extends ApplicationAdapter {
 
         Input.getEventHandler(InputEvent.class).addListener(event -> {
             if (event.released() && event.key().equals(Input.Keys.F11)) {
-                Graphics.DisplayMode currentMode = Gdx.graphics.getDisplayMode();
                 synchronized (renderStack) {
                     renderStack.add(fullscreen ?
                         () -> {
@@ -144,7 +143,7 @@ public class GMTK25 extends ApplicationAdapter {
 
         level = new Level(WorldManager.world, new TmxMapLoader().load("tiledmaps/dev_map.tmx"), camera);
         player = new Player(WorldManager.world, new Vector2(30 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE));
-        
+
         stage.addActor(level);
         stage.addActor(player);
 
