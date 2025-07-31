@@ -1,11 +1,11 @@
-package ing.boykiss.gmtk25.actor;
+package ing.boykiss.gmtk25.actor.ui;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import ing.boykiss.gmtk25.AssetRegistry;
 import ing.boykiss.gmtk25.GMTK25;
+import ing.boykiss.gmtk25.registry.AssetRegistry;
 
 public class PauseScreen extends Actor {
     @Override

@@ -1,4 +1,4 @@
-package ing.boykiss.gmtk25;
+package ing.boykiss.gmtk25.utils;
 
 public class Constants {
     public static final int TPS = 60;

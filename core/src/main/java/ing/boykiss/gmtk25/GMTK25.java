@@ -12,15 +12,18 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import ing.boykiss.gmtk25.actor.Background;
-import ing.boykiss.gmtk25.actor.Level;
-import ing.boykiss.gmtk25.actor.PauseScreen;
-import ing.boykiss.gmtk25.actor.Player;
+import ing.boykiss.gmtk25.actor.level.Level;
+import ing.boykiss.gmtk25.actor.player.DummyPlayer;
+import ing.boykiss.gmtk25.actor.player.Player;
+import ing.boykiss.gmtk25.actor.ui.Background;
+import ing.boykiss.gmtk25.actor.ui.PauseScreen;
 import ing.boykiss.gmtk25.input.Input;
 import ing.boykiss.gmtk25.input.event.InputEvent;
-import ing.boykiss.gmtk25.world.ListenerClass;
-import ing.boykiss.gmtk25.world.ReplayManager;
-import ing.boykiss.gmtk25.world.WorldManager;
+import ing.boykiss.gmtk25.level.ListenerClass;
+import ing.boykiss.gmtk25.level.ReplayManager;
+import ing.boykiss.gmtk25.level.WorldManager;
+import ing.boykiss.gmtk25.registry.MapRegistry;
+import ing.boykiss.gmtk25.utils.Constants;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -169,7 +172,7 @@ public class GMTK25 extends ApplicationAdapter {
         }
         spriteBatch.end();
         spriteBatch.flush();
-        //WorldManager.debugRenderer.render(WorldManager.world, camera.combined);
+        //WorldManager.debugRenderer.render(WorldManager.level, camera.combined);
 
         synchronized (renderStack) {
             while (!renderStack.isEmpty()) {
