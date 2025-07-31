@@ -5,7 +5,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -170,17 +169,6 @@ public class GMTK25 extends ApplicationAdapter {
         }
         spriteBatch.end();
         spriteBatch.flush();
-
-        spriteBatch.setProjectionMatrix(uiViewport.getCamera().combined);
-
-        spriteBatch.begin();
-        if (isPaused) {
-            spriteBatch.setColor(0, 0, 0, 0.5f);
-            spriteBatch.draw(new Texture("textures/fill.png"), 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
-        } else {
-            spriteBatch.setColor(1, 1, 1, 1);
-        }
-        spriteBatch.end();
         //WorldManager.debugRenderer.render(WorldManager.world, camera.combined);
 
         synchronized (renderStack) {
