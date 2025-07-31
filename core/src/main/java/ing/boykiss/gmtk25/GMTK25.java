@@ -202,11 +202,7 @@ public class GMTK25 extends ApplicationAdapter {
         if (isPaused) return;
         WorldManager.world.step(Gdx.graphics.getDeltaTime(), Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS);
 
-        if (ReplayManager.INSTANCE.isReplaying()) {
-            if (!ReplayManager.INSTANCE.nextFrame()) {
-                ReplayManager.INSTANCE.stopRecording();
-            }
-        }
+        ReplayManager.INSTANCE.update();
 
         backStage.act();
         stage.act();

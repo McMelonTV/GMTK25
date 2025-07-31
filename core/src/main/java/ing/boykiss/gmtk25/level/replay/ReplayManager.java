@@ -9,6 +9,18 @@ import lombok.Getter;
 import java.util.List;
 
 public class ReplayManager {
+    public static class ReplayData {
+        public DummyPlayer player;
+        public List<ReplayFrame> frames;
+        public int currentFrame = 0;
+        public boolean isReplaying = true;
+
+        public ReplayData(DummyPlayer player, List<ReplayFrame> frames) {
+            this.player = player;
+            this.frames = frames;
+        }
+    }
+
     public static final ReplayManager INSTANCE = new ReplayManager();
 
     private ReplayManager() {
@@ -19,48 +31,44 @@ public class ReplayManager {
 
     // Return the recorded replay data
     @Getter
-    private final List<ReplayFrame> replayData = new java.util.ArrayList<>();
+    private final List<ReplayFrame> replayFrames = new java.util.ArrayList<>();
+    private final List<ReplayData> replayData = new java.util.ArrayList<>();
 
     public void startRecording() {
         // Logic to start recording the replay
         isRecording = true;
-        replayData.clear(); // Clear previous data if any
+        replayFrames.clear(); // Clear previous data if any
     }
 
     public void recordFrame(Vector2 playerPosition, Vector2 playerVelocity, Vector2 playerScale, Animation<TextureRegion> animation, boolean animationLooping) {
         // Logic to record the player's position for the current frame
         if (!isRecording) return;
 
-        replayData.add(new ReplayFrame(new Vector2(playerPosition), new Vector2(playerVelocity), new Vector2(playerScale), animation, animationLooping));
+        replayFrames.add(new ReplayFrame(new Vector2(playerPosition), new Vector2(playerVelocity), new Vector2(playerScale), animation, animationLooping));
     }
 
     public void stopRecording() {
         // Logic to stop recording the replay
         isRecording = false;
     }
-
-    @Getter
-    private boolean isReplaying = false;
-    private int currentFrame = 0;
-    private DummyPlayer player;
-
     /**
      * Prepares the replay for a player.
      *
      * @param player
      */
     public void replay(DummyPlayer player) {
-        if (replayData.isEmpty()) {
+        if (replayFrames.isEmpty()) {
             return;
         }
-        currentFrame = 0;
-        this.player = player;
-        this.player.getBody().setTransform(replayData.get(currentFrame).playerPosition, 0);
-        this.player.setVelocity(replayData.get(currentFrame).playerVelocity); // do animation based on this | nah i decided to just store animations :p -Whale
-        this.player.setSpriteScale(replayData.get(currentFrame).playerScale);
-        this.player.setAnimation(replayData.get(currentFrame).animation);
-        this.player.setAnimationLooping(replayData.get(currentFrame).animationLooping);
-        isReplaying = true;
+
+        ReplayData data = new ReplayData(player, replayFrames);
+        replayData.add(data);
+
+        data.player.getBody().setTransform(data.frames.getFirst().playerPosition, 0);
+        data.player.setVelocity(data.frames.getFirst().playerVelocity);
+        data.player.setSpriteScale(data.frames.getFirst().playerScale);
+        data.player.setAnimation(data.frames.getFirst().animation);
+        data.player.setAnimationLooping(data.frames.getFirst().animationLooping);
     }
 
     /**
@@ -68,26 +76,37 @@ public class ReplayManager {
      *
      * @return true if there are more frames to replay, false if the end of the replay has been reached.
      */
-    public boolean nextFrame() {
-        if (this.player.isDestroyed()) {
+    public boolean nextFrame(ReplayData data) {
+        if (data.player.isDestroyed()) {
             return false;
         }
-        currentFrame++;
-        this.player.getBody().setTransform(replayData.get(currentFrame).playerPosition, 0);
-        this.player.setVelocity(replayData.get(currentFrame).playerVelocity); // do animation based on this | nah i decided to just store animations :p -Whale
-        this.player.setSpriteScale(replayData.get(currentFrame).playerScale);
-        if (!this.player.getAnimation().equals(replayData.get(currentFrame).animation)) {
-            this.player.resetStateTime();
+        if (data.frames.size() < data.currentFrame) {
+            return false;
         }
-        this.player.setAnimation(replayData.get(currentFrame).animation);
-        this.player.setAnimationLooping(replayData.get(currentFrame).animationLooping);
+        data.currentFrame++;
+        data.player.getBody().setTransform(data.frames.get(data.currentFrame).playerPosition, 0);
+        data.player.setVelocity(data.frames.get(data.currentFrame).playerVelocity); // do animation based on this | nah i decided to just store animations :p -Whale
+        data.player.setSpriteScale(data.frames.get(data.currentFrame).playerScale);
+        if (!data.player.getAnimation().equals(data.frames.get(data.currentFrame).animation)) {
+            data.player.resetStateTime();
+        }
+        data.player.setAnimation(data.frames.get(data.currentFrame).animation);
+        data.player.setAnimationLooping(data.frames.get(data.currentFrame).animationLooping);
 
         // Check if there are more frames to replay
-        if (currentFrame >= replayData.size() - 1) {
-            isReplaying = false; // Stop replaying if we reached the end
-            this.player.destroy();
+        if (data.currentFrame >= replayFrames.size() - 1) {
+            data.isReplaying = false; // Stop replaying if we reached the end
+            data.player.destroy();
             return false;
         }
         return true;
+    }
+
+    public void update() {
+        for (ReplayData data : replayData) {
+            if (!nextFrame(data)) {
+                data.isReplaying = false;
+            }
+        }
     }
 }
