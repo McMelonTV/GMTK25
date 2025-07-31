@@ -14,7 +14,6 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.utils.compression.rangecoder.BitTreeEncoder;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
@@ -22,7 +21,8 @@ import ing.boykiss.gmtk25.input.Input;
 import ing.boykiss.gmtk25.input.event.InputEvent;
 import lombok.Getter;
 
-import java.util.*;
+import java.util.LinkedList;
+import java.util.Queue;
 
 /**
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
@@ -67,6 +67,8 @@ public class GMTK25 extends ApplicationAdapter {
     @Getter
     private Player player;
 
+    private boolean fullscreen = false;
+
     private int windowedWidth = 1280;
     private int windowedHeight = 720;
 
@@ -84,13 +86,22 @@ public class GMTK25 extends ApplicationAdapter {
             if (event.released() && event.key().equals(Input.Keys.F11)) {
                 Graphics.DisplayMode currentMode = Gdx.graphics.getDisplayMode();
                 synchronized (renderStack) {
-                    renderStack.add(Gdx.graphics.isFullscreen() ?
-                        () -> Gdx.graphics.setWindowedMode(windowedWidth, windowedHeight) :
+                    renderStack.add(fullscreen ?
+                        () -> {
+                            Gdx.graphics.setUndecorated(false);
+                            Gdx.graphics.setWindowedMode(windowedWidth, windowedHeight);
+                            fullscreen = false;
+                        } :
                         () -> {
                             windowedWidth = Gdx.graphics.getWidth();
                             windowedHeight = Gdx.graphics.getHeight();
-                            Gdx.graphics.setFullscreenMode(currentMode);
-                        });
+
+                            Gdx.graphics.setUndecorated(true);
+                            Graphics.DisplayMode displayMode = Gdx.graphics.getDisplayMode();
+                            Gdx.graphics.setWindowedMode(displayMode.width, displayMode.height);
+                            fullscreen = true;
+                        }
+                    );
                 }
             }
         });
