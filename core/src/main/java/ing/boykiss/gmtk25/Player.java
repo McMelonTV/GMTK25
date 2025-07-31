@@ -115,6 +115,8 @@ public class Player extends Actor {
     public void act(float deltaTime) { // aka tick
         isOnFloor = collisionCount > 0; // update isOnFloor based on collision count
 
+        tickCoyoteTime();
+
         velocity.y = body.getLinearVelocity().y;
         velocity.x = 0; // Reset horizontal velocity before applying new input
 
