@@ -32,12 +32,12 @@ public class Player extends Actor {
     private final World world;
 
     public Player(World world, Vector2 spawnPos) {
-        idleAnimation = AnimationUtils.createAnimationSheet(TextureRegistry.PLAYER_IDLE, 2, 2, new int[] {
+        idleAnimation = AnimationUtils.createAnimationSheet(TextureRegistry.PLAYER_IDLE, 2, 2, new int[]{
             0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 3
         }, 0.1f);
-        runAnimation = AnimationUtils.createAnimationSheet(TextureRegistry.PLAYER_RUN, 3, 3, new int[] {
+        runAnimation = AnimationUtils.createAnimationSheet(TextureRegistry.PLAYER_RUN, 3, 3, new int[]{
             0, 1, 2, 3, 4, 5, 6, 7
-        }, 0.05f);
+        }, 0.03f);
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -46,7 +46,7 @@ public class Player extends Actor {
         body = world.createBody(bodyDef);
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(6.0f * Constants.UNIT_SCALE, 8.0f * Constants.UNIT_SCALE);
+        shape.setAsBox(4.0f * Constants.UNIT_SCALE, 8.0f * Constants.UNIT_SCALE);
 
         // Body fixture
         FixtureDef fixtureDef = new FixtureDef();
@@ -60,7 +60,7 @@ public class Player extends Actor {
 
         // Sensor fixture for floor detection
         PolygonShape sensorShape = new PolygonShape();
-        sensorShape.setAsBox(5.94f * Constants.UNIT_SCALE, 7.94f * Constants.UNIT_SCALE, new Vector2(0, -0.1f * Constants.UNIT_SCALE), 0);
+        sensorShape.setAsBox(3.94f * Constants.UNIT_SCALE, 7.94f * Constants.UNIT_SCALE, new Vector2(0, -0.1f * Constants.UNIT_SCALE), 0);
 
         FixtureDef sensorFixtureDef = new FixtureDef();
         sensorFixtureDef.shape = sensorShape;
