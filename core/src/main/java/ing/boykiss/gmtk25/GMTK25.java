@@ -3,13 +3,9 @@ package ing.boykiss.gmtk25;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -116,33 +112,7 @@ public class GMTK25 extends ApplicationAdapter {
             }
         });
 
-        background = new Image(new Texture("textures/fill.png")) {
-            private final ShaderProgram shader = new ShaderProgram(
-                Gdx.files.internal("shaders/background.vsh"),
-                Gdx.files.internal("shaders/background.fsh")
-            );
-
-            private float time;
-
-            @Override
-            public void draw(Batch batch, float parentAlpha) {
-                time += Gdx.graphics.getDeltaTime();
-
-                batch.end();
-                batch.flush();
-
-                ShaderProgram.pedantic = false;
-
-                batch.begin();
-                batch.setShader(shader);
-
-                shader.setUniformf("u_time", time);
-                shader.setUniformf("u_viewportRes", viewport.getWorldWidth() / Constants.UNIT_SCALE, viewport.getWorldHeight() / Constants.UNIT_SCALE);
-
-                this.getDrawable().draw(batch, this.getX(), this.getY(), this.getWidth(), this.getHeight());
-            }
-        };
-        background.setColor(Color.DARK_GRAY);
+        background = new Background(viewport);
         backStage.addActor(background);
 
         camera = new OrthographicCamera();
