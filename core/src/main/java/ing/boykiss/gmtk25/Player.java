@@ -20,6 +20,8 @@ public class Player extends Actor {
 
     @Getter
     private boolean isOnFloor;
+    private static final int SPEED = 5000; // Speed of the player
+    private static final int JUMP_FORCE = 7500; // Jump force of the player
 
     private final Sprite sprite = new Sprite(TextureRegistry.PLAYER_TEXTURE);
 
@@ -104,25 +106,36 @@ public class Player extends Actor {
     }
 
     @Override
-    public void act(float deltaTime) {
+    public void act(float deltaTime) { // aka tick
         isOnFloor = collisionCount > 0; // update isOnFloor based on collision count
 
         velocity.y = body.getLinearVelocity().y;
+        velocity.x = 0; // Reset horizontal velocity before applying new input
 
-        if (Input.keyPressed(Input.Keys.C) && isOnFloor) {
-            velocity.y = 7500 * deltaTime; // Jump force
+        handleInput(deltaTime);
+
+        body.setLinearVelocity(velocity);
+    }
+
+
+    /**
+     * Handles the input buffer and applies the actions.
+     * This method is called on the main thread.
+     */
+    private void handleInput(float deltaTime) {
+        if (Input.keyPressed(Input.Keys.C) && (isOnFloor || CoyoteTimeActive)) {
+            velocity.y = JUMP_FORCE * deltaTime;
         }
 
-        velocity.x = 0;
         if (Input.keyPressed(Input.Keys.RIGHT)) {
             velocity.x += 5000 * deltaTime;
             spriteScale.x = 1;
+            velocity.x += SPEED * deltaTime;
+            spriteScale.x = 1; // Face right
         }
         if (Input.keyPressed(Input.Keys.LEFT)) {
-            velocity.x += -5000 * deltaTime;
-            spriteScale.x = -1;
+            velocity.x += -SPEED * deltaTime;
+            spriteScale.x = -1; // Face left
         }
-
-        body.setLinearVelocity(velocity);
     }
 }
