@@ -1,10 +1,7 @@
 package ing.boykiss.gmtk25;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Sprite;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.*;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -102,7 +99,8 @@ public class Player extends Actor {
 
     private final Vector2 spriteScale = new Vector2(1, 1);
 
-    public void draw(SpriteBatch spriteBatch) {
+    @Override
+    public void draw(Batch batch, float parentOpacity) {
         Animation<TextureRegion> currentAnimation = velocity.x == 0 ? idleAnimation : runAnimation;
 
         if (currentAnimation == null) {
@@ -111,7 +109,7 @@ public class Player extends Actor {
 
         stateTime += Gdx.graphics.getDeltaTime();
         TextureRegion currentFrame = currentAnimation.getKeyFrame(stateTime, true);
-        spriteBatch.draw(currentFrame,
+        batch.draw(currentFrame,
             body.getPosition().x - spriteWidthOffset * spriteScale.x,
             body.getPosition().y - spriteHeightOffset * spriteScale.y,
             spriteWidthScaled * spriteScale.x,

@@ -174,13 +174,6 @@ public class GMTK25 extends ApplicationAdapter {
 
         //WorldManager.debugRenderer.render(WorldManager.world, camera.combined);
 
-        spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
-        spriteBatch.begin();
-
-        player.draw(spriteBatch);
-
-        spriteBatch.end();
-
         uiViewport.apply();
         uiStage.draw();
 
