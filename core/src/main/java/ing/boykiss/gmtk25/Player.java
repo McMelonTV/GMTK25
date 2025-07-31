@@ -129,6 +129,16 @@ public class Player extends Actor {
         handleInput(deltaTime);
 
         body.setLinearVelocity(velocity);
+
+        // Snapping x and y to pixels when their respective velocity is 0
+        float x = Math.round(body.getPosition().x / Constants.UNIT_SCALE) * Constants.UNIT_SCALE;
+        float y = Math.round(body.getPosition().y / Constants.UNIT_SCALE) * Constants.UNIT_SCALE;
+
+        body.setTransform(
+            body.getLinearVelocity().x == 0.0f ? x : body.getPosition().x,
+            body.getLinearVelocity().y == 0.0f ? y : body.getPosition().y,
+            body.getAngle()
+        );
     }
 
     /**
