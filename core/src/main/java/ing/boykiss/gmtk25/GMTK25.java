@@ -67,6 +67,8 @@ public class GMTK25 extends ApplicationAdapter {
     @Getter
     private Player player;
 
+    private boolean fullscreen = false;
+
     private int windowedWidth = 1280;
     private int windowedHeight = 720;
 
@@ -82,15 +84,23 @@ public class GMTK25 extends ApplicationAdapter {
 
         Input.getEventHandler(InputEvent.class).addListener(event -> {
             if (event.released() && event.key().equals(Input.Keys.F11)) {
-                Graphics.DisplayMode currentMode = Gdx.graphics.getDisplayMode();
                 synchronized (renderStack) {
-                    renderStack.add(Gdx.graphics.isFullscreen() ?
-                        () -> Gdx.graphics.setWindowedMode(windowedWidth, windowedHeight) :
+                    renderStack.add(fullscreen ?
+                        () -> {
+                            Gdx.graphics.setUndecorated(false);
+                            Gdx.graphics.setWindowedMode(windowedWidth, windowedHeight);
+                            fullscreen = false;
+                        } :
                         () -> {
                             windowedWidth = Gdx.graphics.getWidth();
                             windowedHeight = Gdx.graphics.getHeight();
-                            Gdx.graphics.setFullscreenMode(currentMode);
-                        });
+
+                            Gdx.graphics.setUndecorated(true);
+                            Graphics.DisplayMode displayMode = Gdx.graphics.getDisplayMode();
+                            Gdx.graphics.setWindowedMode(displayMode.width, displayMode.height);
+                            fullscreen = true;
+                        }
+                    );
                 }
             }
         });
@@ -133,7 +143,7 @@ public class GMTK25 extends ApplicationAdapter {
 
         level = new Level(WorldManager.world, new TmxMapLoader().load("tiledmaps/dev_map.tmx"), camera);
         player = new Player(WorldManager.world, new Vector2(30 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE));
-        
+
         stage.addActor(level);
         stage.addActor(player);
 
