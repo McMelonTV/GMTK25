@@ -21,11 +21,9 @@ import ing.boykiss.gmtk25.event.EventHandler;
 import ing.boykiss.gmtk25.event.input.InputEvent;
 import ing.boykiss.gmtk25.event.player.PlayerHitHazardEvent;
 import ing.boykiss.gmtk25.input.Input;
-import ing.boykiss.gmtk25.level.ListenerClass;
 import ing.boykiss.gmtk25.level.replay.ReplayManager;
 import ing.boykiss.gmtk25.registry.AnimationRegistry;
 import ing.boykiss.gmtk25.registry.AssetRegistry;
-import ing.boykiss.gmtk25.utils.AnimationUtils;
 import lombok.Getter;
 
 public class Player extends Actor {

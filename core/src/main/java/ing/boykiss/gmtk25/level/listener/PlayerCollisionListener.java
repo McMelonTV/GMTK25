@@ -1,18 +1,20 @@
-package ing.boykiss.gmtk25.level;
+package ing.boykiss.gmtk25.level.listener;
 
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Contact;
+import com.badlogic.gdx.physics.box2d.ContactImpulse;
+import com.badlogic.gdx.physics.box2d.ContactListener;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.Manifold;
 import ing.boykiss.gmtk25.actor.player.DummyPlayer;
 import ing.boykiss.gmtk25.actor.player.Player;
-import ing.boykiss.gmtk25.event.Event;
 import ing.boykiss.gmtk25.event.EventBus;
-import ing.boykiss.gmtk25.event.EventHandler;
-import ing.boykiss.gmtk25.event.EventListener;
 import ing.boykiss.gmtk25.event.player.PlayerHitHazardEvent;
 import ing.boykiss.gmtk25.event.player.PlayerJumpOnDummyEvent;
 
-public class ListenerClass implements ContactListener {
+public class PlayerCollisionListener implements ContactListener {
     Player player;
-    public ListenerClass(Player player) {
+
+    public PlayerCollisionListener(Player player) {
         this.player = player;
     }
 
