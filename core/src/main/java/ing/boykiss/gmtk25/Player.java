@@ -28,6 +28,9 @@ public class Player extends Actor {
     private boolean CoyoteTimeActive = false;
     private int coyoteTimeCounter = 0;
 
+    private int jumpBuffer = 0;
+    private static final int JUMP_BUFFER_DURATION = 16; // Duration of jump buffer in ticks
+
 
     private final Sprite sprite = new Sprite(TextureRegistry.PLAYER_TEXTURE);
 
@@ -68,7 +71,7 @@ public class Player extends Actor {
 
         // Sensor fixture for floor detection
         PolygonShape sensorShape = new PolygonShape();
-        sensorShape.setAsBox(3.94f * Constants.UNIT_SCALE, 7.94f * Constants.UNIT_SCALE, new Vector2(0, -0.1f * Constants.UNIT_SCALE), 0);
+        sensorShape.setAsBox(3.94f * Constants.UNIT_SCALE, 7.94f * Constants.UNIT_SCALE, new Vector2(0, -0.02f * Constants.UNIT_SCALE), 0);
 
         FixtureDef sensorFixtureDef = new FixtureDef();
         sensorFixtureDef.shape = sensorShape;
@@ -150,8 +153,21 @@ public class Player extends Actor {
      * This method is called on the main thread.
      */
     private void handleInput(float deltaTime) {
-        if (Input.keyPressed(Input.Keys.C) && (isOnFloor || CoyoteTimeActive)) {
+        if (jumpBuffer > 0) {
+            jumpBuffer--;
+        }
+
+        if (jumpBuffer > 0 && (isOnFloor || CoyoteTimeActive)) { // jump from buffer
             velocity.y = JUMP_FORCE * deltaTime;
+            jumpBuffer = 0; // Reset jump buffer after applying jump
+        } else { // only handle jump input if it wasnt already handled by the buffer
+            if (Input.keyPressed(Input.Keys.C)) {
+                if (isOnFloor || CoyoteTimeActive) {
+                    velocity.y = JUMP_FORCE * deltaTime;
+                } else {
+                    jumpBuffer = JUMP_BUFFER_DURATION;
+                }
+            }
         }
 
         if (Input.keyPressed(Input.Keys.RIGHT)) {
@@ -162,5 +178,6 @@ public class Player extends Actor {
             velocity.x += -SPEED * deltaTime;
             spriteScale.x = -1; // Face left
         }
+
     }
 }
