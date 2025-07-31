@@ -186,7 +186,7 @@ public class Player extends Actor {
     }
 
     private void onInputEvent(InputEvent event) {
-        if (event.key().equals(Input.Keys.C)) {
+        if (event.key().equals(Input.Keys.C) || event.key().equals(Input.Keys.SPACE)) {
             if (event.released()) {
                 jumpBuffer = 0;
                 if (velocity.y > MIN_JUMP_FORCE) {
