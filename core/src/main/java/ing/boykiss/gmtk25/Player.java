@@ -166,7 +166,7 @@ public class Player extends Actor {
             velocity.y = JUMP_FORCE * deltaTime;
             jumpBuffer = 0; // Reset jump buffer after applying jump
         } else { // only handle jump input if it wasnt already handled by the buffer
-            if (Input.keyPressed(Input.Keys.C) || Input.keyPressed(Input.Keys.W) || Input.keyPressed(Input.Keys.SPACE)) {
+            if (Input.keyPressed(Input.Keys.C) || Input.keyPressed(Input.Keys.UP) || Input.keyPressed(Input.Keys.W) || Input.keyPressed(Input.Keys.SPACE)) {
                 if (isOnFloor || CoyoteTimeActive) {
                     velocity.y = JUMP_FORCE * deltaTime;
                 } else {
