@@ -6,7 +6,6 @@ import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
@@ -134,7 +133,7 @@ public class GMTK25 extends ApplicationAdapter {
         uiStage = new Stage();
         uiStage.setViewport(uiViewport);
 
-        level = new Level(WorldManager.world, new TmxMapLoader().load("tiledmaps/dev_map.tmx"), camera);
+        level = new Level(WorldManager.world, MapRegistry.DEV_MAP, camera);
         player = new Player(WorldManager.world, new Vector2(30 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE));
 
         stage.addActor(level);

@@ -11,4 +11,10 @@ public class AssetRegistry {
     public static final Texture PLAYER_FALL_TEXTURE = new Texture("textures/player_fall.png");
 
     public static final Texture FILL_TEXTURE = new Texture("textures/fill.png");
+
+    public static final String BACKGROUND_VERTEX_SHADER_PATH = "shaders/background.vsh";
+    public static final String BACKGROUND_FRAGMENT_SHADER_PATH = "shaders/background.fsh";
+
+    public static final String DEV_MAP_PATH = "tiledmaps/dev_map.tmx";
+    public static final String EMPTY_MAP_PATH = "tiledmaps/empty_map.tmx";
 }
