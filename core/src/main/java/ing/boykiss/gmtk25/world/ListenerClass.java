@@ -1,9 +1,10 @@
-package ing.boykiss.gmtk25;
+package ing.boykiss.gmtk25.world;
 
 import com.badlogic.gdx.physics.box2d.Contact;
 import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
+import ing.boykiss.gmtk25.actor.Player;
 
 public class ListenerClass implements ContactListener {
     Player player;

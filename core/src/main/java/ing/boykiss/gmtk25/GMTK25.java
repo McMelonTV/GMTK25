@@ -3,13 +3,9 @@ package ing.boykiss.gmtk25;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -17,8 +13,15 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import ing.boykiss.gmtk25.actor.Background;
+import ing.boykiss.gmtk25.actor.Level;
+import ing.boykiss.gmtk25.actor.PauseScreen;
+import ing.boykiss.gmtk25.actor.Player;
 import ing.boykiss.gmtk25.input.Input;
 import ing.boykiss.gmtk25.input.event.InputEvent;
+import ing.boykiss.gmtk25.world.ListenerClass;
+import ing.boykiss.gmtk25.world.ReplayManager;
+import ing.boykiss.gmtk25.world.WorldManager;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -80,7 +83,7 @@ public class GMTK25 extends ApplicationAdapter {
 
     public static final Queue<Runnable> renderStack = new LinkedList<>();
 
-    private boolean isPaused = false;
+    public static boolean isPaused = false;
 
     @Override
     public void create() {
@@ -89,6 +92,9 @@ public class GMTK25 extends ApplicationAdapter {
         backViewport = new ScreenViewport();
         backStage = new Stage();
         backStage.setViewport(backViewport);
+
+        background = new Background(backViewport);
+        backStage.addActor(background);
 
         Input.getEventHandler(InputEvent.class).addListener(event -> {
             if (event.released() && event.key().equals(Input.Keys.F11)) {
@@ -122,37 +128,9 @@ public class GMTK25 extends ApplicationAdapter {
             }
         });
 
-        background = new Image(new Texture("textures/fill.png")) {
-            private final ShaderProgram shader = new ShaderProgram(
-                Gdx.files.internal("shaders/background.vsh"),
-                Gdx.files.internal("shaders/background.fsh")
-            );
-
-            private float time;
-
-            @Override
-            public void draw(Batch batch, float parentAlpha) {
-                time += Gdx.graphics.getDeltaTime();
-
-                batch.end();
-                batch.flush();
-
-                ShaderProgram.pedantic = false;
-
-                batch.begin();
-                batch.setShader(shader);
-
-                shader.setUniformf("u_time", time);
-                shader.setUniformf("u_viewportRes", viewport.getWorldWidth() / Constants.UNIT_SCALE, viewport.getWorldHeight() / Constants.UNIT_SCALE);
-
-                this.getDrawable().draw(batch, this.getX(), this.getY(), this.getWidth(), this.getHeight());
-            }
-        };
-        background.setColor(Color.DARK_GRAY);
-        backStage.addActor(background);
-
         camera = new OrthographicCamera();
         viewport = new FitViewport(Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_HEIGHT, camera);
+
         stage = new Stage();
         stage.setViewport(viewport);
 
@@ -167,6 +145,7 @@ public class GMTK25 extends ApplicationAdapter {
 
         stage.addActor(level);
         stage.addActor(player);
+        uiStage.addActor(new PauseScreen());
 
         WorldManager.world.setContactListener(new ListenerClass(player)); // Set the contact listener for onFloor detection
 
@@ -181,9 +160,6 @@ public class GMTK25 extends ApplicationAdapter {
         backStage.draw();
         viewport.apply();
         stage.draw();
-
-        //WorldManager.debugRenderer.render(WorldManager.world, camera.combined);
-
         uiViewport.apply();
         uiStage.draw();
 
@@ -205,6 +181,7 @@ public class GMTK25 extends ApplicationAdapter {
             spriteBatch.setColor(1, 1, 1, 1);
         }
         spriteBatch.end();
+        //WorldManager.debugRenderer.render(WorldManager.world, camera.combined);
 
         synchronized (renderStack) {
             while (!renderStack.isEmpty()) {
@@ -236,6 +213,7 @@ public class GMTK25 extends ApplicationAdapter {
         backViewport.update(width, height);
         viewport.update(width, height);
         uiViewport.update(width, height);
+
         background.setSize(viewport.getScreenWidth(), viewport.getScreenHeight());
         background.setPosition(-viewport.getScreenWidth() / 2.0f, -viewport.getScreenHeight() / 2.0f);
     }

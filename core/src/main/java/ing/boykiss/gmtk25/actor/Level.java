@@ -1,4 +1,4 @@
-package ing.boykiss.gmtk25;
+package ing.boykiss.gmtk25.actor;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
@@ -7,12 +7,16 @@ import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import ing.boykiss.gmtk25.Constants;
 import lombok.Getter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Level extends Actor {
     @Getter
@@ -22,9 +26,9 @@ public class Level extends Actor {
     @Getter
     protected final OrthographicCamera camera;
     @Getter
-    protected final List<Body> bodies;
+    protected final Body body;
 
-    private final Map<PolygonShape, Vector2> shapes = new HashMap<>();
+    private final List<PolygonShape> shapes = new ArrayList<>();
 
     public Level(World world, TiledMap map, OrthographicCamera camera) {
         this.map = map;
@@ -35,32 +39,22 @@ public class Level extends Actor {
             for (MapObject o : layer.getObjects()) {
                 if (o instanceof PolygonMapObject po) {
                     PolygonShape shape = new PolygonShape();
-                    float[] vertices = po.getPolygon().getVertices();
+                    float[] vertices = po.getPolygon().getTransformedVertices();
                     for (int i = 0; i < vertices.length; i++) {
                         vertices[i] = vertices[i] * Constants.UNIT_SCALE;
                     }
                     shape.set(vertices);
-                    float x = (float)po.getProperties().get("x");
-                    float y = (float)po.getProperties().get("y");
-                    this.shapes.put(shape, new Vector2(x * Constants.UNIT_SCALE, y * Constants.UNIT_SCALE));
+                    this.shapes.add(shape);
                 }
             }
         }
 
-        List<Body> bodies = new ArrayList<>();
-        for (PolygonShape shape : this.shapes.keySet()) {
-            BodyDef bodyDef = new BodyDef();
-            bodyDef.type = BodyDef.BodyType.StaticBody;
-            Vector2 pos = this.shapes.get(shape);
-            bodyDef.position.x = pos.x;
-            bodyDef.position.y = pos.y;
-
-            Body body = world.createBody(bodyDef);
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        this.body = world.createBody(bodyDef);
+        for (PolygonShape shape : this.shapes) {
             body.createFixture(shape, 0.0f);
-            bodies.add(body);
         }
-
-        this.bodies = Collections.unmodifiableList(bodies);
     }
 
     @Override

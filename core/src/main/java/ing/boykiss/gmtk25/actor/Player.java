@@ -1,4 +1,4 @@
-package ing.boykiss.gmtk25;
+package ing.boykiss.gmtk25.actor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -6,10 +6,21 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import ing.boykiss.gmtk25.AssetRegistry;
+import ing.boykiss.gmtk25.Constants;
+import ing.boykiss.gmtk25.GMTK25;
+import ing.boykiss.gmtk25.AssetRegistry;
 import ing.boykiss.gmtk25.input.Input;
 import ing.boykiss.gmtk25.input.event.InputEvent;
+import ing.boykiss.gmtk25.utils.AnimationUtils;
+import ing.boykiss.gmtk25.world.ReplayManager;
 import lombok.Getter;
 
 public class Player extends Actor {
@@ -30,25 +41,34 @@ public class Player extends Actor {
     private boolean CoyoteTimeActive = false;
     private int coyoteTimeCounter = 0;
 
+    private boolean jumping = false;
+
     private int jumpBuffer = 0;
     private static final int JUMP_BUFFER_DURATION = 8; // Duration of jump buffer in ticks
 
-
-    private final Sprite sprite = new Sprite(TextureRegistry.PLAYER_TEXTURE);
+    private final Sprite sprite = new Sprite(AssetRegistry.PLAYER_TEXTURE);
 
     private final Animation<TextureRegion> idleAnimation;
     private final Animation<TextureRegion> runAnimation;
+    private final Animation<TextureRegion> jumpAnimation;
+    private final Animation<TextureRegion> fallAnimation;
     private float stateTime = 0f;
 
     public int collisionCount = 0;
 
     public Player(World world, Vector2 spawnPos) {
-        idleAnimation = AnimationUtils.createAnimationSheet(TextureRegistry.PLAYER_IDLE, 2, 2, new int[]{
-            0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 3
+        idleAnimation = AnimationUtils.createAnimationSheet(AssetRegistry.PLAYER_IDLE_TEXTURE, 2, 2, new int[]{
+            0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 3,
         }, 0.1f);
-        runAnimation = AnimationUtils.createAnimationSheet(TextureRegistry.PLAYER_RUN, 3, 3, new int[]{
-            0, 1, 2, 3, 4, 5, 6, 7
-        }, 0.03f);
+        runAnimation = AnimationUtils.createAnimationSheet(AssetRegistry.PLAYER_RUN_TEXTURE, 3, 3, new int[]{
+            0, 1, 2, 3, 4, 5, 6, 7,
+        }, 0.05f);
+        jumpAnimation = AnimationUtils.createAnimationSheet(AssetRegistry.PLAYER_JUMP_TEXTURE, 2, 2, new int[]{
+            0, 1, 2,
+        }, 0.07f);
+        fallAnimation = AnimationUtils.createAnimationSheet(AssetRegistry.PLAYER_FALL_TEXTURE, 1, 1, new int[]{
+            0,
+        }, 0.1f);
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -57,7 +77,7 @@ public class Player extends Actor {
         body = world.createBody(bodyDef);
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(4.0f * Constants.UNIT_SCALE, 8.0f * Constants.UNIT_SCALE);
+        shape.setAsBox(3.95f * Constants.UNIT_SCALE, 8.0f * Constants.UNIT_SCALE);
 
         // Body fixture
         FixtureDef fixtureDef = new FixtureDef();
@@ -71,7 +91,7 @@ public class Player extends Actor {
 
         // Sensor fixture for floor detection
         PolygonShape sensorShape = new PolygonShape();
-        sensorShape.setAsBox(3.94f * Constants.UNIT_SCALE, 7.94f * Constants.UNIT_SCALE, new Vector2(0, -0.02f * Constants.UNIT_SCALE), 0);
+        sensorShape.setAsBox(3.8f * Constants.UNIT_SCALE, 7.94f * Constants.UNIT_SCALE, new Vector2(0, -0.02f * Constants.UNIT_SCALE), 0);
 
         FixtureDef sensorFixtureDef = new FixtureDef();
         sensorFixtureDef.shape = sensorShape;
@@ -101,14 +121,31 @@ public class Player extends Actor {
 
     @Override
     public void draw(Batch batch, float parentOpacity) {
-        Animation<TextureRegion> currentAnimation = velocity.x == 0 ? idleAnimation : runAnimation;
+        Animation<TextureRegion> currentAnimation = idleAnimation;
+        boolean looping = true;
+
+        if (jumping) {
+            currentAnimation = jumpAnimation;
+            looping = false;
+            if (jumpAnimation.isAnimationFinished(stateTime)) {
+                jumping = false;
+            }
+        }
+        if (!isOnFloor && !jumping) {
+            currentAnimation = fallAnimation;
+            looping = true;
+        }
+        if (currentAnimation == idleAnimation && velocity.x != 0) {
+            currentAnimation = runAnimation;
+            looping = true;
+        }
 
         if (currentAnimation == null) {
             return;
         }
 
-        stateTime += Gdx.graphics.getDeltaTime();
-        TextureRegion currentFrame = currentAnimation.getKeyFrame(stateTime, true);
+        if (!GMTK25.isPaused) stateTime += Gdx.graphics.getDeltaTime();
+        TextureRegion currentFrame = currentAnimation.getKeyFrame(stateTime, looping);
         batch.draw(currentFrame,
             body.getPosition().x - spriteWidthOffset * spriteScale.x,
             body.getPosition().y - spriteHeightOffset * spriteScale.y,
@@ -126,6 +163,10 @@ public class Player extends Actor {
 
         velocity.y = body.getLinearVelocity().y;
         velocity.x = 0; // Reset horizontal velocity before applying new input
+
+        if (velocity.y < 0 && jumping) {
+            jumping = false;
+        }
 
         handleInput(deltaTime);
 
@@ -174,6 +215,8 @@ public class Player extends Actor {
         if (jumpBuffer > 0 && (isOnFloor || CoyoteTimeActive)) { // jump from buffer
             velocity.y = JUMP_FORCE;
             jumpBuffer = 0; // Reset jump buffer after applying jump
+            stateTime = 0;
+            jumping = true;
         }
 
         if (Input.keyPressed(Input.Keys.RIGHT) || Input.keyPressed(Input.Keys.D)) {
