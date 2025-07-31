@@ -1,7 +1,8 @@
 package ing.boykiss.gmtk25.world;
 
 import com.badlogic.gdx.math.Vector2;
-import ing.boykiss.gmtk25.actor.Player;
+import ing.boykiss.gmtk25.DummyPlayer;
+import ing.boykiss.gmtk25.ReplayFrame;
 import lombok.Getter;
 
 import java.util.List;

@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import ing.boykiss.gmtk25.utils.AnimationUtils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -19,7 +20,7 @@ public class DummyPlayer {
     @Setter
     private Vector2 velocity;
 
-    private final Sprite sprite = new Sprite(TextureRegistry.PLAYER_TEXTURE);
+    private final Sprite sprite = new Sprite(AssetRegistry.PLAYER_TEXTURE);
 
     private final Animation<TextureRegion> idleAnimation;
     private final Animation<TextureRegion> runAnimation;
@@ -27,10 +28,10 @@ public class DummyPlayer {
 
 
     public DummyPlayer(World world, Vector2 spawnPos) {
-        idleAnimation = AnimationUtils.createAnimationSheet(TextureRegistry.PLAYER_IDLE, 2, 2, new int[]{
+        idleAnimation = AnimationUtils.createAnimationSheet(AssetRegistry.PLAYER_IDLE_TEXTURE, 2, 2, new int[]{
             0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 3
         }, 0.1f);
-        runAnimation = AnimationUtils.createAnimationSheet(TextureRegistry.PLAYER_RUN, 3, 3, new int[]{
+        runAnimation = AnimationUtils.createAnimationSheet(AssetRegistry.PLAYER_RUN_TEXTURE, 3, 3, new int[]{
             0, 1, 2, 3, 4, 5, 6, 7
         }, 0.03f);
 
