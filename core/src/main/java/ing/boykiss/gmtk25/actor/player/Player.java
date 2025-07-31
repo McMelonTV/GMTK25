@@ -16,7 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import ing.boykiss.gmtk25.GMTK25;
 import ing.boykiss.gmtk25.input.Input;
 import ing.boykiss.gmtk25.input.event.InputEvent;
-import ing.boykiss.gmtk25.level.ReplayManager;
+import ing.boykiss.gmtk25.level.replay.ReplayManager;
 import ing.boykiss.gmtk25.registry.AssetRegistry;
 import ing.boykiss.gmtk25.utils.AnimationUtils;
 import ing.boykiss.gmtk25.utils.Constants;

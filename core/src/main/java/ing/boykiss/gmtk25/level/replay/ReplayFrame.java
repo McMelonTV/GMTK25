@@ -1,4 +1,4 @@
-package ing.boykiss.gmtk25.utils;
+package ing.boykiss.gmtk25.level.replay;
 
 import com.badlogic.gdx.math.Vector2;
 
