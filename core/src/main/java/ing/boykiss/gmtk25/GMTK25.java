@@ -190,7 +190,8 @@ public class GMTK25 extends ApplicationAdapter {
         if (isPaused) {
             spriteBatch.setColor(0, 0, 0, 0.5f);
             spriteBatch.draw(new Texture("textures/fill.png"), 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
-            spriteBatch.setColor(255, 255, 255, 1);
+        } else {
+            spriteBatch.setColor(1, 1, 1, 1);
         }
         spriteBatch.end();
 
