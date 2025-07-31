@@ -82,6 +82,9 @@ public class GMTK25 extends ApplicationAdapter {
         backStage = new Stage();
         backStage.setViewport(backViewport);
 
+        background = new Background(backViewport);
+        backStage.addActor(background);
+
         Input.getEventHandler(InputEvent.class).addListener(event -> {
             if (event.released() && event.key().equals(Input.Keys.F11)) {
                 synchronized (renderStack) {
@@ -114,9 +117,6 @@ public class GMTK25 extends ApplicationAdapter {
 
         camera = new OrthographicCamera();
         viewport = new FitViewport(Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_HEIGHT, camera);
-
-        background = new Background(viewport);
-        backStage.addActor(background);
 
         stage = new Stage();
         stage.setViewport(viewport);
