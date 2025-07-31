@@ -21,7 +21,9 @@ import ing.boykiss.gmtk25.input.Input;
 import ing.boykiss.gmtk25.input.event.InputEvent;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 /**
@@ -69,6 +71,8 @@ public class GMTK25 extends ApplicationAdapter {
     @Getter
     private Player player;
 
+    private final List<DummyPlayer> renderableDummies = new ArrayList<>();
+
     private boolean fullscreen = false;
 
     private int windowedWidth = 1280;
@@ -112,7 +116,9 @@ public class GMTK25 extends ApplicationAdapter {
             }
             if (event.released() && event.key().equals(Input.Keys.R)) {
                 ReplayManager.INSTANCE.stopRecording();
-                ReplayManager.INSTANCE.replay(player);
+                DummyPlayer dummyPlayer = new DummyPlayer(WorldManager.world, new Vector2(30 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE));
+                renderableDummies.add(dummyPlayer);
+                ReplayManager.INSTANCE.replay(dummyPlayer);
             }
         });
 
@@ -180,6 +186,14 @@ public class GMTK25 extends ApplicationAdapter {
 
         uiViewport.apply();
         uiStage.draw();
+
+        spriteBatch.setProjectionMatrix(camera.combined);
+        spriteBatch.begin();
+        for (DummyPlayer dummy : renderableDummies) {
+            dummy.draw(spriteBatch);
+        }
+        spriteBatch.end();
+        spriteBatch.flush();
 
         spriteBatch.setProjectionMatrix(uiViewport.getCamera().combined);
 
