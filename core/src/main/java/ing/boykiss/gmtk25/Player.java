@@ -21,6 +21,14 @@ public class Player extends Actor {
     @Getter
     private boolean isOnFloor;
 
+    private static final int SPEED = 5000; // Speed of the player
+    private static final int JUMP_FORCE = 7500; // Jump force of the player
+
+    private static final int COYOTE_TIME_DURATION = 6; // Duration of coyote time in ticks
+    private boolean CoyoteTimeActive = false;
+    private int coyoteTimeCounter = 0;
+
+
     private final Sprite sprite = new Sprite(TextureRegistry.PLAYER_TEXTURE);
 
     private final Animation<TextureRegion> idleAnimation;
@@ -104,25 +112,55 @@ public class Player extends Actor {
     }
 
     @Override
-    public void act(float deltaTime) {
+    public void act(float deltaTime) { // aka tick
         isOnFloor = collisionCount > 0; // update isOnFloor based on collision count
 
+        tickCoyoteTime();
+
         velocity.y = body.getLinearVelocity().y;
+        velocity.x = 0; // Reset horizontal velocity before applying new input
 
-        if (Input.keyPressed(Input.Keys.C) && isOnFloor) {
-            velocity.y = 7500 * deltaTime; // Jump force
-        }
-
-        velocity.x = 0;
-        if (Input.keyPressed(Input.Keys.RIGHT)) {
-            velocity.x += 5000 * deltaTime;
-            spriteScale.x = 1;
-        }
-        if (Input.keyPressed(Input.Keys.LEFT)) {
-            velocity.x += -5000 * deltaTime;
-            spriteScale.x = -1;
-        }
+        handleInput(deltaTime);
 
         body.setLinearVelocity(velocity);
+    }
+
+    /**
+     * Ticks the coyote time counter.
+     */
+    private void tickCoyoteTime() {
+        if (isOnFloor) {
+            coyoteTimeCounter = 0;
+            CoyoteTimeActive = true; // Reset coyote time when on the floor
+        } else {
+            if (CoyoteTimeActive) {
+                coyoteTimeCounter++;
+                if (coyoteTimeCounter >= COYOTE_TIME_DURATION) {
+                    CoyoteTimeActive = false; // Deactivate coyote time after duration
+                }
+            } else {
+                coyoteTimeCounter = 0; // Reset counter if not active
+            }
+        }
+    }
+
+
+    /**
+     * Handles the input buffer and applies the actions.
+     * This method is called on the main thread.
+     */
+    private void handleInput(float deltaTime) {
+        if (Input.keyPressed(Input.Keys.C) && (isOnFloor || CoyoteTimeActive)) {
+            velocity.y = JUMP_FORCE * deltaTime;
+        }
+
+        if (Input.keyPressed(Input.Keys.RIGHT)) {
+            velocity.x += SPEED * deltaTime;
+            spriteScale.x = 1; // Face right
+        }
+        if (Input.keyPressed(Input.Keys.LEFT)) {
+            velocity.x += -SPEED * deltaTime;
+            spriteScale.x = -1; // Face left
+        }
     }
 }

@@ -144,11 +144,11 @@ public class GMTK25 extends ApplicationAdapter {
 
         level = new Level(WorldManager.world, new TmxMapLoader().load("tiledmaps/dev_map.tmx"), camera);
         player = new Player(WorldManager.world, new Vector2(30 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE));
-
+        
         stage.addActor(level);
         stage.addActor(player);
 
-        WorldManager.world.setContactListener(new ListenerClass(player));
+        WorldManager.world.setContactListener(new ListenerClass(player)); // Set the contact listener for onFloor detection
 
         tickThread.start();
     }
@@ -162,7 +162,7 @@ public class GMTK25 extends ApplicationAdapter {
         viewport.apply();
         stage.draw();
 
-        WorldManager.debugRenderer.render(WorldManager.world, camera.combined);
+        //WorldManager.debugRenderer.render(WorldManager.world, camera.combined);
 
         spriteBatch.setProjectionMatrix(viewport.getCamera().combined);
         spriteBatch.begin();
