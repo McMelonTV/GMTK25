@@ -8,4 +8,6 @@ public class Constants {
 
     public static final int VELOCITY_ITERATIONS = 10;
     public static final int POSITION_ITERATIONS = 10;
+
+    public static final float GRAVITY = 500.0f;
 }

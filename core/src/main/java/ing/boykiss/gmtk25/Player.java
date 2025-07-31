@@ -11,6 +11,7 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import ing.boykiss.gmtk25.input.Input;
+import ing.boykiss.gmtk25.input.event.InputEvent;
 import lombok.Getter;
 
 public class Player extends Actor {
@@ -24,14 +25,15 @@ public class Player extends Actor {
     private boolean isOnFloor;
 
     private static final int SPEED = 5000; // Speed of the player
-    private static final int JUMP_FORCE = 7500; // Jump force of the player
+    private static final int JUMP_FORCE = 80; // Jump force of the player
+    private static final int MIN_JUMP_FORCE = 25; // Jump force of the player when jump is released
 
     private static final int COYOTE_TIME_DURATION = 6; // Duration of coyote time in ticks
     private boolean CoyoteTimeActive = false;
     private int coyoteTimeCounter = 0;
 
     private int jumpBuffer = 0;
-    private static final int JUMP_BUFFER_DURATION = 16; // Duration of jump buffer in ticks
+    private static final int JUMP_BUFFER_DURATION = 5; // Duration of jump buffer in ticks
 
 
     private final Sprite sprite = new Sprite(TextureRegistry.PLAYER_TEXTURE);
@@ -41,8 +43,6 @@ public class Player extends Actor {
     private float stateTime = 0f;
 
     public int collisionCount = 0;
-
-    private final World world;
 
     public Player(World world, Vector2 spawnPos) {
         idleAnimation = AnimationUtils.createAnimationSheet(TextureRegistry.PLAYER_IDLE, 2, 2, new int[]{
@@ -87,7 +87,7 @@ public class Player extends Actor {
 
         velocity = new Vector2();
 
-        this.world = world;
+        Input.getEventHandler(InputEvent.class).addListener(this::onInputEvent);
 
         shape.dispose();
     }
@@ -161,16 +161,8 @@ public class Player extends Actor {
         }
 
         if (jumpBuffer > 0 && (isOnFloor || CoyoteTimeActive)) { // jump from buffer
-            velocity.y = JUMP_FORCE * deltaTime;
+            velocity.y = JUMP_FORCE;
             jumpBuffer = 0; // Reset jump buffer after applying jump
-        } else { // only handle jump input if it wasnt already handled by the buffer
-            if (Input.keyPressed(Input.Keys.C) || Input.keyPressed(Input.Keys.UP) || Input.keyPressed(Input.Keys.W) || Input.keyPressed(Input.Keys.SPACE)) {
-                if (isOnFloor || CoyoteTimeActive) {
-                    velocity.y = JUMP_FORCE * deltaTime;
-                } else {
-                    jumpBuffer = JUMP_BUFFER_DURATION;
-                }
-            }
         }
 
         if (Input.keyPressed(Input.Keys.RIGHT) || Input.keyPressed(Input.Keys.D)) {
@@ -181,6 +173,18 @@ public class Player extends Actor {
             velocity.x += -SPEED * deltaTime;
             spriteScale.x = -1; // Face left
         }
+    }
 
+    private void onInputEvent(InputEvent event) {
+        if (event.key().equals(Input.Keys.C)) {
+            if (event.released()) {
+                jumpBuffer = 0;
+                if (velocity.y > MIN_JUMP_FORCE) {
+                    body.setLinearVelocity(body.getLinearVelocity().x, MIN_JUMP_FORCE);
+                }
+                return;
+            }
+            jumpBuffer = JUMP_BUFFER_DURATION;
+        }
     }
 }
