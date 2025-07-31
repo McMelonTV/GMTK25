@@ -74,6 +74,8 @@ public class GMTK25 extends ApplicationAdapter {
 
     public static final Queue<Runnable> renderStack = new LinkedList<>();
 
+    private boolean isPaused = false;
+
     @Override
     public void create() {
         spriteBatch = new SpriteBatch();
@@ -102,6 +104,9 @@ public class GMTK25 extends ApplicationAdapter {
                         }
                     );
                 }
+            }
+            if (event.released() && (event.key().equals(Input.Keys.ESCAPE) || event.key().equals(Input.Keys.P))) {
+                isPaused = !isPaused;
             }
         });
 
@@ -168,6 +173,13 @@ public class GMTK25 extends ApplicationAdapter {
 
         player.draw(spriteBatch);
 
+        if (isPaused) {
+            Color prev = spriteBatch.getColor();
+            spriteBatch.setColor(0, 0, 0, 0.5f);
+            spriteBatch.draw(new Texture("textures/fill.png"), 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
+            spriteBatch.setColor(prev);
+        }
+
         spriteBatch.end();
 
         synchronized (renderStack) {
@@ -181,6 +193,7 @@ public class GMTK25 extends ApplicationAdapter {
     }
 
     public void tick() {
+        if (isPaused) return;
         WorldManager.world.step(Gdx.graphics.getDeltaTime(), Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS);
 
         backStage.act();
