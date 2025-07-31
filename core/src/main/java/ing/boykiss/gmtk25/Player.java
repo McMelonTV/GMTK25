@@ -6,7 +6,12 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import ing.boykiss.gmtk25.input.Input;
 import lombok.Getter;
@@ -161,7 +166,7 @@ public class Player extends Actor {
             velocity.y = JUMP_FORCE * deltaTime;
             jumpBuffer = 0; // Reset jump buffer after applying jump
         } else { // only handle jump input if it wasnt already handled by the buffer
-            if (Input.keyPressed(Input.Keys.C)) {
+            if (Input.keyPressed(Input.Keys.C) || Input.keyPressed(Input.Keys.W) || Input.keyPressed(Input.Keys.SPACE)) {
                 if (isOnFloor || CoyoteTimeActive) {
                     velocity.y = JUMP_FORCE * deltaTime;
                 } else {
@@ -170,11 +175,11 @@ public class Player extends Actor {
             }
         }
 
-        if (Input.keyPressed(Input.Keys.RIGHT)) {
+        if (Input.keyPressed(Input.Keys.RIGHT) || Input.keyPressed(Input.Keys.D)) {
             velocity.x += SPEED * deltaTime;
             spriteScale.x = 1; // Face right
         }
-        if (Input.keyPressed(Input.Keys.LEFT)) {
+        if (Input.keyPressed(Input.Keys.LEFT) || Input.keyPressed(Input.Keys.A)) {
             velocity.x += -SPEED * deltaTime;
             spriteScale.x = -1; // Face left
         }
