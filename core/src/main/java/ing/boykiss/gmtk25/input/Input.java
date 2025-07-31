@@ -212,7 +212,7 @@ public class Input {
     private static final Set<Keys> keyStack = new HashSet<>();
     private static final Set<Keys> justPressedKeyStack = new HashSet<>();
 
-    private static  <T extends Event> EventHandler<T> getEventHandler(Class<T> event) {
+    public static <T extends Event> EventHandler<T> getEventHandler(Class<T> event) {
         return (EventHandler<T>) eventHandlers.get(event);
     }
     public static void update() {

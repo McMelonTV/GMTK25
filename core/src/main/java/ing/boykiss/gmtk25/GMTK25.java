@@ -2,20 +2,27 @@ package ing.boykiss.gmtk25;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.utils.compression.rangecoder.BitTreeEncoder;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import ing.boykiss.gmtk25.input.Input;
+import ing.boykiss.gmtk25.input.event.InputEvent;
 import lombok.Getter;
+
+import java.util.*;
 
 /**
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
@@ -60,6 +67,11 @@ public class GMTK25 extends ApplicationAdapter {
     @Getter
     private Player player;
 
+    private int windowedWidth = 1280;
+    private int windowedHeight = 720;
+
+    public static final Queue<Runnable> renderStack = new LinkedList<>();
+
     @Override
     public void create() {
         spriteBatch = new SpriteBatch();
@@ -68,7 +80,47 @@ public class GMTK25 extends ApplicationAdapter {
         backStage = new Stage();
         backStage.setViewport(backViewport);
 
-        background = new Image(new Texture("textures/fill.png"));
+        Input.getEventHandler(InputEvent.class).addListener(event -> {
+            if (event.released() && event.key().equals(Input.Keys.F11)) {
+                Graphics.DisplayMode currentMode = Gdx.graphics.getDisplayMode();
+                synchronized (renderStack) {
+                    renderStack.add(Gdx.graphics.isFullscreen() ?
+                        () -> Gdx.graphics.setWindowedMode(windowedWidth, windowedHeight) :
+                        () -> {
+                            windowedWidth = Gdx.graphics.getWidth();
+                            windowedHeight = Gdx.graphics.getHeight();
+                            Gdx.graphics.setFullscreenMode(currentMode);
+                        });
+                }
+            }
+        });
+
+        background = new Image(new Texture("textures/fill.png")) {
+            private final ShaderProgram shader = new ShaderProgram(
+                Gdx.files.internal("shaders/background.vsh"),
+                Gdx.files.internal("shaders/background.fsh")
+            );
+
+            private float time;
+
+            @Override
+            public void draw(Batch batch, float parentAlpha) {
+                time += Gdx.graphics.getDeltaTime();
+
+                batch.end();
+                batch.flush();
+
+                ShaderProgram.pedantic = false;
+
+                batch.begin();
+                batch.setShader(shader);
+
+                shader.setUniformf("u_time", time);
+                shader.setUniformf("u_viewportRes", viewport.getWorldWidth() / Constants.UNIT_SCALE, viewport.getWorldHeight() / Constants.UNIT_SCALE);
+
+                this.getDrawable().draw(batch, this.getX(), this.getY(), this.getWidth(), this.getHeight());
+            }
+        };
         background.setColor(Color.DARK_GRAY);
         backStage.addActor(background);
 
@@ -85,7 +137,6 @@ public class GMTK25 extends ApplicationAdapter {
         stage.addActor(level);
         stage.addActor(player);
 
-
         WorldManager.world.setContactListener(new ListenerClass(player));
 
         tickThread.start();
@@ -94,8 +145,6 @@ public class GMTK25 extends ApplicationAdapter {
     @Override
     public void render() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
-
-        Input.update();
 
         backViewport.apply();
         backStage.draw();
@@ -110,6 +159,15 @@ public class GMTK25 extends ApplicationAdapter {
         player.draw(spriteBatch);
 
         spriteBatch.end();
+
+        synchronized (renderStack) {
+            while (!renderStack.isEmpty()) {
+                Runnable r = renderStack.poll();
+                if (r != null) r.run();
+            }
+        }
+
+        Input.update();
     }
 
     public void tick() {

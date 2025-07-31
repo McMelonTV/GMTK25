@@ -9,33 +9,48 @@
     ],
     "fileStates": {
         "dev_map.tmx": {
-            "scale": 2,
-            "selectedLayer": -1,
+            "expandedGroupLayers": [
+                7,
+                8
+            ],
+            "scale": 11,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 285.75,
-                "y": 101
+                "x": 210.95454545454544,
+                "y": 147.54545454545453
             }
         },
         "dev_tiles.tsx": {
+            "scaleInDock": 4,
+            "scaleInEditor": 11
+        },
+        "grating.tsx": {
+            "scaleInDock": 5.5,
+            "scaleInEditor": 11
+        },
+        "panels.tsx": {
             "scaleInDock": 1,
             "scaleInEditor": 11
         }
     },
-    "last.imagePath": "C:/Users/siegf/source/Java/libgdx/gmtk25/assets/textures",
+    "last.imagePath": "C:/Users/siegf/source/Java/libgdx/GMTK252/assets/textures/tilesets",
     "map.height": 24,
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 8,
     "map.tileWidth": 8,
     "map.width": 40,
     "openFiles": [
-        "dev_tiles.tsx",
+        "panels.tsx",
+        "grating.tsx",
         "dev_map.tmx"
     ],
     "project": "platformer.tiled-project",
     "property.type": "object",
     "recentFiles": [
-        "dev_tiles.tsx",
-        "dev_map.tmx"
+        "panels.tsx",
+        "grating.tsx",
+        "dev_map.tmx",
+        "dev_tiles.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
