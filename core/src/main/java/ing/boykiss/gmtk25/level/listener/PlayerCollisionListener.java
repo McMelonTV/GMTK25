@@ -12,7 +12,7 @@ import ing.boykiss.gmtk25.event.player.PlayerHitHazardEvent;
 import ing.boykiss.gmtk25.event.player.PlayerJumpOnDummyEvent;
 
 public class PlayerCollisionListener implements ContactListener {
-    Player player;
+    private final Player player;
 
     public PlayerCollisionListener(Player player) {
         this.player = player;
