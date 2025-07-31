@@ -184,10 +184,11 @@ public class GMTK25 extends ApplicationAdapter {
     @Override
     public void resize(int width, int height) {
         backViewport.update(width, height);
-        background.setSize(viewport.getScreenWidth(), viewport.getScreenHeight());
-        background.setPosition(-viewport.getScreenWidth() / 2.0f, -viewport.getScreenHeight() / 2.0f);
         viewport.update(width, height);
         uiViewport.update(width, height);
+
+        background.setSize(viewport.getScreenWidth(), viewport.getScreenHeight());
+        background.setPosition(-viewport.getScreenWidth() / 2.0f, -viewport.getScreenHeight() / 2.0f);
     }
 
     @Override
