@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import ing.boykiss.gmtk25.actor.interactable.InteractableButton;
 import ing.boykiss.gmtk25.actor.level.Level;
 import ing.boykiss.gmtk25.actor.level.LevelBackground;
 import ing.boykiss.gmtk25.actor.player.DummyPlayer;
@@ -24,6 +25,8 @@ import ing.boykiss.gmtk25.event.input.InputEvent;
 import ing.boykiss.gmtk25.event.player.PlayerJumpOnDummyEvent;
 import ing.boykiss.gmtk25.input.Input;
 import ing.boykiss.gmtk25.level.WorldManager;
+import ing.boykiss.gmtk25.level.listener.CollisionListener;
+import ing.boykiss.gmtk25.level.listener.InteractableCollisionListener;
 import ing.boykiss.gmtk25.level.listener.PlayerCollisionListener;
 import ing.boykiss.gmtk25.level.replay.ReplayManager;
 import ing.boykiss.gmtk25.registry.MapRegistry;
@@ -178,10 +181,14 @@ public class GMTK25 extends ApplicationAdapter {
                 }
             }
         });
+        stage.addActor(new InteractableButton(WorldManager.world, new Vector2(8, 3)));
         stage.addActor(player);
         uiStage.addActor(new PauseScreen());
 
-        WorldManager.world.setContactListener(new PlayerCollisionListener(player)); // Set the contact listener for onFloor detection
+        WorldManager.world.setContactListener(CollisionListener.INSTANCE); // Set the contact listener for onFloor detection
+
+        CollisionListener.INSTANCE.getListeners().add(new PlayerCollisionListener(player));
+        CollisionListener.INSTANCE.getListeners().add(new InteractableCollisionListener());
 
         tickThread.start();
     }
