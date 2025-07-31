@@ -16,6 +16,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import ing.boykiss.gmtk25.AssetRegistry;
 import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.GMTK25;
+import ing.boykiss.gmtk25.AssetRegistry;
 import ing.boykiss.gmtk25.input.Input;
 import ing.boykiss.gmtk25.input.event.InputEvent;
 import ing.boykiss.gmtk25.utils.AnimationUtils;
@@ -40,25 +41,34 @@ public class Player extends Actor {
     private boolean CoyoteTimeActive = false;
     private int coyoteTimeCounter = 0;
 
+    private boolean jumping = false;
+
     private int jumpBuffer = 0;
     private static final int JUMP_BUFFER_DURATION = 8; // Duration of jump buffer in ticks
-
 
     private final Sprite sprite = new Sprite(AssetRegistry.PLAYER_TEXTURE);
 
     private final Animation<TextureRegion> idleAnimation;
     private final Animation<TextureRegion> runAnimation;
+    private final Animation<TextureRegion> jumpAnimation;
+    private final Animation<TextureRegion> fallAnimation;
     private float stateTime = 0f;
 
     public int collisionCount = 0;
 
     public Player(World world, Vector2 spawnPos) {
         idleAnimation = AnimationUtils.createAnimationSheet(AssetRegistry.PLAYER_IDLE_TEXTURE, 2, 2, new int[]{
-            0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 3
+            0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 3,
         }, 0.1f);
         runAnimation = AnimationUtils.createAnimationSheet(AssetRegistry.PLAYER_RUN_TEXTURE, 3, 3, new int[]{
-            0, 1, 2, 3, 4, 5, 6, 7
+            0, 1, 2, 3, 4, 5, 6, 7,
         }, 0.05f);
+        jumpAnimation = AnimationUtils.createAnimationSheet(AssetRegistry.PLAYER_JUMP_TEXTURE, 2, 2, new int[]{
+            0, 1, 2,
+        }, 0.07f);
+        fallAnimation = AnimationUtils.createAnimationSheet(AssetRegistry.PLAYER_FALL_TEXTURE, 1, 1, new int[]{
+            0,
+        }, 0.1f);
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -111,14 +121,31 @@ public class Player extends Actor {
 
     @Override
     public void draw(Batch batch, float parentOpacity) {
-        Animation<TextureRegion> currentAnimation = velocity.x == 0 ? idleAnimation : runAnimation;
+        Animation<TextureRegion> currentAnimation = idleAnimation;
+        boolean looping = true;
+
+        if (jumping) {
+            currentAnimation = jumpAnimation;
+            looping = false;
+            if (jumpAnimation.isAnimationFinished(stateTime)) {
+                jumping = false;
+            }
+        }
+        if (!isOnFloor && !jumping) {
+            currentAnimation = fallAnimation;
+            looping = true;
+        }
+        if (currentAnimation == idleAnimation && velocity.x != 0) {
+            currentAnimation = runAnimation;
+            looping = true;
+        }
 
         if (currentAnimation == null) {
             return;
         }
 
         if (!GMTK25.isPaused) stateTime += Gdx.graphics.getDeltaTime();
-        TextureRegion currentFrame = currentAnimation.getKeyFrame(stateTime, true);
+        TextureRegion currentFrame = currentAnimation.getKeyFrame(stateTime, looping);
         batch.draw(currentFrame,
             body.getPosition().x - spriteWidthOffset * spriteScale.x,
             body.getPosition().y - spriteHeightOffset * spriteScale.y,
@@ -136,6 +163,10 @@ public class Player extends Actor {
 
         velocity.y = body.getLinearVelocity().y;
         velocity.x = 0; // Reset horizontal velocity before applying new input
+
+        if (velocity.y < 0 && jumping) {
+            jumping = false;
+        }
 
         handleInput(deltaTime);
 
@@ -184,6 +215,8 @@ public class Player extends Actor {
         if (jumpBuffer > 0 && (isOnFloor || CoyoteTimeActive)) { // jump from buffer
             velocity.y = JUMP_FORCE;
             jumpBuffer = 0; // Reset jump buffer after applying jump
+            stateTime = 0;
+            jumping = true;
         }
 
         if (Input.keyPressed(Input.Keys.RIGHT) || Input.keyPressed(Input.Keys.D)) {
