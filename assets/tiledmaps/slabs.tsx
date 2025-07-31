@@ -1,21 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <tileset version="1.10" tiledversion="1.11.2" name="slabs" tilewidth="8" tileheight="8" tilecount="60" columns="12">
  <image source="../textures/tilesets/slabs.png" width="96" height="40"/>
- <tile id="0" probability="3"/>
- <tile id="1" probability="3"/>
- <tile id="2" probability="3"/>
- <tile id="12" probability="3"/>
  <tile id="13" probability="3"/>
- <tile id="14" probability="3"/>
- <tile id="24" probability="3"/>
- <tile id="25" probability="3"/>
- <tile id="26" probability="3"/>
- <tile id="36" probability="3"/>
- <tile id="37" probability="3"/>
- <tile id="38" probability="3"/>
- <tile id="48" probability="3"/>
- <tile id="49" probability="3"/>
- <tile id="50" probability="3"/>
  <wangsets>
   <wangset name="Slabs" type="corner" tile="38">
    <wangcolor name="Slabs" color="#ff0000" tile="38" probability="1"/>
