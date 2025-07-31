@@ -12,6 +12,10 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import ing.boykiss.gmtk25.Constants;
+import ing.boykiss.gmtk25.GMTK25;
+import ing.boykiss.gmtk25.event.EventBus;
+import ing.boykiss.gmtk25.event.player.PlayerJumpOnDummyEvent;
+import ing.boykiss.gmtk25.registry.AnimationRegistry;
 import ing.boykiss.gmtk25.registry.AssetRegistry;
 import ing.boykiss.gmtk25.utils.AnimationUtils;
 import lombok.Getter;
@@ -21,31 +25,36 @@ public class DummyPlayer {
 
     @Getter
     private final Body body;
+    @Getter
+    private boolean destroyed = false;
 
     @Getter
     @Setter
     private Vector2 velocity;
+    @Getter
+    @Setter
+    private Vector2 spriteScale = new Vector2(1, 1);
+
+    @Getter
+    @Setter
+    private Animation<TextureRegion> animation;
+
+    @Getter
+    @Setter
+    private boolean animationLooping;
 
     private final Sprite sprite = new Sprite(AssetRegistry.PLAYER_TEXTURE);
 
-    private final Animation<TextureRegion> idleAnimation;
-    private final Animation<TextureRegion> runAnimation;
     private float stateTime = 0f;
 
 
     public DummyPlayer(World world, Vector2 spawnPos) {
-        idleAnimation = AnimationUtils.createAnimationSheet(AssetRegistry.PLAYER_IDLE_TEXTURE, 2, 2, new int[]{
-            0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 3
-        }, 0.1f);
-        runAnimation = AnimationUtils.createAnimationSheet(AssetRegistry.PLAYER_RUN_TEXTURE, 3, 3, new int[]{
-            0, 1, 2, 3, 4, 5, 6, 7
-        }, 0.03f);
-
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.KinematicBody;
         bodyDef.position.set(spawnPos);
 
         body = world.createBody(bodyDef);
+        body.setUserData(this);
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(4.0f * Constants.UNIT_SCALE, 8.0f * Constants.UNIT_SCALE);
@@ -56,8 +65,9 @@ public class DummyPlayer {
         fixtureDef.density = 0f;
         fixtureDef.friction = 0f;
         fixtureDef.restitution = 0f;
+        fixtureDef.isSensor = true;
 
-        body.createFixture(fixtureDef).setSensor(true);
+        body.createFixture(fixtureDef).setUserData("dummy_player");
         body.setFixedRotation(true);
 
         velocity = new Vector2();
@@ -71,22 +81,29 @@ public class DummyPlayer {
     private final float spriteHeightScaled = sprite.getHeight() * Constants.UNIT_SCALE;
     private final float spriteWidthScaled = sprite.getWidth() * Constants.UNIT_SCALE;
 
-    private final Vector2 spriteScale = new Vector2(1, 1);
+    public void resetStateTime() {
+        stateTime = 0;
+    }
 
     public void draw(Batch batch) {
-        Animation<TextureRegion> currentAnimation = velocity.x == 0 ? idleAnimation : runAnimation;
-
-        if (currentAnimation == null) {
-            return;
-        }
-
         stateTime += Gdx.graphics.getDeltaTime();
-        TextureRegion currentFrame = currentAnimation.getKeyFrame(stateTime, true);
+        TextureRegion currentFrame = animation.getKeyFrame(stateTime, animationLooping);
         batch.draw(currentFrame,
             body.getPosition().x - spriteWidthOffset * spriteScale.x,
             body.getPosition().y - spriteHeightOffset * spriteScale.y,
             spriteWidthScaled * spriteScale.x,
             spriteHeightScaled * spriteScale.y
         );
+    }
+
+    public void destroy() {
+        if (destroyed) {
+            return;
+        }
+        destroyed = true;
+        GMTK25.renderStack.add(() -> {
+            GMTK25.getInstance().getRenderableDummies().remove(this);
+            getBody().getWorld().destroyBody(getBody());
+        });
     }
 }

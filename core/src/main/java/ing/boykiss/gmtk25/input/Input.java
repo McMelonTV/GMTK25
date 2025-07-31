@@ -212,6 +212,7 @@ public class Input {
     private static final Set<Keys> keyStack = new HashSet<>();
     private static final Set<Keys> justPressedKeyStack = new HashSet<>();
 
+    @SuppressWarnings({"unchecked"})
     public static <T extends Event> EventHandler<T> getEventHandler(Class<T> event) {
         return (EventHandler<T>) eventHandlers.get(event);
     }

@@ -15,11 +15,15 @@ import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.GMTK25;
+import ing.boykiss.gmtk25.event.Event;
+import ing.boykiss.gmtk25.event.EventBus;
+import ing.boykiss.gmtk25.event.EventHandler;
 import ing.boykiss.gmtk25.event.input.InputEvent;
 import ing.boykiss.gmtk25.event.player.PlayerHitHazardEvent;
 import ing.boykiss.gmtk25.input.Input;
 import ing.boykiss.gmtk25.level.ListenerClass;
 import ing.boykiss.gmtk25.level.replay.ReplayManager;
+import ing.boykiss.gmtk25.registry.AnimationRegistry;
 import ing.boykiss.gmtk25.registry.AssetRegistry;
 import ing.boykiss.gmtk25.utils.AnimationUtils;
 import lombok.Getter;
@@ -33,6 +37,9 @@ public class Player extends Actor {
 
     @Getter
     private boolean isOnFloor;
+
+    @Getter
+    private final EventHandler<Event> onJump = new EventHandler<>();
 
     private static final int SPEED = 5000; // Speed of the player
     private static final int JUMP_FORCE = 80; // Jump force of the player
@@ -49,27 +56,11 @@ public class Player extends Actor {
 
     private final Sprite sprite = new Sprite(AssetRegistry.PLAYER_TEXTURE);
 
-    private final Animation<TextureRegion> idleAnimation;
-    private final Animation<TextureRegion> runAnimation;
-    private final Animation<TextureRegion> jumpAnimation;
-    private final Animation<TextureRegion> fallAnimation;
     private float stateTime = 0f;
 
     public int collisionCount = 0;
 
     public Player(World world, Vector2 spawnPos) {
-        idleAnimation = AnimationUtils.createAnimationSheet(AssetRegistry.PLAYER_IDLE_TEXTURE, 2, 2, new int[]{
-            0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 3,
-        }, 0.1f);
-        runAnimation = AnimationUtils.createAnimationSheet(AssetRegistry.PLAYER_RUN_TEXTURE, 3, 3, new int[]{
-            0, 1, 2, 3, 4, 5, 6, 7,
-        }, 0.05f);
-        jumpAnimation = AnimationUtils.createAnimationSheet(AssetRegistry.PLAYER_JUMP_TEXTURE, 2, 2, new int[]{
-            0, 1, 2,
-        }, 0.07f);
-        fallAnimation = AnimationUtils.createAnimationSheet(AssetRegistry.PLAYER_FALL_TEXTURE, 1, 1, new int[]{
-            0,
-        }, 0.1f);
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -117,7 +108,7 @@ public class Player extends Actor {
         velocity = new Vector2();
 
         Input.getEventHandler(InputEvent.class).addListener(this::onInputEvent);
-        ListenerClass.playerHitHazardHandler.addListener(this::onPlayerHitHazard);
+        EventBus.addListener(PlayerHitHazardEvent.class, this::onPlayerHitHazard);
 
         shape.dispose();
         sensorShape.dispose();
@@ -132,33 +123,34 @@ public class Player extends Actor {
 
     private final Vector2 spriteScale = new Vector2(1, 1);
 
+    Animation<TextureRegion> currentAnimation = AnimationRegistry.PLAYER_IDLE;
+    boolean currentAnimationLooping = true;
+
     @Override
     public void draw(Batch batch, float parentOpacity) {
-        Animation<TextureRegion> currentAnimation = idleAnimation;
-        boolean looping = true;
+        batch.end();
+        batch.flush();
+        batch.begin();
+
+        currentAnimation = AnimationRegistry.PLAYER_IDLE;
 
         if (jumping) {
-            currentAnimation = jumpAnimation;
-            looping = false;
-            if (jumpAnimation.isAnimationFinished(stateTime)) {
+            currentAnimation = AnimationRegistry.PLAYER_JUMP;
+            currentAnimationLooping = false;
+            if (AnimationRegistry.PLAYER_JUMP.isAnimationFinished(stateTime)) {
                 jumping = false;
             }
         }
         if (!isOnFloor && !jumping) {
-            currentAnimation = fallAnimation;
-            looping = true;
+            currentAnimation = AnimationRegistry.PLAYER_FALL;
+            currentAnimationLooping = true;
         }
-        if (currentAnimation == idleAnimation && velocity.x != 0) {
-            currentAnimation = runAnimation;
-            looping = true;
-        }
-
-        if (currentAnimation == null) {
-            return;
+        if (currentAnimation == AnimationRegistry.PLAYER_IDLE && velocity.x != 0) {
+            currentAnimation = AnimationRegistry.PLAYER_RUN;
         }
 
         if (!GMTK25.isPaused) stateTime += Gdx.graphics.getDeltaTime();
-        TextureRegion currentFrame = currentAnimation.getKeyFrame(stateTime, looping);
+        TextureRegion currentFrame = currentAnimation.getKeyFrame(stateTime, currentAnimationLooping);
         batch.draw(currentFrame,
             body.getPosition().x - spriteWidthOffset * spriteScale.x,
             body.getPosition().y - spriteHeightOffset * spriteScale.y,
@@ -169,7 +161,7 @@ public class Player extends Actor {
 
     @Override
     public void act(float deltaTime) { // aka tick
-        ReplayManager.INSTANCE.recordFrame(body.getPosition(), velocity);
+        ReplayManager.INSTANCE.recordFrame(body.getPosition(), velocity, spriteScale, currentAnimation, currentAnimationLooping);
         isOnFloor = collisionCount > 0; // update isOnFloor based on collision count
 
         tickCoyoteTime();
@@ -230,6 +222,7 @@ public class Player extends Actor {
             jumpBuffer = 0; // Reset jump buffer after applying jump
             stateTime = 0;
             jumping = true;
+            onJump.call(new Event() {});
         }
 
         if (Input.keyPressed(Input.Keys.RIGHT) || Input.keyPressed(Input.Keys.D)) {

@@ -5,8 +5,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Graphics;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.FitViewport;
@@ -17,7 +19,9 @@ import ing.boykiss.gmtk25.actor.level.LevelBackground;
 import ing.boykiss.gmtk25.actor.player.DummyPlayer;
 import ing.boykiss.gmtk25.actor.player.Player;
 import ing.boykiss.gmtk25.actor.ui.PauseScreen;
+import ing.boykiss.gmtk25.event.EventBus;
 import ing.boykiss.gmtk25.event.input.InputEvent;
+import ing.boykiss.gmtk25.event.player.PlayerJumpOnDummyEvent;
 import ing.boykiss.gmtk25.input.Input;
 import ing.boykiss.gmtk25.level.ListenerClass;
 import ing.boykiss.gmtk25.level.WorldManager;
@@ -34,6 +38,9 @@ import java.util.Queue;
  * {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms.
  */
 public class GMTK25 extends ApplicationAdapter {
+    @Getter
+    private static GMTK25 instance;
+
     private final Thread tickThread = new Thread(() -> {
         long eSleepTime = (long) (1_000f / Constants.TPS);
         // declare variables in advance because perf
@@ -75,6 +82,7 @@ public class GMTK25 extends ApplicationAdapter {
     @Getter
     private Player player;
 
+    @Getter
     private final List<DummyPlayer> renderableDummies = new ArrayList<>();
 
     private boolean fullscreen = false;
@@ -88,6 +96,8 @@ public class GMTK25 extends ApplicationAdapter {
 
     @Override
     public void create() {
+        instance = this;
+
         spriteBatch = new SpriteBatch();
 
         backViewport = new ScreenViewport();
@@ -122,10 +132,22 @@ public class GMTK25 extends ApplicationAdapter {
                 isPaused = !isPaused;
             }
             if (event.released() && event.key().equals(Input.Keys.R)) {
-                ReplayManager.INSTANCE.stopRecording();
-                DummyPlayer dummyPlayer = new DummyPlayer(WorldManager.world, new Vector2(30 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE));
-                renderableDummies.add(dummyPlayer);
-                ReplayManager.INSTANCE.replay(dummyPlayer);
+                renderStack.add(() -> {
+                    ReplayManager.INSTANCE.stopRecording();
+                    DummyPlayer dummyPlayer = new DummyPlayer(WorldManager.world, new Vector2(30 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE));
+                    renderableDummies.add(dummyPlayer);
+                    ReplayManager.INSTANCE.replay(dummyPlayer);
+
+                    EventBus.addListener(PlayerJumpOnDummyEvent.class, e -> {
+                        if (e.dummyPlayer() != dummyPlayer) {
+                            return;
+                        }
+                        renderStack.add(() -> {
+                            dummyPlayer.destroy();
+                            renderableDummies.remove(dummyPlayer);
+                        });
+                    });
+                });
             }
         });
 
@@ -145,6 +167,17 @@ public class GMTK25 extends ApplicationAdapter {
         player = new Player(WorldManager.world, new Vector2(30 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE));
 
         stage.addActor(level);
+        stage.addActor(new Actor() {
+            @Override
+            public void draw(Batch batch, float parentOpacity) {
+                batch.end();
+                batch.flush();
+                batch.begin();
+                for (DummyPlayer dummy : renderableDummies) {
+                    dummy.draw(batch);
+                }
+            }
+        });
         stage.addActor(player);
         uiStage.addActor(new PauseScreen());
 
@@ -159,19 +192,14 @@ public class GMTK25 extends ApplicationAdapter {
 
         backViewport.apply();
         backStage.draw();
+
         viewport.apply();
         stage.draw();
+
         uiViewport.apply();
         uiStage.draw();
 
-        spriteBatch.setProjectionMatrix(camera.combined);
-        spriteBatch.begin();
-        for (DummyPlayer dummy : renderableDummies) {
-            dummy.draw(spriteBatch);
-        }
-        spriteBatch.end();
-        spriteBatch.flush();
-        //WorldManager.debugRenderer.render(WorldManager.level, camera.combined);
+        WorldManager.debugRenderer.render(WorldManager.world, camera.combined);
 
         synchronized (renderStack) {
             while (!renderStack.isEmpty()) {
