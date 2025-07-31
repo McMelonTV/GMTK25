@@ -1,7 +1,10 @@
 package ing.boykiss.gmtk25;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.g2d.*;
+import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.Batch;
+import com.badlogic.gdx.graphics.g2d.Sprite;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
@@ -186,7 +189,7 @@ public class Player extends Actor {
     }
 
     private void onInputEvent(InputEvent event) {
-        if (event.key().equals(Input.Keys.C) || event.key().equals(Input.Keys.SPACE)) {
+        if (event.key().equals(Input.Keys.C) || event.key().equals(Input.Keys.UP) || event.key().equals(Input.Keys.W) || event.key().equals(Input.Keys.SPACE)) {
             if (event.released()) {
                 jumpBuffer = 0;
                 if (velocity.y > MIN_JUMP_FORCE) {
