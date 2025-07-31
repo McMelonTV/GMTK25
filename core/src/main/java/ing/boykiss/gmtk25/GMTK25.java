@@ -76,7 +76,7 @@ public class GMTK25 extends ApplicationAdapter {
 
     public static final Queue<Runnable> renderStack = new LinkedList<>();
 
-    private boolean isPaused = false;
+    public static boolean isPaused = false;
 
     @Override
     public void create() {
@@ -161,6 +161,7 @@ public class GMTK25 extends ApplicationAdapter {
 
         stage.addActor(level);
         stage.addActor(player);
+        uiStage.addActor(new PauseScreen());
 
         WorldManager.world.setContactListener(new ListenerClass(player)); // Set the contact listener for onFloor detection
 
@@ -180,17 +181,6 @@ public class GMTK25 extends ApplicationAdapter {
 
         uiViewport.apply();
         uiStage.draw();
-
-        spriteBatch.setProjectionMatrix(uiViewport.getCamera().combined);
-
-        spriteBatch.begin();
-        if (isPaused) {
-            spriteBatch.setColor(0, 0, 0, 0.5f);
-            spriteBatch.draw(new Texture("textures/fill.png"), 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
-        } else {
-            spriteBatch.setColor(1, 1, 1, 1);
-        }
-        spriteBatch.end();
 
         synchronized (renderStack) {
             while (!renderStack.isEmpty()) {
