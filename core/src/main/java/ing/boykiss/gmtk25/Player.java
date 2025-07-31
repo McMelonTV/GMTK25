@@ -48,7 +48,7 @@ public class Player extends Actor {
         }, 0.1f);
         runAnimation = AnimationUtils.createAnimationSheet(TextureRegistry.PLAYER_RUN, 3, 3, new int[]{
             0, 1, 2, 3, 4, 5, 6, 7
-        }, 0.03f);
+        }, 0.05f);
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -57,7 +57,7 @@ public class Player extends Actor {
         body = world.createBody(bodyDef);
 
         PolygonShape shape = new PolygonShape();
-        shape.setAsBox(4.0f * Constants.UNIT_SCALE, 8.0f * Constants.UNIT_SCALE);
+        shape.setAsBox(3.95f * Constants.UNIT_SCALE, 8.0f * Constants.UNIT_SCALE);
 
         // Body fixture
         FixtureDef fixtureDef = new FixtureDef();
@@ -71,7 +71,7 @@ public class Player extends Actor {
 
         // Sensor fixture for floor detection
         PolygonShape sensorShape = new PolygonShape();
-        sensorShape.setAsBox(3.94f * Constants.UNIT_SCALE, 7.94f * Constants.UNIT_SCALE, new Vector2(0, -0.02f * Constants.UNIT_SCALE), 0);
+        sensorShape.setAsBox(3.8f * Constants.UNIT_SCALE, 7.94f * Constants.UNIT_SCALE, new Vector2(0, -0.02f * Constants.UNIT_SCALE), 0);
 
         FixtureDef sensorFixtureDef = new FixtureDef();
         sensorFixtureDef.shape = sensorShape;
