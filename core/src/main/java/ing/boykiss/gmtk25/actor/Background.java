@@ -1,12 +1,13 @@
-package ing.boykiss.gmtk25;
+package ing.boykiss.gmtk25.actor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import ing.boykiss.gmtk25.AssetRegistry;
+import ing.boykiss.gmtk25.Constants;
 
 public class Background extends Image {
     private final Viewport viewport;
@@ -17,7 +18,7 @@ public class Background extends Image {
     private float time;
 
     public Background(Viewport viewport) {
-        super(new Texture("textures/fill.png"));
+        super(AssetRegistry.FILL_TEXTURE);
         this.setColor(Color.DARK_GRAY);
         this.viewport = viewport;
     }

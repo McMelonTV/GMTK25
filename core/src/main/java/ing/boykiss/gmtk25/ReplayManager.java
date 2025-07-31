@@ -1,6 +1,7 @@
 package ing.boykiss.gmtk25;
 
 import com.badlogic.gdx.math.Vector2;
+import ing.boykiss.gmtk25.actor.Player;
 import lombok.Getter;
 
 import java.util.List;

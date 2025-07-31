@@ -1,4 +1,4 @@
-package ing.boykiss.gmtk25;
+package ing.boykiss.gmtk25.actor;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -13,6 +13,11 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import ing.boykiss.gmtk25.AnimationUtils;
+import ing.boykiss.gmtk25.AssetRegistry;
+import ing.boykiss.gmtk25.Constants;
+import ing.boykiss.gmtk25.GMTK25;
+import ing.boykiss.gmtk25.ReplayManager;
 import ing.boykiss.gmtk25.input.Input;
 import ing.boykiss.gmtk25.input.event.InputEvent;
 import lombok.Getter;
@@ -39,7 +44,7 @@ public class Player extends Actor {
     private static final int JUMP_BUFFER_DURATION = 8; // Duration of jump buffer in ticks
 
 
-    private final Sprite sprite = new Sprite(TextureRegistry.PLAYER_TEXTURE);
+    private final Sprite sprite = new Sprite(AssetRegistry.PLAYER_TEXTURE);
 
     private final Animation<TextureRegion> idleAnimation;
     private final Animation<TextureRegion> runAnimation;
@@ -48,10 +53,10 @@ public class Player extends Actor {
     public int collisionCount = 0;
 
     public Player(World world, Vector2 spawnPos) {
-        idleAnimation = AnimationUtils.createAnimationSheet(TextureRegistry.PLAYER_IDLE, 2, 2, new int[]{
+        idleAnimation = AnimationUtils.createAnimationSheet(AssetRegistry.PLAYER_IDLE_TEXTURE, 2, 2, new int[]{
             0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 3
         }, 0.1f);
-        runAnimation = AnimationUtils.createAnimationSheet(TextureRegistry.PLAYER_RUN, 3, 3, new int[]{
+        runAnimation = AnimationUtils.createAnimationSheet(AssetRegistry.PLAYER_RUN_TEXTURE, 3, 3, new int[]{
             0, 1, 2, 3, 4, 5, 6, 7
         }, 0.05f);
 
