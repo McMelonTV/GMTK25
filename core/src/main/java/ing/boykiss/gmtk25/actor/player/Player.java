@@ -16,7 +16,9 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.GMTK25;
 import ing.boykiss.gmtk25.event.input.InputEvent;
+import ing.boykiss.gmtk25.event.player.PlayerHitHazardEvent;
 import ing.boykiss.gmtk25.input.Input;
+import ing.boykiss.gmtk25.level.ListenerClass;
 import ing.boykiss.gmtk25.level.replay.ReplayManager;
 import ing.boykiss.gmtk25.registry.AssetRegistry;
 import ing.boykiss.gmtk25.utils.AnimationUtils;
@@ -102,11 +104,23 @@ public class Player extends Actor {
         Fixture sensor = body.createFixture(sensorFixtureDef);
         sensor.setUserData("player_sensor"); // Set user data for identification
 
+        FixtureDef hurtBoxFixtureDef = new FixtureDef();
+        hurtBoxFixtureDef.shape = shape;
+        hurtBoxFixtureDef.isSensor = true; // Make it a sensor
+        hurtBoxFixtureDef.density = 0f; // No density for sensor
+        hurtBoxFixtureDef.friction = 0f;
+        hurtBoxFixtureDef.restitution = 0f;
+
+        Fixture hurtBox = body.createFixture(hurtBoxFixtureDef);
+        hurtBox.setUserData("player_hurtbox"); // Set user data for identification
+
         velocity = new Vector2();
 
         Input.getEventHandler(InputEvent.class).addListener(this::onInputEvent);
+        ListenerClass.playerHitHazardHandler.addListener(this::onPlayerHitHazard);
 
         shape.dispose();
+        sensorShape.dispose();
 
         ReplayManager.INSTANCE.startRecording();
     }
@@ -238,6 +252,12 @@ public class Player extends Actor {
                 return;
             }
             jumpBuffer = JUMP_BUFFER_DURATION;
+        }
+    }
+
+    private void onPlayerHitHazard(PlayerHitHazardEvent event) {
+        if (event.player() == this) {
+            System.out.println("YOU DIED L BOZO");
         }
     }
 }
