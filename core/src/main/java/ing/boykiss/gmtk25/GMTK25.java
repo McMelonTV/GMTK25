@@ -185,15 +185,13 @@ public class GMTK25 extends ApplicationAdapter {
         uiStage.draw();
 
         spriteBatch.setProjectionMatrix(uiViewport.getCamera().combined);
-        spriteBatch.begin();
 
+        spriteBatch.begin();
         if (isPaused) {
-            Color prev = spriteBatch.getColor();
             spriteBatch.setColor(0, 0, 0, 0.5f);
             spriteBatch.draw(new Texture("textures/fill.png"), 0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
-            spriteBatch.setColor(prev);
+            spriteBatch.setColor(255, 255, 255, 1);
         }
-
         spriteBatch.end();
 
         synchronized (renderStack) {
