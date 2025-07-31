@@ -23,7 +23,6 @@ import ing.boykiss.gmtk25.level.ListenerClass;
 import ing.boykiss.gmtk25.level.WorldManager;
 import ing.boykiss.gmtk25.level.replay.ReplayManager;
 import ing.boykiss.gmtk25.registry.MapRegistry;
-import ing.boykiss.gmtk25.utils.Constants;
 import lombok.Getter;
 
 import java.util.ArrayList;
