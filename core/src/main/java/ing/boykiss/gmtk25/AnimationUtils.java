@@ -5,17 +5,21 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class AnimationUtils {
-    public static Animation<TextureRegion> createAnimationSheet(Texture texture, int frameCols, int frameRows, float frameDuration) {
-        int tileWidth = texture.getWidth() / frameCols;
-        int tileHeight = texture.getHeight() / frameRows;
-        TextureRegion[][] tmp = TextureRegion.split(TextureRegistry.PLAYER_SHEET, tileWidth, tileHeight);
-        TextureRegion[] frames = new TextureRegion[frameCols * frameRows];
+    public static Animation<TextureRegion> createAnimationSheet(Texture texture, int sheetCols, int sheetRows, int[] frames, float frameLength) {
+        int tileWidth = texture.getWidth() / sheetCols;
+        int tileHeight = texture.getHeight() / sheetRows;
+        TextureRegion[][] tmp = TextureRegion.split(texture, tileWidth, tileHeight);
+        TextureRegion[] foundFrames = new TextureRegion[sheetCols * sheetRows];
         int index = 0;
-        for (int i = 0; i < frameRows; i++) {
-            for (int j = 0; j < frameCols; j++) {
-                frames[index++] = tmp[i][j];
+        for (int i = 0; i < sheetRows; i++) {
+            for (int j = 0; j < sheetCols; j++) {
+                foundFrames[index++] = tmp[i][j];
             }
         }
-        return new Animation<>(frameDuration, frames);
+        TextureRegion[] frameData = new TextureRegion[frames.length];
+        for (int i = 0; i < frames.length; i++) {
+            frameData[i] = foundFrames[frames[i] % foundFrames.length]; // Modulo here wraps the index so it never goes out of bounds
+        }
+        return new Animation<>(frameLength, frameData);
     }
 }

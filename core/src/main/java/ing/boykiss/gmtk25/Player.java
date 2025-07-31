@@ -1,7 +1,6 @@
 package ing.boykiss.gmtk25;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -9,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import ing.boykiss.gmtk25.input.Input;
 import lombok.Getter;
 
 public class Player extends Actor {
@@ -24,6 +24,7 @@ public class Player extends Actor {
     private final Sprite sprite = new Sprite(TextureRegistry.PLAYER_TEXTURE);
 
     private final Animation<TextureRegion> idleAnimation;
+    private final Animation<TextureRegion> runAnimation;
     private float stateTime = 0f;
 
     public int collisionCount = 0;
@@ -31,7 +32,12 @@ public class Player extends Actor {
     private final World world;
 
     public Player(World world, Vector2 spawnPos) {
-        idleAnimation = AnimationUtils.createAnimationSheet(TextureRegistry.PLAYER_SHEET, 2, 2, 0.5f);
+        idleAnimation = AnimationUtils.createAnimationSheet(TextureRegistry.PLAYER_IDLE, 2, 2, new int[] {
+            0, 0, 0, 0, 0, 0, 1, 2, 2, 2, 2, 2, 2, 3
+        }, 0.1f);
+        runAnimation = AnimationUtils.createAnimationSheet(TextureRegistry.PLAYER_RUN, 3, 3, new int[] {
+            0, 1, 2, 3, 4, 5, 6, 7
+        }, 0.05f);
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -78,12 +84,23 @@ public class Player extends Actor {
     private final float spriteHeightScaled = sprite.getHeight() * Constants.UNIT_SCALE;
     private final float spriteWidthScaled = sprite.getWidth() * Constants.UNIT_SCALE;
 
+    private final Vector2 spriteScale = new Vector2(1, 1);
+
     public void draw(SpriteBatch spriteBatch) {
+        Animation<TextureRegion> currentAnimation = velocity.x == 0 ? idleAnimation : runAnimation;
+
+        if (currentAnimation == null) {
+            return;
+        }
+
         stateTime += Gdx.graphics.getDeltaTime();
-        TextureRegion currentFrame = idleAnimation.getKeyFrame(stateTime, true);
-        spriteBatch.draw(currentFrame, body.getPosition().x - spriteWidthOffset,
-            body.getPosition().y - spriteHeightOffset,
-            spriteWidthScaled, spriteHeightScaled);
+        TextureRegion currentFrame = currentAnimation.getKeyFrame(stateTime, true);
+        spriteBatch.draw(currentFrame,
+            body.getPosition().x - spriteWidthOffset * spriteScale.x,
+            body.getPosition().y - spriteHeightOffset * spriteScale.y,
+            spriteWidthScaled * spriteScale.x,
+            spriteHeightScaled * spriteScale.y
+        );
     }
 
     @Override
@@ -92,16 +109,18 @@ public class Player extends Actor {
 
         velocity.y = body.getLinearVelocity().y;
 
-        if (Gdx.input.isKeyPressed(Input.Keys.C) && isOnFloor) {
+        if (Input.keyPressed(Input.Keys.C) && isOnFloor) {
             velocity.y = 7500 * deltaTime; // Jump force
         }
 
         velocity.x = 0;
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            velocity.x = -5000 * deltaTime;
+        if (Input.keyPressed(Input.Keys.RIGHT)) {
+            velocity.x += 5000 * deltaTime;
+            spriteScale.x = 1;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            velocity.x = 5000 * deltaTime;
+        if (Input.keyPressed(Input.Keys.LEFT)) {
+            velocity.x += -5000 * deltaTime;
+            spriteScale.x = -1;
         }
 
         body.setLinearVelocity(velocity);
