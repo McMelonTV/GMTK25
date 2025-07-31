@@ -3,7 +3,7 @@ package ing.boykiss.gmtk25.input;
 import com.badlogic.gdx.Gdx;
 import ing.boykiss.gmtk25.event.Event;
 import ing.boykiss.gmtk25.event.EventHandler;
-import ing.boykiss.gmtk25.input.event.InputEvent;
+import ing.boykiss.gmtk25.event.input.InputEvent;
 import lombok.Getter;
 
 import java.util.HashSet;
