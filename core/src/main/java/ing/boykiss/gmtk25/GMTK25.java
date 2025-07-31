@@ -60,6 +60,8 @@ public class GMTK25 extends ApplicationAdapter {
     private OrthographicCamera camera;
     private Viewport viewport;
     private Stage stage;
+    private Viewport uiViewport;
+    private Stage uiStage;
     private Level level;
 
     SpriteBatch spriteBatch;
@@ -146,6 +148,10 @@ public class GMTK25 extends ApplicationAdapter {
 
         camera.translate(Constants.VIEWPORT_WIDTH / 2.0f, Constants.VIEWPORT_HEIGHT / 2.0f);
 
+        uiViewport = new ScreenViewport();
+        uiStage = new Stage();
+        uiStage.setViewport(uiViewport);
+
         level = new Level(WorldManager.world, new TmxMapLoader().load("tiledmaps/dev_map.tmx"), camera);
         player = new Player(WorldManager.world, new Vector2(30 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE));
 
@@ -173,6 +179,14 @@ public class GMTK25 extends ApplicationAdapter {
 
         player.draw(spriteBatch);
 
+        spriteBatch.end();
+
+        uiViewport.apply();
+        uiStage.draw();
+
+        spriteBatch.setProjectionMatrix(uiViewport.getCamera().combined);
+        spriteBatch.begin();
+
         if (isPaused) {
             Color prev = spriteBatch.getColor();
             spriteBatch.setColor(0, 0, 0, 0.5f);
@@ -198,12 +212,14 @@ public class GMTK25 extends ApplicationAdapter {
 
         backStage.act();
         stage.act();
+        uiStage.act();
     }
 
     @Override
     public void resize(int width, int height) {
         backViewport.update(width, height);
         viewport.update(width, height);
+        uiViewport.update(width, height);
         background.setSize(viewport.getScreenWidth(), viewport.getScreenHeight());
         background.setPosition(-viewport.getScreenWidth() / 2.0f, -viewport.getScreenHeight() / 2.0f);
     }
@@ -214,5 +230,6 @@ public class GMTK25 extends ApplicationAdapter {
 
         backStage.dispose();
         stage.dispose();
+        uiStage.dispose();
     }
 }
