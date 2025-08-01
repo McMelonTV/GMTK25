@@ -26,7 +26,7 @@ public class TeaVMBuilder {
         TeaVMTool tool = TeaBuilder.config(teaBuildConfiguration);
         // You can uncomment the line below to use WASM instead of JavaScript as a target.
         // Some code can see very significant performance benefits from WASM, and some won't.
-        tool.setTargetType(TeaVMTargetType.WEBASSEMBLY_GC);
+       // tool.setTargetType(TeaVMTargetType.WEBASSEMBLY_GC);
         tool.setMainClass(TeaVMLauncher.class.getName());
         // For many (or most) applications, using a high optimization won't add much to build time.
         // If your builds take too long, and runtime performance doesn't matter, you can change ADVANCED to SIMPLE .

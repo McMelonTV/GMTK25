@@ -11,16 +11,22 @@ import ing.boykiss.gmtk25.registry.AssetRegistry;
 
 public class LevelBackground extends Image {
     private final Viewport viewport;
-    private final ShaderProgram shader = new ShaderProgram(
-            Gdx.files.internal(AssetRegistry.BACKGROUND_VERTEX_SHADER_PATH),
-            Gdx.files.internal(AssetRegistry.BACKGROUND_FRAGMENT_SHADER_PATH)
-    );
+    private final ShaderProgram shader;
     private float time;
 
     public LevelBackground(Viewport viewport) {
         super(AssetRegistry.FILL_TEXTURE);
         this.setColor(Color.DARK_GRAY);
         this.viewport = viewport;
+
+        ShaderProgram.pedantic = false; // less strict on uniforms
+        shader = new ShaderProgram(
+            Gdx.files.internal(AssetRegistry.BACKGROUND_VERTEX_SHADER_PATH),
+            Gdx.files.internal(AssetRegistry.BACKGROUND_FRAGMENT_SHADER_PATH)
+        );
+        if (!shader.isCompiled()) {
+            Gdx.app.error("ShaderError", shader.getLog());
+        }
     }
 
     @Override
