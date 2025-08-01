@@ -27,6 +27,17 @@ public class Level extends Actor {
     @Getter
     protected final List<Fixture> hazardSensors = new ArrayList<>();
 
+    // camera bounding box
+    @Getter
+    private final float cameraLeft;
+    @Getter
+    private final float cameraRight;
+    @Getter
+    private final float cameraTop;
+    @Getter
+    private final float cameraBottom;
+
+
     private final List<PolygonShape> shapes = new ArrayList<>();
     private final List<PolygonShape> hazardShapes = new ArrayList<>();
 
@@ -34,6 +45,14 @@ public class Level extends Actor {
         this.map = map;
         this.camera = camera;
         this.renderer = new OrthogonalTiledMapRenderer(map, Constants.UNIT_SCALE);
+
+        // Set the camera limits to the map size
+        int width = map.getProperties().get("width", Integer.class);
+        int height = map.getProperties().get("height", Integer.class);
+        this.cameraLeft = Constants.VIEWPORT_WIDTH / 2;
+        this.cameraRight = width - Constants.VIEWPORT_WIDTH / 2;
+        this.cameraTop = height - Constants.VIEWPORT_HEIGHT / 2;
+        this.cameraBottom = Constants.VIEWPORT_HEIGHT / 2;
 
         for (MapLayer layer : this.map.getLayers()) {
             for (MapObject o : layer.getObjects()) {

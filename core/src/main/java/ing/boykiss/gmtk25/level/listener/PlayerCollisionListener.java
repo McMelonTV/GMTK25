@@ -11,6 +11,9 @@ import ing.boykiss.gmtk25.event.EventBus;
 import ing.boykiss.gmtk25.event.player.PlayerHitHazardEvent;
 import ing.boykiss.gmtk25.event.player.PlayerJumpOnDummyEvent;
 
+import java.util.Arrays;
+import java.util.List;
+
 public class PlayerCollisionListener implements ContactListener {
     private final Player player;
 
@@ -21,9 +24,10 @@ public class PlayerCollisionListener implements ContactListener {
     @Override
     public void endContact(Contact contact) {
         if (contact.getFixtureA().getUserData() instanceof String || contact.getFixtureB().getUserData() instanceof String) {
-            String fixtureA = contact.getFixtureA().getUserData() instanceof String ? (String) contact.getFixtureA().getUserData() : "unknown";
-            String fixtureB = contact.getFixtureB().getUserData() instanceof String ? (String) contact.getFixtureB().getUserData() : "unknown";
-            if (fixtureA.equals("player_sensor") || fixtureB.equals("player_sensor")) {
+            List<String> fixtureA = contact.getFixtureA().getUserData() instanceof String ? Arrays.stream(((String) contact.getFixtureA().getUserData()).split(" ")).toList() : List.of();
+            List<String> fixtureB = contact.getFixtureB().getUserData() instanceof String ? Arrays.stream(((String) contact.getFixtureB().getUserData()).split(" ")).toList() : List.of();
+
+            if (fixtureA.contains("player_sensor") || fixtureB.contains("player_sensor")) {
                 player.collisionCount--;
             }
         }
@@ -41,19 +45,20 @@ public class PlayerCollisionListener implements ContactListener {
     @Override
     public void beginContact(Contact contact) {
         if (contact.getFixtureA().getUserData() instanceof String || contact.getFixtureB().getUserData() instanceof String) {
-            String fixtureA = contact.getFixtureA().getUserData() instanceof String ? (String) contact.getFixtureA().getUserData() : "unknown";
-            String fixtureB = contact.getFixtureB().getUserData() instanceof String ? (String) contact.getFixtureB().getUserData() : "unknown";
-            if (fixtureA.equals("player_sensor") || fixtureB.equals("player_sensor")) {
+            List<String> fixtureA = contact.getFixtureA().getUserData() instanceof String ? Arrays.stream(((String) contact.getFixtureA().getUserData()).split(" ")).toList() : List.of();
+            List<String> fixtureB = contact.getFixtureB().getUserData() instanceof String ? Arrays.stream(((String) contact.getFixtureB().getUserData()).split(" ")).toList() : List.of();
+
+            if (fixtureA.contains("player_sensor") || fixtureB.contains("player_sensor")) {
                 player.collisionCount++;
-                if (fixtureA.equals("dummy_player") || fixtureB.equals("dummy_player")) {
-                    Fixture dummyFixture = fixtureA.equals("dummy_player") ? contact.getFixtureA() : contact.getFixtureB();
+                if (fixtureA.contains("dummy_player") || fixtureB.contains("dummy_player")) {
+                    Fixture dummyFixture = fixtureA.contains("dummy_player") ? contact.getFixtureA() : contact.getFixtureB();
                     if (dummyFixture.getBody().getUserData() instanceof DummyPlayer dummyPlayer) {
                         player.getOnJump().addListener(event -> EventBus.call(PlayerJumpOnDummyEvent.class, new PlayerJumpOnDummyEvent(player, dummyPlayer)));
                     }
                 }
             }
-            if (fixtureA.equals("player_hurtbox") || fixtureB.equals("player_hurtbox")) {
-                if (fixtureA.equals("hazard") || fixtureB.equals("hazard")) {
+            if (fixtureA.contains("player_hurtbox") || fixtureB.contains("player_hurtbox")) {
+                if (fixtureA.contains("hazard") || fixtureB.contains("hazard")) {
                     EventBus.call(PlayerHitHazardEvent.class, new PlayerHitHazardEvent(player));
                 }
             }

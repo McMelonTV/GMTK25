@@ -80,7 +80,7 @@ public class DummyPlayer {
     public void resetStateTime() {
         stateTime = 0;
     }
-
+    
     public void draw(Batch batch) {
         stateTime += Gdx.graphics.getDeltaTime();
         TextureRegion currentFrame = animation.getKeyFrame(stateTime, animationLooping);

@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import ing.boykiss.gmtk25.actor.interactable.InteractableButton;
 import ing.boykiss.gmtk25.actor.level.Level;
 import ing.boykiss.gmtk25.actor.level.LevelBackground;
 import ing.boykiss.gmtk25.actor.player.DummyPlayer;
@@ -23,6 +24,8 @@ import ing.boykiss.gmtk25.event.input.InputEvent;
 import ing.boykiss.gmtk25.event.player.PlayerJumpOnDummyEvent;
 import ing.boykiss.gmtk25.input.Input;
 import ing.boykiss.gmtk25.level.WorldManager;
+import ing.boykiss.gmtk25.level.listener.CollisionListener;
+import ing.boykiss.gmtk25.level.listener.InteractableCollisionListener;
 import ing.boykiss.gmtk25.level.listener.PlayerCollisionListener;
 import ing.boykiss.gmtk25.level.replay.ReplayManager;
 import ing.boykiss.gmtk25.registry.MapRegistry;
@@ -165,10 +168,14 @@ public class GMTK25 extends ApplicationAdapter {
 
         stage.addActor(level);
         stage.addActor(dummyPlayerRenderer);
+        stage.addActor(new InteractableButton(WorldManager.world, new Vector2(8, 3)));
         stage.addActor(player);
         uiStage.addActor(new PauseScreen());
 
-        WorldManager.world.setContactListener(new PlayerCollisionListener(player)); // Set the contact listener for onFloor detection
+        WorldManager.world.setContactListener(CollisionListener.INSTANCE); // Set the contact listener for onFloor detection
+
+        CollisionListener.INSTANCE.getListeners().add(new PlayerCollisionListener(player));
+        CollisionListener.INSTANCE.getListeners().add(new InteractableCollisionListener());
 
         tickThread.start();
     }
@@ -176,6 +183,8 @@ public class GMTK25 extends ApplicationAdapter {
     @Override
     public void render() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+
+        updateCameraPosition();
 
         backViewport.apply();
         backStage.draw();
@@ -226,5 +235,43 @@ public class GMTK25 extends ApplicationAdapter {
         backStage.dispose();
         stage.dispose();
         uiStage.dispose();
+    }
+
+    private void updateCameraPosition() {
+        Vector2 cameraMoveVector = player.getBody().getPosition().cpy().sub(camera.position.x, camera.position.y);
+        // if camera near enough, don't move
+        if (cameraMoveVector.len() < Constants.CAMERA_PLAYER_DISTANCE * Constants.UNIT_SCALE) {
+            cameraMoveVector.setZero();
+        }
+
+        cameraMoveVector = cameraMoveVector.lerp(cameraMoveVector, 0.1f);
+
+        // normalize the vector and scale it by camera speed
+        // also multiply by delta time to make it frame rate independent
+        if (cameraMoveVector.len() > Constants.CAMERA_SPEED * Gdx.graphics.getDeltaTime()) {
+            cameraMoveVector.nor().scl(Constants.CAMERA_SPEED * Gdx.graphics.getDeltaTime());
+        }
+        // if the vector is too small, set it to zero
+        if (cameraMoveVector.len() < 0.1f) {
+            cameraMoveVector.setZero();
+        }
+
+        Vector2 finalCameraPosition = new Vector2(camera.position.cpy().x + cameraMoveVector.x, camera.position.cpy().y + cameraMoveVector.y);
+
+        // snap camera to camera limits
+        if (finalCameraPosition.x < level.getCameraLeft()) {
+            finalCameraPosition.x = level.getCameraLeft();
+        } else if (finalCameraPosition.x > level.getCameraRight()) {
+            finalCameraPosition.x = level.getCameraRight();
+        }
+        if (finalCameraPosition.y < level.getCameraBottom()) {
+            finalCameraPosition.y = level.getCameraBottom();
+        } else if (finalCameraPosition.y > level.getCameraTop()) {
+            finalCameraPosition.y = level.getCameraTop();
+        }
+
+        camera.position.set(finalCameraPosition, 0);
+        camera.update();
+
     }
 }
