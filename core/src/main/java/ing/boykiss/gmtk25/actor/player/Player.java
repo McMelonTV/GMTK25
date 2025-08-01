@@ -159,6 +159,8 @@ public class Player extends Actor {
 
     @Override
     public void act(float deltaTime) { // aka tick
+        System.out.println(1f / Constants.TPS);
+
         ReplayManager.INSTANCE.recordFrame(body.getPosition(), velocity, spriteScale, currentAnimation, currentAnimationLooping);
         isOnFloor = collisionCount > 0; // update isOnFloor based on collision count
 

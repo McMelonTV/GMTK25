@@ -8,11 +8,29 @@ uniform sampler2D u_texture;
 
 varying vec2 v_texCoords;
 
+float round(float f) {
+    return ceil(f - 0.5);
+}
+vec2 round(vec2 v) {
+    return vec2(round(v.x), round(v.y));
+}
+
+vec3 round(vec3 v) {
+    return vec3(round(v.x), round(v.y), round(v.z));
+}
+
+vec4 round(vec4 v) {
+    return vec4(round(v.x), round(v.y), round(v.z), round(v.w));
+}
+
+
+
 float random (vec2 st) {
     return fract(sin(dot(st.xy,
     vec2(12.9898,78.233)))
     * 43758.5453123);
 }
+
 float noise(vec2 x) {
     vec2 p = floor(x);
     vec2 f = fract(x);
@@ -69,32 +87,26 @@ vec3 colA(vec2 uv) {
     float v = random(round(sampleAt(uv * 0.01, 1.0) + vec2(u_time * 0.1, u_time * 0.1) + uv * 0.01) * 0.00001);
     vec3 col = vec3(0.325, 0.071, 0.149);
     vec3 hsv = rgb2hsv(mix(col, invert(col), v) * 0.4);
-    float h = float(int((hsv.x + u_time * 0.03)*200.0) % 200) / 200.0;
+    float h = mod((hsv.x + u_time * 0.03)*200.0, 200.0) / 200.0;
     return hsv2rgb(vec3(h, 0.3, hsv.z * 0.5));
 }
 vec3 colB(vec2 uv) {
     float v = random(round(sampleAt(uv * 0.01 + 0.53425, -1.0) - vec2(u_time * 0.1, u_time * 0.1) + uv * 0.01) * 0.00001);
     vec3 col = vec3(0.325, 0.071, 0.149);
     vec3 hsv = rgb2hsv(mix(col, invert(col), v) * 0.4);
-    float h = float(int((hsv.x + 0.1 + u_time * 0.03)*200.0) % 200) / 200.0;
+    float h = mod((hsv.x + 0.1 + u_time * 0.03)*200.0, 200.0) / 200.0;
     return hsv2rgb(vec3(h, 0.3, hsv.z * 0.5));
 }
 
 void main() {
-    vec4 color = texture(u_texture, v_texCoords);
-
-    if (color.a < 1.0) {
-        discard;
-    }
-
     vec2 target = u_viewportRes * 10.0;
     vec2 ratio = target / 2.0 / u_viewportRes;
     vec2 pos = floor(v_texCoords * target / ratio) * ratio;
 
-    int x1 = int(floor((pos.x - u_time * 0.5) / 32.0));
-    int y1 = int(floor((pos.y - u_time * 0.5) / 32.0));
-    bool x2 = bool(int(floor((pos.x + u_time * 0.5 * 20.0 * (float(y1 % 2) - 0.5) * 2.0) / 32.0)) % 2);
-    bool y2 = bool(int(floor((pos.y + u_time * 0.5 * 20.0 * (float(x1 % 2) - 0.5) * 2.0) / 32.0)) % 2);
+    float x1 = floor((pos.x - u_time * 0.5) / 32.0);
+    float y1 = floor((pos.y - u_time * 0.5) / 32.0);
+    bool x2 = bool(mod(floor((pos.x + u_time * 0.5 * 20.0 * (mod(y1, 2.0) - 0.5) * 2.0) / 32.0), 2.0));
+    bool y2 = bool(mod(floor((pos.y + u_time * 0.5 * 20.0 * (mod(x1, 2.0) - 0.5) * 2.0) / 32.0), 2.0));
 
-    gl_FragColor = vec4(mix(colA(pos), colB(pos), float(x2 ^^ y2)), color.a);
+    gl_FragColor = vec4(mix(colA(pos), colB(pos), float(x2 ^^ y2)), 1.0);
 }

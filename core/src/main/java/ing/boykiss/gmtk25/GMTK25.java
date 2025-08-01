@@ -42,27 +42,15 @@ public class GMTK25 extends ApplicationAdapter {
     private static GMTK25 instance;
 
     private final Thread tickThread = new Thread(() -> {
-        long eSleepTime = (long) (1_000f / Constants.TPS);
-        // declare variables in advance because perf
-        long startTime;
-        long elapsedTime;
-        long sleepTime;
+        long prevTime = System.nanoTime();
         while (true) {
-            try {
-                startTime = System.currentTimeMillis();
-
-                tick();
-
-                elapsedTime = System.currentTimeMillis() - startTime;
-
-                sleepTime = eSleepTime - elapsedTime;
-                if (sleepTime >= 0) {
-                    Thread.sleep(sleepTime);
-                }
-            } catch (InterruptedException e) {
-                // If the thread is interrupted, we stop ticking
-                return;
+            long currTime = System.nanoTime();
+            float time = (currTime - prevTime) / 1_000_000_000f;
+            if (time < 1.0f / Constants.TPS) {
+                continue;
             }
+            prevTime = currTime;
+            tick(time);
         }
     });
 
@@ -192,10 +180,10 @@ public class GMTK25 extends ApplicationAdapter {
         viewport.apply();
         stage.draw();
 
+        WorldManager.debugRenderer.render(WorldManager.world, camera.combined);
+
         uiViewport.apply();
         uiStage.draw();
-
-        WorldManager.debugRenderer.render(WorldManager.world, camera.combined);
 
         synchronized (renderStack) {
             while (!renderStack.isEmpty()) {
@@ -207,15 +195,15 @@ public class GMTK25 extends ApplicationAdapter {
         Input.update();
     }
 
-    public void tick() {
+    public void tick(float deltaTime) {
         if (isPaused) return;
-        WorldManager.world.step(Gdx.graphics.getDeltaTime(), Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS);
+        WorldManager.world.step(deltaTime, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS);
 
         ReplayManager.INSTANCE.update();
 
-        backStage.act();
-        stage.act();
-        uiStage.act();
+        backStage.act(deltaTime);
+        stage.act(deltaTime);
+        uiStage.act(deltaTime);
     }
 
     @Override
