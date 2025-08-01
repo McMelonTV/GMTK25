@@ -39,9 +39,9 @@ public class Player extends Actor {
     @Getter
     private final EventHandler<Event> onJump = new EventHandler<>();
 
-    private static final int SPEED = 5000; // Speed of the player
-    private static final int JUMP_FORCE = 80; // Jump force of the player
-    private static final int MIN_JUMP_FORCE = 25; // Jump force of the player when jump is released
+    private static final float SPEED = 1250; // Speed of the player
+    private static final float JUMP_FORCE = 40; // Jump force of the player
+    private static final float MIN_JUMP_FORCE = 10; // Jump force of the player when jump is released
 
     private static final int COYOTE_TIME_DURATION = 6; // Duration of coyote time in ticks
     private boolean CoyoteTimeActive = false;
