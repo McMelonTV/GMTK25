@@ -7,7 +7,12 @@ import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import ing.boykiss.gmtk25.Constants;
@@ -56,7 +61,7 @@ public class Level extends Actor {
     private final List<PolygonShape> hazardShapes = new ArrayList<>();
 
     // interactables must be first button, second door
-    public Level(TiledMap map, Vector2 startPos, Map<LevelEntity, LevelEntity> interactables) {
+    public Level(TiledMap map, Vector2 startPos, Map<LevelObject, LevelObject> interactables) {
         this.world = new World(new Vector2(0, -Constants.GRAVITY), true);
         this.stage = new Stage();
         stage.setViewport(GMTK25.getViewport());
@@ -117,8 +122,8 @@ public class Level extends Actor {
         dummyPlayerRenderer = new PlayerDummyRenderer();
         stage.addActor(dummyPlayerRenderer);
 
-        for (Map.Entry<LevelEntity, LevelEntity> entry : interactables.entrySet()) {
-            if (entry.getKey().getType() == EntityType.BUTTON && entry.getValue().getType() == EntityType.DOOR) {
+        for (Map.Entry<LevelObject, LevelObject> entry : interactables.entrySet()) {
+            if (entry.getKey().getType() == LevelObjectType.BUTTON && entry.getValue().getType() == LevelObjectType.DOOR) {
                 Door door = new Door(world, entry.getValue().getPosition());
                 stage.addActor(door);
 
