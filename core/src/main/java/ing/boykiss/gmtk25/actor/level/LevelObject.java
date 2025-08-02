@@ -11,9 +11,20 @@ public class LevelObject {
     @Getter
     private final Vector2 position;
 
+    @Getter
+    private final Runnable command;
+
+
     public LevelObject(LevelObjectType type, Vector2 position) {
         this.type = type;
         this.position = position;
+        this.command = null;
+    }
+
+    public LevelObject(LevelObjectType type, Runnable command) {
+        this.type = type;
+        this.position = null;
+        this.command = command;
     }
 
 }

@@ -60,9 +60,8 @@ public class GMTK25 extends ApplicationAdapter {
             float delta = (currTime - prevTime) / 1_000_000_000f;
             if (delta < target) {
                 long sleepMillis = (long) ((target - delta) * 1_000);
-                int sleepNanos = (int) (((target - delta) * 1_000_000_000) % 1_000_000);
                 try {
-                    Thread.sleep(sleepMillis, sleepNanos);
+                    Thread.sleep(sleepMillis);
                 } catch (InterruptedException e) {
                     Thread.currentThread().interrupt();
                     break;
@@ -280,5 +279,9 @@ public class GMTK25 extends ApplicationAdapter {
 
         camera.position.set(finalCameraPosition, 0);
         camera.update();
+    }
+
+    public void transitionToLevel(String levelName) {
+        player.levelTransition(LevelRegistry.LEVELS.get(levelName));
     }
 }

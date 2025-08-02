@@ -7,18 +7,15 @@ import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.GMTK25;
 import ing.boykiss.gmtk25.actor.interactable.Door;
+import ing.boykiss.gmtk25.actor.interactable.IInteractionTarget;
 import ing.boykiss.gmtk25.actor.interactable.InteractableButton;
+import ing.boykiss.gmtk25.actor.interactable.InteractionCommand;
 import ing.boykiss.gmtk25.actor.player.PlayerDummyRenderer;
 import ing.boykiss.gmtk25.level.listener.CollisionListener;
 import lombok.Getter;
@@ -123,11 +120,18 @@ public class Level extends Actor {
         stage.addActor(dummyPlayerRenderer);
 
         for (Map.Entry<LevelObject, LevelObject> entry : interactables.entrySet()) {
-            if (entry.getKey().getType() == LevelObjectType.BUTTON && entry.getValue().getType() == LevelObjectType.DOOR) {
-                Door door = new Door(world, entry.getValue().getPosition());
-                stage.addActor(door);
+            if (entry.getKey().getType() == LevelObjectType.BUTTON) {
+                IInteractionTarget target = null;
+                if (entry.getValue().getType() == LevelObjectType.DOOR) {
+                    Door door = new Door(world, entry.getValue().getPosition());
+                    stage.addActor(door);
+                    target = door;
+                }
+                if (entry.getValue().getType() == LevelObjectType.COMMAND) {
+                    target = new InteractionCommand(entry.getValue().getCommand(), GMTK25.renderStack);
+                }
 
-                InteractableButton button = new InteractableButton(world, entry.getKey().getPosition(), door);
+                InteractableButton button = new InteractableButton(world, entry.getKey().getPosition(), target);
                 stage.addActor(button);
             }
         }
