@@ -10,14 +10,16 @@ import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
 import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.GMTK25;
+import ing.boykiss.gmtk25.actor.level.Level;
 import ing.boykiss.gmtk25.registry.AssetRegistry;
 import lombok.Getter;
 import lombok.Setter;
 
 public class DummyPlayer {
+    @Getter
+    private final Level level;
 
     @Getter
     private final Body body;
@@ -44,12 +46,14 @@ public class DummyPlayer {
     private float stateTime = 0f;
 
 
-    public DummyPlayer(World world, Vector2 spawnPos) {
+    public DummyPlayer(Level level) {
+        this.level = level;
+
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(spawnPos);
+        bodyDef.position.set(level.getStartPos());
 
-        body = world.createBody(bodyDef);
+        body = level.getWorld().createBody(bodyDef);
         body.setUserData(this);
 
         PolygonShape shape = new PolygonShape();
@@ -85,10 +89,10 @@ public class DummyPlayer {
         stateTime += Gdx.graphics.getDeltaTime();
         TextureRegion currentFrame = animation.getKeyFrame(stateTime, animationLooping);
         batch.draw(currentFrame,
-                body.getPosition().x - spriteWidthOffset * spriteScale.x,
-                body.getPosition().y - spriteHeightOffset * spriteScale.y,
-                spriteWidthScaled * spriteScale.x,
-                spriteHeightScaled * spriteScale.y
+            body.getPosition().x - spriteWidthOffset * spriteScale.x,
+            body.getPosition().y - spriteHeightOffset * spriteScale.y,
+            spriteWidthScaled * spriteScale.x,
+            spriteHeightScaled * spriteScale.y
         );
     }
 
@@ -98,7 +102,7 @@ public class DummyPlayer {
         }
         destroyed = true;
         GMTK25.renderStack.add(() -> {
-            GMTK25.getInstance().dummyPlayerRenderer.removeRenderableDummy(this);
+            level.getDummyPlayerRenderer().removeRenderableDummy(this);
             getBody().getWorld().destroyBody(getBody());
         });
     }

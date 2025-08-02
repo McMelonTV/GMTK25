@@ -15,7 +15,6 @@ import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import ing.boykiss.gmtk25.actor.level.LevelBackground;
 import ing.boykiss.gmtk25.actor.player.DummyPlayer;
-import ing.boykiss.gmtk25.actor.player.DummyPlayerRenderer;
 import ing.boykiss.gmtk25.actor.player.Player;
 import ing.boykiss.gmtk25.actor.ui.PauseScreen;
 import ing.boykiss.gmtk25.audio.MusicPlayer;
@@ -78,8 +77,6 @@ public class GMTK25 extends ApplicationAdapter {
     private Song song;
 
     SpriteBatch spriteBatch;
-
-    public DummyPlayerRenderer dummyPlayerRenderer;
 
     private boolean fullscreen = false;
 
@@ -153,7 +150,7 @@ public class GMTK25 extends ApplicationAdapter {
                 renderStack.add(() -> {
                     ReplayManager.INSTANCE.stopRecording();
                     DummyPlayer dummyPlayer = player.createDummy();
-                    dummyPlayerRenderer.addRenderableDummy(dummyPlayer);
+                    player.getLevel().getDummyPlayerRenderer().addRenderableDummy(dummyPlayer);
                     ReplayManager.INSTANCE.replay(dummyPlayer);
 
                     EventBus.addListener(PlayerJumpOnDummyEvent.class, e -> {
@@ -162,7 +159,7 @@ public class GMTK25 extends ApplicationAdapter {
                         }
                         renderStack.add(() -> {
                             dummyPlayer.destroy();
-                            dummyPlayerRenderer.removeRenderableDummy(dummyPlayer);
+                            player.getLevel().getDummyPlayerRenderer().removeRenderableDummy(dummyPlayer);
                         });
                     });
                 });

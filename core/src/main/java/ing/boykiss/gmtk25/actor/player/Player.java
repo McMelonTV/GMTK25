@@ -165,7 +165,7 @@ public class Player extends Actor {
     }
 
     public DummyPlayer createDummy() {
-        return new DummyPlayer(level.getWorld(), level.getStartPos());
+        return new DummyPlayer(level);
     }
 
     private final float spriteHeightOffset = (sprite.getHeight() * Constants.UNIT_SCALE) * 0.25f;
