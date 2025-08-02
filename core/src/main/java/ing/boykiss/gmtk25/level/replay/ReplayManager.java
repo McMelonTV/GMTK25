@@ -3,22 +3,31 @@ package ing.boykiss.gmtk25.level.replay;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import ing.boykiss.gmtk25.actor.player.DummyPlayer;
+import ing.boykiss.gmtk25.actor.player.Player;
+import ing.boykiss.gmtk25.actor.player.PlayerDummy;
 import lombok.Getter;
 
 import java.util.List;
 
 public class ReplayManager {
-    public static class ReplayData {
-        public DummyPlayer player;
-        public List<ReplayFrame> frames;
-        public int currentFrame = 0;
-        public boolean isReplaying = true;
-
-        public ReplayData(DummyPlayer player, List<ReplayFrame> frames) {
-            this.player = player;
-            this.frames = frames;
+    /**
+     * Prepares the replay for a player.
+     *
+     * @param player
+     */
+    public void replay(Player player) {
+        if (replayFrames.isEmpty()) {
+            return;
         }
+
+        ReplayData data = new ReplayData(new PlayerDummy(player), replayFrames);
+        replayData.add(data);
+
+        data.player.getBody().setTransform(data.frames.getFirst().playerPosition, 0);
+        data.player.setVelocity(data.frames.getFirst().playerVelocity);
+        data.player.setSpriteScale(data.frames.getFirst().playerScale);
+        data.player.setAnimation(data.frames.getFirst().animation);
+        data.player.setAnimationLooping(data.frames.getFirst().animationLooping);
     }
 
     public static final ReplayManager INSTANCE = new ReplayManager();
@@ -51,24 +60,17 @@ public class ReplayManager {
         // Logic to stop recording the replay
         isRecording = false;
     }
-    /**
-     * Prepares the replay for a player.
-     *
-     * @param player
-     */
-    public void replay(DummyPlayer player) {
-        if (replayFrames.isEmpty()) {
-            return;
+
+    public static class ReplayData {
+        public PlayerDummy player;
+        public List<ReplayFrame> frames;
+        public int currentFrame = 0;
+        public boolean isReplaying = true;
+
+        public ReplayData(PlayerDummy player, List<ReplayFrame> frames) {
+            this.player = player;
+            this.frames = frames;
         }
-
-        ReplayData data = new ReplayData(player, replayFrames);
-        replayData.add(data);
-
-        data.player.getBody().setTransform(data.frames.getFirst().playerPosition, 0);
-        data.player.setVelocity(data.frames.getFirst().playerVelocity);
-        data.player.setSpriteScale(data.frames.getFirst().playerScale);
-        data.player.setAnimation(data.frames.getFirst().animation);
-        data.player.setAnimationLooping(data.frames.getFirst().animationLooping);
     }
 
     /**

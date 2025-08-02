@@ -27,6 +27,9 @@ import ing.boykiss.gmtk25.registry.AssetRegistry;
 import ing.boykiss.gmtk25.utils.AnimationUtils;
 import lombok.Getter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Player extends Actor {
     @Getter
     private final Vector2 velocity = new Vector2();
@@ -62,11 +65,13 @@ public class Player extends Actor {
     private Body body;
     private boolean coyoteTimeActive = false;
 
+    public final List<PlayerDummy> dummies = new ArrayList<>();
+
     public Player(Level level) {
+        respawn(level);
+
         Input.getEventHandler(InputEvent.class).addListener(this::onInputEvent);
         EventBus.addListener(PlayerHitHazardEvent.class, this::onPlayerHitHazard);
-
-        respawn(level);
     }
 
     private void reloadBody() {
@@ -160,12 +165,9 @@ public class Player extends Actor {
     }
 
     public void startLoop() {
+        ReplayManager.INSTANCE.stopRecording();
         teleportToLevelStart();
-        ReplayManager.INSTANCE.replay(createDummy());
-    }
-
-    public DummyPlayer createDummy() {
-        return new DummyPlayer(level);
+        ReplayManager.INSTANCE.replay(this);
     }
 
     private final float spriteHeightOffset = (sprite.getHeight() * Constants.UNIT_SCALE) * 0.25f;

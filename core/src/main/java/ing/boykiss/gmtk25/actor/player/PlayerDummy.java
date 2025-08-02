@@ -11,13 +11,19 @@ import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import ing.boykiss.gmtk25.Constants;
-import ing.boykiss.gmtk25.GMTK25;
 import ing.boykiss.gmtk25.actor.level.Level;
+import ing.boykiss.gmtk25.event.EventBus;
+import ing.boykiss.gmtk25.event.player.PlayerJumpOnDummyEvent;
 import ing.boykiss.gmtk25.registry.AssetRegistry;
 import lombok.Getter;
 import lombok.Setter;
 
-public class DummyPlayer {
+import static ing.boykiss.gmtk25.GMTK25.renderStack;
+
+public class PlayerDummy {
+    @Getter
+    private final Player player;
+
     @Getter
     private final Level level;
 
@@ -46,8 +52,9 @@ public class DummyPlayer {
     private float stateTime = 0f;
 
 
-    public DummyPlayer(Level level) {
-        this.level = level;
+    public PlayerDummy(Player player) {
+        this.player = player;
+        this.level = player.getLevel();
 
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
@@ -73,8 +80,18 @@ public class DummyPlayer {
         velocity = new Vector2();
 
         shape.dispose();
+
+        player.dummies.add(this);
+
+        player.getLevel().getDummyPlayerRenderer().addRenderableDummy(this);
+
+        EventBus.addListener(PlayerJumpOnDummyEvent.class, this::onPlayerJumpOnDummy);
     }
 
+    private void onPlayerJumpOnDummy(PlayerJumpOnDummyEvent event) {
+        if (event.dummyPlayer() != this) return;
+        renderStack.add(this::destroy);
+    }
 
     private final float spriteHeightOffset = (sprite.getHeight() * Constants.UNIT_SCALE) * 0.25f;
     private final float spriteWidthOffset = (sprite.getWidth() * Constants.UNIT_SCALE) * 0.5f;
@@ -101,7 +118,8 @@ public class DummyPlayer {
             return;
         }
         destroyed = true;
-        GMTK25.renderStack.add(() -> {
+        player.dummies.remove(this);
+        renderStack.add(() -> {
             level.getDummyPlayerRenderer().removeRenderableDummy(this);
             getBody().getWorld().destroyBody(getBody());
         });

@@ -19,7 +19,7 @@ import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.GMTK25;
 import ing.boykiss.gmtk25.actor.interactable.Door;
 import ing.boykiss.gmtk25.actor.interactable.InteractableButton;
-import ing.boykiss.gmtk25.actor.player.DummyPlayerRenderer;
+import ing.boykiss.gmtk25.actor.player.PlayerDummyRenderer;
 import ing.boykiss.gmtk25.level.listener.CollisionListener;
 import lombok.Getter;
 
@@ -41,7 +41,7 @@ public class Level extends Actor {
     protected final Body body;
 
     @Getter
-    private final DummyPlayerRenderer dummyPlayerRenderer;
+    private final PlayerDummyRenderer dummyPlayerRenderer;
 
     @Getter
     protected final List<Fixture> hazardSensors = new ArrayList<>();
@@ -117,7 +117,7 @@ public class Level extends Actor {
 
         stage.addActor(this);
 
-        dummyPlayerRenderer = new DummyPlayerRenderer();
+        dummyPlayerRenderer = new PlayerDummyRenderer();
         stage.addActor(dummyPlayerRenderer);
 
         Door door = new Door(world, new Vector2(12, 5));

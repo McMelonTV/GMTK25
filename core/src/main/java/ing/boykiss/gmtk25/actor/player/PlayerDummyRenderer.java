@@ -6,24 +6,24 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DummyPlayerRenderer extends Actor {
-    private final List<DummyPlayer> renderableDummies = new ArrayList<>();
+public class PlayerDummyRenderer extends Actor {
+    private final List<PlayerDummy> renderableDummies = new ArrayList<>();
 
     @Override
     public void draw(Batch batch, float parentOpacity) {
         batch.end();
         batch.flush();
         batch.begin();
-        for (DummyPlayer dummy : renderableDummies) {
+        for (PlayerDummy dummy : renderableDummies) {
             dummy.draw(batch);
         }
     }
 
-    public void addRenderableDummy(DummyPlayer dummy) {
+    public void addRenderableDummy(PlayerDummy dummy) {
         renderableDummies.add(dummy);
     }
 
-    public void removeRenderableDummy(DummyPlayer dummy) {
+    public void removeRenderableDummy(PlayerDummy dummy) {
         renderableDummies.remove(dummy);
     }
 }

@@ -5,8 +5,8 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Fixture;
 import com.badlogic.gdx.physics.box2d.Manifold;
-import ing.boykiss.gmtk25.actor.player.DummyPlayer;
 import ing.boykiss.gmtk25.actor.player.Player;
+import ing.boykiss.gmtk25.actor.player.PlayerDummy;
 import ing.boykiss.gmtk25.event.EventBus;
 import ing.boykiss.gmtk25.event.player.PlayerHitHazardEvent;
 import ing.boykiss.gmtk25.event.player.PlayerJumpOnDummyEvent;
@@ -52,7 +52,7 @@ public class PlayerCollisionListener implements ContactListener {
                 player.collisionCount++;
                 if (fixtureA.contains("dummy_player") || fixtureB.contains("dummy_player")) {
                     Fixture dummyFixture = fixtureA.contains("dummy_player") ? contact.getFixtureA() : contact.getFixtureB();
-                    if (dummyFixture.getBody().getUserData() instanceof DummyPlayer dummyPlayer) {
+                    if (dummyFixture.getBody().getUserData() instanceof PlayerDummy dummyPlayer) {
                         player.getOnJump().addListener(event -> EventBus.call(PlayerJumpOnDummyEvent.class, new PlayerJumpOnDummyEvent(player, dummyPlayer)));
                     }
                 }

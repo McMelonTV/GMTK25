@@ -14,14 +14,11 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import ing.boykiss.gmtk25.actor.level.LevelBackground;
-import ing.boykiss.gmtk25.actor.player.DummyPlayer;
 import ing.boykiss.gmtk25.actor.player.Player;
 import ing.boykiss.gmtk25.actor.ui.PauseScreen;
 import ing.boykiss.gmtk25.audio.MusicPlayer;
 import ing.boykiss.gmtk25.audio.Song;
-import ing.boykiss.gmtk25.event.EventBus;
 import ing.boykiss.gmtk25.event.input.InputEvent;
-import ing.boykiss.gmtk25.event.player.PlayerJumpOnDummyEvent;
 import ing.boykiss.gmtk25.input.Input;
 import ing.boykiss.gmtk25.level.listener.CollisionListener;
 import ing.boykiss.gmtk25.level.listener.InteractableCollisionListener;
@@ -147,22 +144,7 @@ public class GMTK25 extends ApplicationAdapter {
                 isPaused = !isPaused;
             }
             if (event.released() && event.key().equals(Input.Keys.R)) {
-                renderStack.add(() -> {
-                    ReplayManager.INSTANCE.stopRecording();
-                    DummyPlayer dummyPlayer = player.createDummy();
-                    player.getLevel().getDummyPlayerRenderer().addRenderableDummy(dummyPlayer);
-                    ReplayManager.INSTANCE.replay(dummyPlayer);
-
-                    EventBus.addListener(PlayerJumpOnDummyEvent.class, e -> {
-                        if (e.dummyPlayer() != dummyPlayer) {
-                            return;
-                        }
-                        renderStack.add(() -> {
-                            dummyPlayer.destroy();
-                            player.getLevel().getDummyPlayerRenderer().removeRenderableDummy(dummyPlayer);
-                        });
-                    });
-                });
+                renderStack.add(player::startLoop);
             }
             if (event.released() && event.key().equals(Input.Keys.B)) {
                 player.levelTransition(player.getLevel() == LevelRegistry.level0 ? LevelRegistry.level1 : LevelRegistry.level0);
