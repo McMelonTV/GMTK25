@@ -51,8 +51,8 @@ public class Level extends Actor {
         int height = map.getProperties().get("height", Integer.class);
         this.cameraLeft = Constants.VIEWPORT_WIDTH / 2;
         this.cameraRight = width - Constants.VIEWPORT_WIDTH / 2;
-        this.cameraTop = height - Constants.VIEWPORT_HEIGHT / 2;
-        this.cameraBottom = Constants.VIEWPORT_HEIGHT / 2;
+        this.cameraTop = height - Constants.VIEWPORT_HEIGHT / 2 - 0.75f;
+        this.cameraBottom = Constants.VIEWPORT_HEIGHT / 2 + 0.75f;
 
         for (MapLayer layer : this.map.getLayers()) {
             for (MapObject o : layer.getObjects()) {
