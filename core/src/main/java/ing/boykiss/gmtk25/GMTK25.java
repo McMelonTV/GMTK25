@@ -148,7 +148,7 @@ public class GMTK25 extends ApplicationAdapter {
                     );
                 }
             }
-            if (event.released() && (event.key().equals(Input.Keys.ESCAPE) || event.key().equals(Input.Keys.P))) {
+            if (event.released() && (Input.PAUSE_KEYS.contains(event.key()))) {
                 isPaused = !isPaused;
             }
             if (event.released() && event.key().equals(Input.Keys.R)) {
@@ -208,16 +208,16 @@ public class GMTK25 extends ApplicationAdapter {
             }
         }
 
-        AnimationUtils.playTransitionAnimation(spriteBatch);
-
         Input.update();
+
+        AnimationUtils.playTransitionAnimation(spriteBatch);
     }
 
     public void tick(float deltaTime) {
-        //tick animation
+        if (isPaused) return;
+
         AnimationUtils.tickAnimation(deltaTime);
 
-        if (isPaused) return;
         player.getLevel().getWorld().step(deltaTime, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS);
 
         ReplayManager.INSTANCE.update();
