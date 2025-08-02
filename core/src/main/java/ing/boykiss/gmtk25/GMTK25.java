@@ -29,7 +29,6 @@ import ing.boykiss.gmtk25.registry.SoundRegistry;
 import ing.boykiss.gmtk25.utils.AnimationUtils;
 import lombok.Getter;
 
-import java.time.Duration;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -54,23 +53,24 @@ public class GMTK25 extends ApplicationAdapter {
     private static Viewport viewport;
 
     private final Thread tickThread = new Thread(() -> {
-        float target = 1.0f / Constants.TPS;
-        long prevTime = System.currentTimeMillis();
-        System.out.println(target);
-        while (true) {
-            long currTime = System.currentTimeMillis();
-            float time = (currTime - prevTime) / 1_000f;
-            System.out.println(time);
-            if (time < target) {
+        final float target = 1.0f / Constants.TPS;
+        long prevTime = System.nanoTime();
+        while (!Thread.currentThread().isInterrupted()) {
+            long currTime = System.nanoTime();
+            float delta = (currTime - prevTime) / 1_000_000_000f;
+            if (delta < target) {
+                long sleepMillis = (long) ((target - delta) * 1_000);
+                int sleepNanos = (int) (((target - delta) * 1_000_000_000) % 1_000_000);
                 try {
-                    Thread.sleep((long) (target - time) * 1_000);
-                    continue;
+                    Thread.sleep(sleepMillis, sleepNanos);
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                     break;
                 }
+                continue;
             }
             prevTime = currTime;
-            tick(time);
+            tick(delta);
         }
     });
 
