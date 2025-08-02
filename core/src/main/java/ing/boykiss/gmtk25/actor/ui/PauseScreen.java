@@ -20,7 +20,7 @@ public class PauseScreen extends Actor {
 
             Texture pausedTextTexture = AssetRegistry.PAUSED_TEXT_TEXTURE;
             batch.setColor(1, 1, 1, 1);
-            batch.draw(pausedTextTexture, -pausedTextTexture.getWidth() * 6, -pausedTextTexture.getHeight() * 6, pausedTextTexture.getWidth() * 6, pausedTextTexture.getHeight() * 6);
+            batch.draw(pausedTextTexture, -pausedTextTexture.getWidth() * 3, -pausedTextTexture.getHeight() * 3, pausedTextTexture.getWidth() * 6, pausedTextTexture.getHeight() * 6);
 
             batch.setColor(color);
         }
