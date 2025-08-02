@@ -1,6 +1,6 @@
 package ing.boykiss.gmtk25.actor.level;
 
-public enum EntityType {
+public enum LevelObjectType {
     BUTTON,
     DOOR
 }
