@@ -42,7 +42,7 @@ public class LevelBackground extends Image {
         batch.setShader(shader);
 
         shader.setUniformf("u_time", time);
-        shader.setUniformf("u_viewportRes", viewport.getWorldWidth() * Constants.UNIT_SCALE, viewport.getWorldHeight() * Constants.UNIT_SCALE);
+        shader.setUniformf("u_viewportRes", Constants.VIEWPORT_WIDTH / Constants.UNIT_SCALE, Constants.VIEWPORT_HEIGHT / Constants.UNIT_SCALE);
 
         this.getDrawable().draw(batch, this.getX(), this.getY(), this.getWidth(), this.getHeight());
     }

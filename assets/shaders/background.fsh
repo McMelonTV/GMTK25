@@ -99,7 +99,7 @@ vec3 colB(vec2 uv) {
 }
 
 void main() {
-    vec2 target = u_viewportRes * 10.0;
+    vec2 target = u_viewportRes * 5.0;
     vec2 ratio = target / 2.0 / u_viewportRes;
     vec2 pos = floor(v_texCoords * target / ratio) * ratio;
 
