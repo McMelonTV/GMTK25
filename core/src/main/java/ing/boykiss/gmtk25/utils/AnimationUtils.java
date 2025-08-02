@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import ing.boykiss.gmtk25.input.Input;
 import ing.boykiss.gmtk25.registry.AssetRegistry;
 
 public class AnimationUtils {
@@ -35,6 +36,7 @@ public class AnimationUtils {
 
     public static void startTransitionAnimation(Runnable midTransitionCallback) {
         if (!transitionStarted) {
+            Input.lock();
             callback = midTransitionCallback;
             callbackCalled = false;
             transitionStarted = true;
@@ -70,6 +72,7 @@ public class AnimationUtils {
         if (transitionStateTime > 1) {
             transitionStateTime = 0;
             transitionStarted = false; // Reset the transition state
+            Input.unlock();
         }
     }
 }

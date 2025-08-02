@@ -1,14 +1,17 @@
 package ing.boykiss.gmtk25.input;
 
 import com.badlogic.gdx.Gdx;
+import ing.boykiss.gmtk25.GMTK25;
 import ing.boykiss.gmtk25.event.Event;
 import ing.boykiss.gmtk25.event.EventHandler;
 import ing.boykiss.gmtk25.event.input.InputEvent;
 import lombok.Getter;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class Input {
     public enum Keys {
@@ -205,6 +208,8 @@ public class Input {
         private final int gdxKey;
     }
 
+    public static final List<Keys> PAUSE_KEYS = List.of(Keys.ESCAPE);
+
     private static final Map<Class<? extends Event>, EventHandler<?>> eventHandlers = Map.of(
         InputEvent.class, new EventHandler<InputEvent>()
     );
@@ -217,21 +222,60 @@ public class Input {
         return (EventHandler<T>) eventHandlers.get(event);
     }
 
+    private static boolean lock = false;
+
+    public static void lock() {
+        lock = true;
+    }
+
+    public static void unlock() {
+        lock = false;
+    }
+
     public static void update() {
-        for (Keys key : Keys.values()) {
-            if (Gdx.input.isKeyPressed(key.gdxKey)) {
-                if (!justPressedKeyStack.contains(key)) {
-                    getEventHandler(InputEvent.class).call(new InputEvent(key, false));
-                    justPressedKeyStack.add(key);
-                }
-                keyStack.add(key);
-            } else {
-                if (justPressedKeyStack.contains(key)) {
-                    getEventHandler(InputEvent.class).call(new InputEvent(key, true));
-                    justPressedKeyStack.remove(key);
-                }
-                keyStack.remove(key);
+        //handle escape key separately so that pause works
+        PAUSE_KEYS.forEach(Input::handleKeyUpdate);
+
+        if (GMTK25.isPaused || lock) {
+            if (isNotEmptyExceptPause(justPressedKeyStack)) clearExceptPause(justPressedKeyStack);
+            if (isNotEmptyExceptPause(keyStack)) {
+                filterExceptPause(keyStack).forEach(key -> getEventHandler(InputEvent.class).call(new InputEvent(key, true)));
+                clearExceptPause(keyStack);
             }
+            return;
+        }
+
+        for (Keys key : Keys.values()) {
+            if (PAUSE_KEYS.contains(key)) continue;
+            handleKeyUpdate(key);
+        }
+    }
+
+    private static boolean isNotEmptyExceptPause(Set<Keys> set) {
+        return !filterExceptPause(set).isEmpty();
+    }
+
+    private static void clearExceptPause(Set<Keys> set) {
+        filterExceptPause(set).forEach(set::remove);
+    }
+
+    private static Set<Keys> filterExceptPause(Set<Keys> set) {
+        return set.stream().filter(k -> !PAUSE_KEYS.contains(k)).collect(Collectors.toSet());
+    }
+
+    private static void handleKeyUpdate(Keys key) {
+        if (Gdx.input.isKeyPressed(key.gdxKey)) {
+            if (!justPressedKeyStack.contains(key)) {
+                getEventHandler(InputEvent.class).call(new InputEvent(key, false));
+                justPressedKeyStack.add(key);
+            }
+            keyStack.add(key);
+        } else {
+            if (justPressedKeyStack.contains(key)) {
+                getEventHandler(InputEvent.class).call(new InputEvent(key, true));
+                justPressedKeyStack.remove(key);
+            }
+            keyStack.remove(key);
         }
     }
 
