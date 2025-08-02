@@ -128,6 +128,18 @@ public class GMTK25 extends ApplicationAdapter {
         background = new LevelBackground(backViewport);
         backStage.addActor(background);
 
+        camera.translate(Constants.VIEWPORT_WIDTH / 2.0f, Constants.VIEWPORT_HEIGHT / 2.0f);
+
+        uiViewport = new ScreenViewport();
+        uiStage = new Stage();
+        uiStage.setViewport(uiViewport);
+        uiStage.addActor(new PauseScreen());
+
+        CollisionListener.INSTANCE.getListeners().add(new PlayerCollisionListener(player));
+        CollisionListener.INSTANCE.getListeners().add(new InteractableCollisionListener());
+
+        tickThread.start();
+
         Input.getEventHandler(InputEvent.class).addListener(event -> {
             if (event.released() && event.key().equals(InputKeys.F11)) {
                 synchronized (renderStack) {
@@ -169,18 +181,6 @@ public class GMTK25 extends ApplicationAdapter {
                 player.levelTransition(LevelRegistry.menu);
             }
         });
-
-        camera.translate(Constants.VIEWPORT_WIDTH / 2.0f, Constants.VIEWPORT_HEIGHT / 2.0f);
-
-        uiViewport = new ScreenViewport();
-        uiStage = new Stage();
-        uiStage.setViewport(uiViewport);
-        uiStage.addActor(new PauseScreen());
-
-        CollisionListener.INSTANCE.getListeners().add(new PlayerCollisionListener(player));
-        CollisionListener.INSTANCE.getListeners().add(new InteractableCollisionListener());
-
-        tickThread.start();
     }
 
     @Override
