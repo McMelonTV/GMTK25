@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import ing.boykiss.gmtk25.actor.interactable.Door;
 import ing.boykiss.gmtk25.actor.interactable.InteractableButton;
 import ing.boykiss.gmtk25.actor.level.Level;
 import ing.boykiss.gmtk25.actor.level.LevelBackground;
@@ -156,7 +157,9 @@ public class GMTK25 extends ApplicationAdapter {
 
         stage.addActor(level);
         stage.addActor(dummyPlayerRenderer);
-        stage.addActor(new InteractableButton(WorldManager.world, new Vector2(8, 3)));
+        Door door = new Door(WorldManager.world, new Vector2(12, 5));
+        stage.addActor(door);
+        stage.addActor(new InteractableButton(WorldManager.world, new Vector2(8, 3), door));
         stage.addActor(player);
         uiStage.addActor(new PauseScreen());
 

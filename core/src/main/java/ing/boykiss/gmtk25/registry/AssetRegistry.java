@@ -12,6 +12,9 @@ public class AssetRegistry {
 
     public static final Texture FILL_TEXTURE = new Texture("textures/fill.png");
 
+    public static final Texture BUTTON_TEXTURE = new Texture("textures/button.png");
+    public static final Texture DOOR_TEXTURE = new Texture("textures/door.png");
+
     public static final String BACKGROUND_VERTEX_SHADER_PATH = "shaders/background.vsh";
     public static final String BACKGROUND_FRAGMENT_SHADER_PATH = "shaders/background.fsh";
 
