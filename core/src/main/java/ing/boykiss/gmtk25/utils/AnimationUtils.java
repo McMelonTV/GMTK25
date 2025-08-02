@@ -48,14 +48,14 @@ public class AnimationUtils {
         if (!transitionStarted) {
             return; // No transition to play
         }
-        float posX = -(Gdx.graphics.getWidth() * 2) + 2 * Gdx.graphics.getWidth() * ((float) Math.cos((transitionStateTime * Math.PI) - Math.PI) + 1);
+        float posX = -(Gdx.graphics.getWidth()) + Gdx.graphics.getWidth() * ((float) Math.cos((transitionStateTime * Math.PI) - Math.PI) + 1);
         batch.begin();
         // Draw a black rectangle over the entire screen
         batch.setColor(0, 0, 0, 1f);
         batch.draw(
             AssetRegistry.FILL_TEXTURE,
             posX, 0,
-            Gdx.graphics.getWidth() * 2, Gdx.graphics.getHeight()
+            Gdx.graphics.getWidth(), Gdx.graphics.getHeight()
         );
         batch.end();
         if (transitionStateTime > 0.5f && !callbackCalled) {
