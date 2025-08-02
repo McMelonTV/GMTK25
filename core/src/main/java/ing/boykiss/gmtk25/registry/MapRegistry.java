@@ -8,4 +8,5 @@ public class MapRegistry {
 
     public static final TiledMap DEV_MAP = mapLoader.load(AssetRegistry.DEV_MAP_PATH);
     public static final TiledMap EMPTY_MAP = mapLoader.load(AssetRegistry.EMPTY_MAP_PATH);
+    public static final TiledMap MENU_MAP = mapLoader.load(AssetRegistry.MENU_MAP_PATH);
 }

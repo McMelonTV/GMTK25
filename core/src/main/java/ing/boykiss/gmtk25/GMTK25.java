@@ -100,7 +100,7 @@ public class GMTK25 extends ApplicationAdapter {
         camera = new OrthographicCamera();
         viewport = new FitViewport(Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_HEIGHT, camera);
 
-        player = new Player(LevelRegistry.level0);
+        player = new Player(LevelRegistry.menu);
 
         musicPlayer = new MusicPlayer();
         song = new Song(
@@ -162,6 +162,10 @@ public class GMTK25 extends ApplicationAdapter {
             if (event.released() && event.key().equals(Input.Keys.K)) {
                 if (isPaused) return;
                 player.kill();
+            }
+            if (event.released() && event.key().equals(Input.Keys.M)) {
+                if (isPaused) return;
+                player.levelTransition(LevelRegistry.menu);
             }
         });
 

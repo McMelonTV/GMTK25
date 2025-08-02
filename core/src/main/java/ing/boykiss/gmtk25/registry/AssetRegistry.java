@@ -20,4 +20,5 @@ public class AssetRegistry {
 
     public static final String DEV_MAP_PATH = "tiledmaps/dev_map.tmx";
     public static final String EMPTY_MAP_PATH = "tiledmaps/empty_map.tmx";
+    public static final String MENU_MAP_PATH = "tiledmaps/main_menu_map.tmx";
 }
