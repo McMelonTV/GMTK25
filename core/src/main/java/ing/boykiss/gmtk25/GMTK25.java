@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import ing.boykiss.gmtk25.actor.interactable.Door;
+import games.rednblack.miniaudio.MiniAudio;
 import ing.boykiss.gmtk25.actor.interactable.InteractableButton;
 import ing.boykiss.gmtk25.actor.level.Level;
 import ing.boykiss.gmtk25.actor.level.LevelBackground;
@@ -20,6 +21,8 @@ import ing.boykiss.gmtk25.actor.player.DummyPlayer;
 import ing.boykiss.gmtk25.actor.player.DummyPlayerRenderer;
 import ing.boykiss.gmtk25.actor.player.Player;
 import ing.boykiss.gmtk25.actor.ui.PauseScreen;
+import ing.boykiss.gmtk25.audio.MusicPlayer;
+import ing.boykiss.gmtk25.audio.Songs;
 import ing.boykiss.gmtk25.event.EventBus;
 import ing.boykiss.gmtk25.event.input.InputEvent;
 import ing.boykiss.gmtk25.event.player.PlayerJumpOnDummyEvent;
@@ -30,9 +33,12 @@ import ing.boykiss.gmtk25.level.listener.InteractableCollisionListener;
 import ing.boykiss.gmtk25.level.listener.PlayerCollisionListener;
 import ing.boykiss.gmtk25.level.replay.ReplayManager;
 import ing.boykiss.gmtk25.registry.MapRegistry;
+import ing.boykiss.gmtk25.registry.SoundRegistry;
 import lombok.Getter;
 
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 /**
@@ -65,6 +71,9 @@ public class GMTK25 extends ApplicationAdapter {
     private Viewport uiViewport;
     private Stage uiStage;
     private Level level;
+    private MusicPlayer musicPlayer;
+    private MiniAudio miniAudio;
+    private Songs song;
 
     SpriteBatch spriteBatch;
 
@@ -85,6 +94,22 @@ public class GMTK25 extends ApplicationAdapter {
     @Override
     public void create() {
         instance = this;
+
+        miniAudio = new MiniAudio();
+        musicPlayer = new MusicPlayer(miniAudio);
+        song = new Songs(
+            List.of(
+                SoundRegistry.MAIN_SONG_PART_C,
+                SoundRegistry.MAIN_SONG_PART_A,
+                SoundRegistry.MAIN_SONG_PART_B
+            ),
+            Map.of(
+                SoundRegistry.MAIN_SONG_PART_A, 2,
+                SoundRegistry.MAIN_SONG_PART_B, 2,
+                SoundRegistry.MAIN_SONG_PART_C, 1
+            )
+        );
+        musicPlayer.playSong(song);
 
         spriteBatch = new SpriteBatch();
 
@@ -177,6 +202,9 @@ public class GMTK25 extends ApplicationAdapter {
 
         updateCameraPosition();
 
+        miniAudio.setMasterVolume(0.1f);
+        musicPlayer.update(Gdx.graphics.getDeltaTime());
+
         backViewport.apply();
         backStage.draw();
 
@@ -226,6 +254,8 @@ public class GMTK25 extends ApplicationAdapter {
         backStage.dispose();
         stage.dispose();
         uiStage.dispose();
+
+        miniAudio.dispose();
     }
 
     private void updateCameraPosition() {
