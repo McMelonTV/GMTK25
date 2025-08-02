@@ -147,9 +147,17 @@ public class Player extends Actor {
 
     private void respawn(Level level) {
         if (body != null) this.level.getWorld().destroyBody(body);
+        destroyDummies();
         this.level = level;
         reload();
         teleportToLevelStart();
+    }
+
+    private void destroyDummies() {
+        // we have to create a copy to prevent ConcurrentModificationException since PlayerDummy::destroy removes the dummy from the dummies list
+        List<PlayerDummy> dummiesCopy = new ArrayList<>(dummies);
+        dummiesCopy.forEach(PlayerDummy::destroy);
+        dummiesCopy.clear(); // might help with memory, not sure
     }
 
     public void levelTransition(Level level) {
