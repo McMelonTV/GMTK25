@@ -144,12 +144,15 @@ public class GMTK25 extends ApplicationAdapter {
                 isPaused = !isPaused;
             }
             if (event.released() && event.key().equals(Input.Keys.R)) {
+                if (isPaused) return;
                 renderStack.add(player::startLoop);
             }
             if (event.released() && event.key().equals(Input.Keys.B)) {
+                if (isPaused) return;
                 player.levelTransition(player.getLevel() == LevelRegistry.level0 ? LevelRegistry.level1 : LevelRegistry.level0);
             }
             if (event.released() && event.key().equals(Input.Keys.K)) {
+                if (isPaused) return;
                 player.kill();
             }
         });
