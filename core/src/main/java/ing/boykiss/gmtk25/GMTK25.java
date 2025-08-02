@@ -7,15 +7,13 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import games.rednblack.miniaudio.MiniAudio;
-import ing.boykiss.gmtk25.actor.interactable.Door;
-import ing.boykiss.gmtk25.actor.interactable.InteractableButton;
-import ing.boykiss.gmtk25.actor.level.Level;
 import ing.boykiss.gmtk25.actor.level.LevelBackground;
 import ing.boykiss.gmtk25.actor.player.DummyPlayer;
 import ing.boykiss.gmtk25.actor.player.DummyPlayerRenderer;
@@ -25,15 +23,13 @@ import ing.boykiss.gmtk25.audio.MusicPlayer;
 import ing.boykiss.gmtk25.audio.Songs;
 import ing.boykiss.gmtk25.event.EventBus;
 import ing.boykiss.gmtk25.event.input.InputEvent;
-import ing.boykiss.gmtk25.event.player.PlayerHitHazardEvent;
 import ing.boykiss.gmtk25.event.player.PlayerJumpOnDummyEvent;
 import ing.boykiss.gmtk25.input.Input;
-import ing.boykiss.gmtk25.level.WorldManager;
 import ing.boykiss.gmtk25.level.listener.CollisionListener;
 import ing.boykiss.gmtk25.level.listener.InteractableCollisionListener;
 import ing.boykiss.gmtk25.level.listener.PlayerCollisionListener;
 import ing.boykiss.gmtk25.level.replay.ReplayManager;
-import ing.boykiss.gmtk25.registry.MapRegistry;
+import ing.boykiss.gmtk25.registry.LevelRegistry;
 import ing.boykiss.gmtk25.registry.SoundRegistry;
 import ing.boykiss.gmtk25.utils.AnimationUtils;
 import lombok.Getter;
@@ -49,6 +45,17 @@ import java.util.Queue;
 public class GMTK25 extends ApplicationAdapter {
     @Getter
     private static GMTK25 instance;
+
+    @Getter
+    private static Player player;
+
+    @Getter
+    private static Box2DDebugRenderer debugRenderer;
+
+    @Getter
+    private static OrthographicCamera camera;
+    @Getter
+    private static Viewport viewport;
 
     private final Thread tickThread = new Thread(() -> {
         long prevTime = System.nanoTime();
@@ -66,21 +73,13 @@ public class GMTK25 extends ApplicationAdapter {
     private Viewport backViewport;
     private Stage backStage;
     private Image background;
-
-    private OrthographicCamera camera;
-    private Viewport viewport;
-    private Stage stage;
     private Viewport uiViewport;
     private Stage uiStage;
-    private Level level;
     private MusicPlayer musicPlayer;
     private MiniAudio miniAudio;
     private Songs song;
 
     SpriteBatch spriteBatch;
-
-    @Getter
-    private Player player;
 
     public DummyPlayerRenderer dummyPlayerRenderer;
 
@@ -96,6 +95,12 @@ public class GMTK25 extends ApplicationAdapter {
     @Override
     public void create() {
         instance = this;
+        debugRenderer = new Box2DDebugRenderer();
+
+        camera = new OrthographicCamera();
+        viewport = new FitViewport(Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_HEIGHT, camera);
+
+        player = new Player(LevelRegistry.level0);
 
         miniAudio = new MiniAudio();
         musicPlayer = new MusicPlayer(miniAudio);
@@ -149,7 +154,7 @@ public class GMTK25 extends ApplicationAdapter {
             if (event.released() && event.key().equals(Input.Keys.R)) {
                 renderStack.add(() -> {
                     ReplayManager.INSTANCE.stopRecording();
-                    DummyPlayer dummyPlayer = new DummyPlayer(WorldManager.world, new Vector2(30 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE));
+                    DummyPlayer dummyPlayer = player.createDummy();
                     dummyPlayerRenderer.addRenderableDummy(dummyPlayer);
                     ReplayManager.INSTANCE.replay(dummyPlayer);
 
@@ -164,44 +169,25 @@ public class GMTK25 extends ApplicationAdapter {
                     });
                 });
             }
+            if (event.released() && event.key().equals(Input.Keys.B)) {
+                player.levelTransition(LevelRegistry.level1);
+            }
+            if (event.released() && event.key().equals(Input.Keys.K)) {
+                player.kill();
+            }
         });
-
-        camera = new OrthographicCamera();
-        viewport = new FitViewport(Constants.VIEWPORT_WIDTH, Constants.VIEWPORT_HEIGHT, camera);
-
-        stage = new Stage();
-        stage.setViewport(viewport);
 
         camera.translate(Constants.VIEWPORT_WIDTH / 2.0f, Constants.VIEWPORT_HEIGHT / 2.0f);
 
         uiViewport = new ScreenViewport();
         uiStage = new Stage();
         uiStage.setViewport(uiViewport);
-
-        level = new Level(WorldManager.world, MapRegistry.DEV_MAP, camera);
-        player = new Player(WorldManager.world, new Vector2(30 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE));
-        dummyPlayerRenderer = new DummyPlayerRenderer();
-
-        stage.addActor(level);
-        stage.addActor(dummyPlayerRenderer);
-        Door door = new Door(WorldManager.world, new Vector2(12, 5));
-        stage.addActor(door);
-        stage.addActor(new InteractableButton(WorldManager.world, new Vector2(8, 3), door));
-        stage.addActor(player);
         uiStage.addActor(new PauseScreen());
-
-        WorldManager.world.setContactListener(CollisionListener.INSTANCE); // Set the contact listener for onFloor detection
 
         CollisionListener.INSTANCE.getListeners().add(new PlayerCollisionListener(player));
         CollisionListener.INSTANCE.getListeners().add(new InteractableCollisionListener());
 
-        EventBus.addListener(PlayerHitHazardEvent.class, this::onPlayerDeath);
-
         tickThread.start();
-    }
-
-    private void resetLevel() {
-        player.getBody().setTransform(30 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE, 0);
     }
 
     @Override
@@ -217,9 +203,9 @@ public class GMTK25 extends ApplicationAdapter {
         backStage.draw();
 
         viewport.apply();
-        stage.draw();
+        player.getLevel().getStage().draw();
 
-        WorldManager.debugRenderer.render(WorldManager.world, camera.combined);
+        debugRenderer.render(player.getLevel().getWorld(), camera.combined);
 
         uiViewport.apply();
         uiStage.draw();
@@ -241,12 +227,12 @@ public class GMTK25 extends ApplicationAdapter {
         AnimationUtils.tickAnimation(deltaTime);
 
         if (isPaused) return;
-        WorldManager.world.step(deltaTime, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS);
+        player.getLevel().getWorld().step(deltaTime, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS);
 
         ReplayManager.INSTANCE.update();
 
         backStage.act(deltaTime);
-        stage.act(deltaTime);
+        player.getLevel().getStage().act(deltaTime);
         uiStage.act(deltaTime);
     }
 
@@ -265,7 +251,7 @@ public class GMTK25 extends ApplicationAdapter {
         tickThread.interrupt();
 
         backStage.dispose();
-        stage.dispose();
+        player.getLevel().dispose();
         uiStage.dispose();
 
         miniAudio.dispose();
@@ -293,23 +279,18 @@ public class GMTK25 extends ApplicationAdapter {
         Vector2 finalCameraPosition = new Vector2(camera.position.cpy().x + cameraMoveVector.x, camera.position.cpy().y + cameraMoveVector.y);
 
         // snap camera to camera limits
-        if (finalCameraPosition.x < level.getCameraLeft()) {
-            finalCameraPosition.x = level.getCameraLeft();
-        } else if (finalCameraPosition.x > level.getCameraRight()) {
-            finalCameraPosition.x = level.getCameraRight();
+        if (finalCameraPosition.x < player.getLevel().getCameraLeft()) {
+            finalCameraPosition.x = player.getLevel().getCameraLeft();
+        } else if (finalCameraPosition.x > player.getLevel().getCameraRight()) {
+            finalCameraPosition.x = player.getLevel().getCameraRight();
         }
-        if (finalCameraPosition.y < level.getCameraBottom()) {
-            finalCameraPosition.y = level.getCameraBottom();
-        } else if (finalCameraPosition.y > level.getCameraTop()) {
-            finalCameraPosition.y = level.getCameraTop();
+        if (finalCameraPosition.y < player.getLevel().getCameraBottom()) {
+            finalCameraPosition.y = player.getLevel().getCameraBottom();
+        } else if (finalCameraPosition.y > player.getLevel().getCameraTop()) {
+            finalCameraPosition.y = player.getLevel().getCameraTop();
         }
 
         camera.position.set(finalCameraPosition, 0);
         camera.update();
-    }
-
-    private void onPlayerDeath(PlayerHitHazardEvent event) {
-        System.out.println("Player hit hazard, resetting level...");
-        AnimationUtils.startTransitionAnimation(this::resetLevel);
     }
 }

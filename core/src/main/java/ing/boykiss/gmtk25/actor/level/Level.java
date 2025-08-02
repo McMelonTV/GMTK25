@@ -1,15 +1,26 @@
 package ing.boykiss.gmtk25.actor.level;
 
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
 import com.badlogic.gdx.maps.objects.PolygonMapObject;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import ing.boykiss.gmtk25.Constants;
+import ing.boykiss.gmtk25.GMTK25;
+import ing.boykiss.gmtk25.actor.interactable.Door;
+import ing.boykiss.gmtk25.actor.interactable.InteractableButton;
+import ing.boykiss.gmtk25.actor.player.DummyPlayerRenderer;
+import ing.boykiss.gmtk25.level.listener.CollisionListener;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -17,13 +28,21 @@ import java.util.List;
 
 public class Level extends Actor {
     @Getter
+    protected final World world;
+    @Getter
+    protected final Stage stage;
+    @Getter
+    protected final Vector2 startPos;
+    @Getter
     protected final TiledMap map;
     @Getter
     protected final OrthogonalTiledMapRenderer renderer;
     @Getter
-    protected final OrthographicCamera camera;
-    @Getter
     protected final Body body;
+
+    @Getter
+    private final DummyPlayerRenderer dummyPlayerRenderer;
+
     @Getter
     protected final List<Fixture> hazardSensors = new ArrayList<>();
 
@@ -37,14 +56,17 @@ public class Level extends Actor {
     @Getter
     private final float cameraBottom;
 
-
     private final List<PolygonShape> shapes = new ArrayList<>();
     private final List<PolygonShape> hazardShapes = new ArrayList<>();
 
-    public Level(World world, TiledMap map, OrthographicCamera camera) {
+    public Level(TiledMap map, Vector2 startPos) {
+        this.world = new World(new Vector2(0, -Constants.GRAVITY), true);
+        this.stage = new Stage();
+        stage.setViewport(GMTK25.getViewport());
+
         this.map = map;
-        this.camera = camera;
         this.renderer = new OrthogonalTiledMapRenderer(map, Constants.UNIT_SCALE);
+        this.startPos = startPos;
 
         // Set the camera limits to the map size
         int width = map.getProperties().get("width", Integer.class);
@@ -92,11 +114,29 @@ public class Level extends Actor {
 
             this.hazardSensors.add(fixture);
         }
+
+        stage.addActor(this);
+
+        dummyPlayerRenderer = new DummyPlayerRenderer();
+        stage.addActor(dummyPlayerRenderer);
+
+        Door door = new Door(world, new Vector2(12, 5));
+        stage.addActor(door);
+
+        stage.addActor(new InteractableButton(world, new Vector2(8, 3), door));
+
+        world.setContactListener(CollisionListener.INSTANCE); // Set the contact listener for onFloor detection
     }
 
     @Override
     public void draw(Batch batch, float parentOpacity) {
-        renderer.setView(camera);
+        renderer.setView(GMTK25.getCamera());
         renderer.render();
+    }
+
+    public void dispose() {
+        stage.dispose();
+        world.dispose();
+        renderer.dispose();
     }
 }

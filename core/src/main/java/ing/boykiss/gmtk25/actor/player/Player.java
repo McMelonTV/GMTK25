@@ -6,10 +6,15 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.GMTK25;
+import ing.boykiss.gmtk25.actor.level.Level;
 import ing.boykiss.gmtk25.event.Event;
 import ing.boykiss.gmtk25.event.EventBus;
 import ing.boykiss.gmtk25.event.EventHandler;
@@ -19,14 +24,14 @@ import ing.boykiss.gmtk25.input.Input;
 import ing.boykiss.gmtk25.level.replay.ReplayManager;
 import ing.boykiss.gmtk25.registry.AnimationRegistry;
 import ing.boykiss.gmtk25.registry.AssetRegistry;
+import ing.boykiss.gmtk25.utils.AnimationUtils;
 import lombok.Getter;
 
 public class Player extends Actor {
     @Getter
-    private final Body body;
-
-    @Getter
-    private final Vector2 velocity;
+    private final Vector2 velocity = new Vector2();
+    Animation<TextureRegion> currentAnimation = AnimationRegistry.PLAYER_IDLE;
+    boolean currentAnimationLooping = true;
 
     @Getter
     private boolean isOnFloor;
@@ -39,7 +44,8 @@ public class Player extends Actor {
     private static final float MIN_JUMP_FORCE = 10; // Jump force of the player when jump is released
 
     private static final int COYOTE_TIME_DURATION = 6; // Duration of coyote time in ticks
-    private boolean CoyoteTimeActive = false;
+    @Getter
+    private Level level;
     private int coyoteTimeCounter = 0;
 
     private boolean jumping = false;
@@ -52,14 +58,23 @@ public class Player extends Actor {
     private float stateTime = 0f;
 
     public int collisionCount = 0;
+    @Getter
+    private Body body;
+    private boolean coyoteTimeActive = false;
 
-    public Player(World world, Vector2 spawnPos) {
+    public Player(Level level) {
+        Input.getEventHandler(InputEvent.class).addListener(this::onInputEvent);
+        EventBus.addListener(PlayerHitHazardEvent.class, this::onPlayerHitHazard);
 
+        respawn(level);
+    }
+
+    private void reloadBody() {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.DynamicBody;
-        bodyDef.position.set(spawnPos);
+        bodyDef.position.set(level.getStartPos());
 
-        body = world.createBody(bodyDef);
+        body = level.getWorld().createBody(bodyDef);
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(3.95f * Constants.UNIT_SCALE, 8.0f * Constants.UNIT_SCALE);
@@ -98,15 +113,59 @@ public class Player extends Actor {
         Fixture hurtBox = body.createFixture(hurtBoxFixtureDef);
         hurtBox.setUserData("player_hurtbox"); // Set user data for identification
 
-        velocity = new Vector2();
-
-        Input.getEventHandler(InputEvent.class).addListener(this::onInputEvent);
-        EventBus.addListener(PlayerHitHazardEvent.class, this::onPlayerHitHazard);
-
         shape.dispose();
         sensorShape.dispose();
+    }
 
+    private void reload() {
+        reloadBody();
+        coyoteTimeActive = false;
+        coyoteTimeCounter = 0;
+        jumping = false;
+        jumpBuffer = 0;
+        stateTime = 0f;
+        collisionCount = 0;
+        velocity.set(new Vector2());
+        currentAnimation = AnimationRegistry.PLAYER_IDLE;
+        currentAnimationLooping = true;
         ReplayManager.INSTANCE.startRecording();
+        this.level.getStage().addActor(this);
+    }
+
+    public void teleport(Vector2 pos, float angle) {
+        body.setTransform(pos, angle);
+    }
+
+    private void respawn() {
+        respawn(this.level);
+    }
+
+    private void respawn(Level level) {
+        if (body != null) this.level.getWorld().destroyBody(body);
+        this.level = level;
+        reload();
+        teleportToLevelStart();
+    }
+
+    public void levelTransition(Level level) {
+        AnimationUtils.startTransitionAnimation(() -> respawn(level));
+    }
+
+    public void kill() {
+        AnimationUtils.startTransitionAnimation(this::respawn);
+    }
+
+    public void teleportToLevelStart() {
+        teleport(level.getStartPos(), 0);
+    }
+
+    public void startLoop() {
+        teleportToLevelStart();
+        ReplayManager.INSTANCE.replay(createDummy());
+    }
+
+    public DummyPlayer createDummy() {
+        return new DummyPlayer(level.getWorld(), level.getStartPos());
     }
 
     private final float spriteHeightOffset = (sprite.getHeight() * Constants.UNIT_SCALE) * 0.25f;
@@ -115,9 +174,6 @@ public class Player extends Actor {
     private final float spriteWidthScaled = sprite.getWidth() * Constants.UNIT_SCALE;
 
     private final Vector2 spriteScale = new Vector2(1, 1);
-
-    Animation<TextureRegion> currentAnimation = AnimationRegistry.PLAYER_IDLE;
-    boolean currentAnimationLooping = true;
 
     @Override
     public void draw(Batch batch, float parentOpacity) {
@@ -187,12 +243,12 @@ public class Player extends Actor {
     private void tickCoyoteTime() {
         if (isOnFloor) {
             coyoteTimeCounter = 0;
-            CoyoteTimeActive = true; // Reset coyote time when on the floor
+            coyoteTimeActive = true; // Reset coyote time when on the floor
         } else {
-            if (CoyoteTimeActive) {
+            if (coyoteTimeActive) {
                 coyoteTimeCounter++;
                 if (coyoteTimeCounter >= COYOTE_TIME_DURATION) {
-                    CoyoteTimeActive = false; // Deactivate coyote time after duration
+                    coyoteTimeActive = false; // Deactivate coyote time after duration
                 }
             } else {
                 coyoteTimeCounter = 0; // Reset counter if not active
@@ -210,7 +266,7 @@ public class Player extends Actor {
             jumpBuffer--;
         }
 
-        if (jumpBuffer > 0 && (isOnFloor || CoyoteTimeActive)) { // jump from buffer
+        if (jumpBuffer > 0 && (isOnFloor || coyoteTimeActive)) { // jump from buffer
             velocity.y = JUMP_FORCE;
             jumpBuffer = 0; // Reset jump buffer after applying jump
             stateTime = 0;
@@ -243,8 +299,7 @@ public class Player extends Actor {
     }
 
     private void onPlayerHitHazard(PlayerHitHazardEvent event) {
-        if (event.player() == this) {
-            System.out.println("YOU DIED L BOZO");
-        }
+        if (event.player() != this) return;
+        kill();
     }
 }
