@@ -280,4 +280,8 @@ public class GMTK25 extends ApplicationAdapter {
         camera.position.set(finalCameraPosition, 0);
         camera.update();
     }
+
+    public void transitionToLevel(String levelName) {
+        player.levelTransition(LevelRegistry.LEVELS.get(levelName));
+    }
 }
