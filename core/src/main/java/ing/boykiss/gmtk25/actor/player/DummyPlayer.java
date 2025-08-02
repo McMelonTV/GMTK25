@@ -46,7 +46,7 @@ public class DummyPlayer {
 
     public DummyPlayer(World world, Vector2 spawnPos) {
         BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.KinematicBody;
+        bodyDef.type = BodyDef.BodyType.DynamicBody;
         bodyDef.position.set(spawnPos);
 
         body = world.createBody(bodyDef);
@@ -80,7 +80,7 @@ public class DummyPlayer {
     public void resetStateTime() {
         stateTime = 0;
     }
-    
+
     public void draw(Batch batch) {
         stateTime += Gdx.graphics.getDeltaTime();
         TextureRegion currentFrame = animation.getKeyFrame(stateTime, animationLooping);
