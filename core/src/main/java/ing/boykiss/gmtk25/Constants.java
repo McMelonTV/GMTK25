@@ -13,4 +13,6 @@ public class Constants {
     public static final int POSITION_ITERATIONS = 10;
 
     public static final float GRAVITY = 125;
+
+    public static final float VOLUME = 0.2f;
 }

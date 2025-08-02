@@ -1,6 +1,11 @@
 package ing.boykiss.gmtk25.audio;
 
-import games.rednblack.miniaudio.MiniAudio;
+import com.badlogic.gdx.Files;
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.utils.Timer;
+import ing.boykiss.gmtk25.Constants;
+import ing.boykiss.gmtk25.event.EventBus;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -9,17 +14,12 @@ import java.util.List;
 
 public class MusicPlayer {
     @Getter
-    private Songs currentSong;
+    private Song currentSong;
     private SongPart currentPart;
 
     private final List<SongPart> partBucket = new ArrayList<>();
 
-    private final MiniAudio ma;
     private int repeat = 0;
-
-    public MusicPlayer(MiniAudio ma) {
-        this.ma = ma;
-    }
 
     float time = 0;
 
@@ -40,7 +40,7 @@ public class MusicPlayer {
         time -= deltaTime;
     }
 
-    public void playSong(Songs song) {
+    public void playSong(Song song) {
         currentSong = song;
         repeat = 0;
         time = 0;
@@ -78,6 +78,14 @@ public class MusicPlayer {
 
     private void playPart() {
         time = currentPart.length;
-        ma.playSound(currentPart.sound);
+        Music music = Gdx.audio.newMusic(Gdx.files.internal(currentPart.sound));
+        music.play();
+        music.setVolume(Constants.VOLUME);
+        Timer.schedule(new Timer.Task() {
+            @Override
+            public void run() {
+                music.dispose();
+            }
+        }, currentPart.length + 2);
     }
 }

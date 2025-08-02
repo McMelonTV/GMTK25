@@ -12,7 +12,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import games.rednblack.miniaudio.MiniAudio;
 import ing.boykiss.gmtk25.actor.interactable.Door;
 import ing.boykiss.gmtk25.actor.interactable.InteractableButton;
 import ing.boykiss.gmtk25.actor.level.Level;
@@ -22,7 +21,7 @@ import ing.boykiss.gmtk25.actor.player.DummyPlayerRenderer;
 import ing.boykiss.gmtk25.actor.player.Player;
 import ing.boykiss.gmtk25.actor.ui.PauseScreen;
 import ing.boykiss.gmtk25.audio.MusicPlayer;
-import ing.boykiss.gmtk25.audio.Songs;
+import ing.boykiss.gmtk25.audio.Song;
 import ing.boykiss.gmtk25.event.EventBus;
 import ing.boykiss.gmtk25.event.input.InputEvent;
 import ing.boykiss.gmtk25.event.player.PlayerHitHazardEvent;
@@ -74,8 +73,7 @@ public class GMTK25 extends ApplicationAdapter {
     private Stage uiStage;
     private Level level;
     private MusicPlayer musicPlayer;
-    private MiniAudio miniAudio;
-    private Songs song;
+    private Song song;
 
     SpriteBatch spriteBatch;
 
@@ -97,9 +95,8 @@ public class GMTK25 extends ApplicationAdapter {
     public void create() {
         instance = this;
 
-        miniAudio = new MiniAudio();
-        musicPlayer = new MusicPlayer(miniAudio);
-        song = new Songs(
+        musicPlayer = new MusicPlayer();
+        song = new Song(
             List.of(
                 SoundRegistry.MAIN_SONG_PART_C,
                 SoundRegistry.MAIN_SONG_PART_A,
@@ -107,6 +104,7 @@ public class GMTK25 extends ApplicationAdapter {
             ),
             Map.of(
                 SoundRegistry.MAIN_SONG_PART_A, 2,
+                SoundRegistry.MAIN_SONG_PART_D, 2,
                 SoundRegistry.MAIN_SONG_PART_B, 2,
                 SoundRegistry.MAIN_SONG_PART_C, 1
             )
@@ -210,7 +208,6 @@ public class GMTK25 extends ApplicationAdapter {
 
         updateCameraPosition();
 
-        miniAudio.setMasterVolume(0.1f);
         musicPlayer.update(Gdx.graphics.getDeltaTime());
 
         backViewport.apply();
@@ -267,8 +264,6 @@ public class GMTK25 extends ApplicationAdapter {
         backStage.dispose();
         stage.dispose();
         uiStage.dispose();
-
-        miniAudio.dispose();
     }
 
     private void updateCameraPosition() {

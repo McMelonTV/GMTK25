@@ -10,7 +10,6 @@ dependencies {
   api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
   api "com.badlogicgames.gdx:gdx:$gdxVersion"
   api "com.sudoplay.joise:joise:$joiseVersion"
-  api "games.rednblack.miniaudio:miniaudio:$miniaudioVersion"
   annotationProcessor "org.projectlombok:lombok:$lombokVersion"
   compileOnly "org.projectlombok:lombok:$lombokVersion"
 
