@@ -12,8 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
-import ing.boykiss.gmtk25.actor.interactable.Door;
 import games.rednblack.miniaudio.MiniAudio;
+import ing.boykiss.gmtk25.actor.interactable.Door;
 import ing.boykiss.gmtk25.actor.interactable.InteractableButton;
 import ing.boykiss.gmtk25.actor.level.Level;
 import ing.boykiss.gmtk25.actor.level.LevelBackground;
@@ -25,6 +25,7 @@ import ing.boykiss.gmtk25.audio.MusicPlayer;
 import ing.boykiss.gmtk25.audio.Songs;
 import ing.boykiss.gmtk25.event.EventBus;
 import ing.boykiss.gmtk25.event.input.InputEvent;
+import ing.boykiss.gmtk25.event.player.PlayerHitHazardEvent;
 import ing.boykiss.gmtk25.event.player.PlayerJumpOnDummyEvent;
 import ing.boykiss.gmtk25.input.Input;
 import ing.boykiss.gmtk25.level.WorldManager;
@@ -34,6 +35,7 @@ import ing.boykiss.gmtk25.level.listener.PlayerCollisionListener;
 import ing.boykiss.gmtk25.level.replay.ReplayManager;
 import ing.boykiss.gmtk25.registry.MapRegistry;
 import ing.boykiss.gmtk25.registry.SoundRegistry;
+import ing.boykiss.gmtk25.utils.AnimationUtils;
 import lombok.Getter;
 
 import java.util.LinkedList;
@@ -193,7 +195,13 @@ public class GMTK25 extends ApplicationAdapter {
         CollisionListener.INSTANCE.getListeners().add(new PlayerCollisionListener(player));
         CollisionListener.INSTANCE.getListeners().add(new InteractableCollisionListener());
 
+        EventBus.addListener(PlayerHitHazardEvent.class, this::onPlayerDeath);
+
         tickThread.start();
+    }
+
+    private void resetLevel() {
+        player.getBody().setTransform(30 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE, 0);
     }
 
     @Override
@@ -223,10 +231,15 @@ public class GMTK25 extends ApplicationAdapter {
             }
         }
 
+        AnimationUtils.playTransitionAnimation(spriteBatch);
+
         Input.update();
     }
 
     public void tick(float deltaTime) {
+        //tick animation
+        AnimationUtils.tickAnimation(deltaTime);
+
         if (isPaused) return;
         WorldManager.world.step(deltaTime, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS);
 
@@ -293,6 +306,10 @@ public class GMTK25 extends ApplicationAdapter {
 
         camera.position.set(finalCameraPosition, 0);
         camera.update();
+    }
 
+    private void onPlayerDeath(PlayerHitHazardEvent event) {
+        System.out.println("Player hit hazard, resetting level...");
+        AnimationUtils.startTransitionAnimation(this::resetLevel);
     }
 }
