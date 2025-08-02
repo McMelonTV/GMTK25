@@ -21,6 +21,7 @@ import ing.boykiss.gmtk25.event.EventHandler;
 import ing.boykiss.gmtk25.event.input.InputEvent;
 import ing.boykiss.gmtk25.event.player.PlayerHitHazardEvent;
 import ing.boykiss.gmtk25.input.Input;
+import ing.boykiss.gmtk25.input.InputKeys;
 import ing.boykiss.gmtk25.level.replay.ReplayManager;
 import ing.boykiss.gmtk25.registry.AnimationRegistry;
 import ing.boykiss.gmtk25.registry.AssetRegistry;
@@ -285,18 +286,18 @@ public class Player extends Actor {
             });
         }
 
-        if (Input.keyPressed(Input.Keys.RIGHT) || Input.keyPressed(Input.Keys.D)) {
+        if (Input.keyStack.contains(InputKeys.RIGHT) || Input.keyStack.contains(InputKeys.D)) {
             velocity.x += SPEED * deltaTime;
             spriteScale.x = 1; // Face right
         }
-        if (Input.keyPressed(Input.Keys.LEFT) || Input.keyPressed(Input.Keys.A)) {
+        if (Input.keyStack.contains(InputKeys.LEFT) || Input.keyStack.contains(InputKeys.A)) {
             velocity.x += -SPEED * deltaTime;
             spriteScale.x = -1; // Face left
         }
     }
 
     private void onInputEvent(InputEvent event) {
-        if (event.key().equals(Input.Keys.C) || event.key().equals(Input.Keys.UP) || event.key().equals(Input.Keys.W) || event.key().equals(Input.Keys.SPACE)) {
+        if (event.key().equals(InputKeys.C) || event.key().equals(InputKeys.UP) || event.key().equals(InputKeys.W) || event.key().equals(InputKeys.SPACE)) {
             if (event.released()) {
                 jumpBuffer = 0;
                 if (velocity.y > MIN_JUMP_FORCE) {
