@@ -168,7 +168,7 @@ public class GMTK25 extends ApplicationAdapter {
                 });
             }
             if (event.released() && event.key().equals(Input.Keys.B)) {
-                player.levelTransition(LevelRegistry.level1);
+                player.levelTransition(player.getLevel() == LevelRegistry.level0 ? LevelRegistry.level1 : LevelRegistry.level0);
             }
             if (event.released() && event.key().equals(Input.Keys.K)) {
                 player.kill();
