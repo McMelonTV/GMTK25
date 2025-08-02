@@ -20,6 +20,7 @@ import ing.boykiss.gmtk25.audio.MusicPlayer;
 import ing.boykiss.gmtk25.audio.Song;
 import ing.boykiss.gmtk25.event.input.InputEvent;
 import ing.boykiss.gmtk25.input.Input;
+import ing.boykiss.gmtk25.input.InputKeys;
 import ing.boykiss.gmtk25.level.listener.CollisionListener;
 import ing.boykiss.gmtk25.level.listener.InteractableCollisionListener;
 import ing.boykiss.gmtk25.level.listener.PlayerCollisionListener;
@@ -128,7 +129,7 @@ public class GMTK25 extends ApplicationAdapter {
         backStage.addActor(background);
 
         Input.getEventHandler(InputEvent.class).addListener(event -> {
-            if (event.released() && event.key().equals(Keys.F11)) {
+            if (event.released() && event.key().equals(InputKeys.F11)) {
                 synchronized (renderStack) {
                     renderStack.add(fullscreen ?
                         () -> {
@@ -151,19 +152,19 @@ public class GMTK25 extends ApplicationAdapter {
             if (event.released() && (Input.PAUSE_KEYS.contains(event.key()))) {
                 isPaused = !isPaused;
             }
-            if (event.released() && event.key().equals(Keys.R)) {
+            if (event.released() && event.key().equals(InputKeys.R)) {
                 if (isPaused) return;
                 renderStack.add(player::startLoop);
             }
-            if (event.released() && event.key().equals(Keys.B)) {
+            if (event.released() && event.key().equals(InputKeys.B)) {
                 if (isPaused) return;
                 player.levelTransition(player.getLevel() == LevelRegistry.level0 ? LevelRegistry.level1 : LevelRegistry.level0);
             }
-            if (event.released() && event.key().equals(Keys.K)) {
+            if (event.released() && event.key().equals(InputKeys.K)) {
                 if (isPaused) return;
                 player.kill();
             }
-            if (event.released() && event.key().equals(Keys.M)) {
+            if (event.released() && event.key().equals(InputKeys.M)) {
                 if (isPaused) return;
                 player.levelTransition(LevelRegistry.menu);
             }
