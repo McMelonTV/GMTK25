@@ -48,7 +48,9 @@ public class AnimationUtils {
         }
     }
 
-    public static void playTransitionAnimation(SpriteBatch batch) {
+    public static void playTransitionAnimation() {
+        SpriteBatch batch = new SpriteBatch();
+
         if (!transitionStarted) {
             return; // No transition to play
         }
@@ -67,8 +69,9 @@ public class AnimationUtils {
         posX -= (layout.width / 2f);
         posX += Gdx.graphics.getWidth() / 2f; // Center the text horizontally
         AssetRegistry.FONT_LARGE.draw(batch, transitionTextt, posX, Gdx.graphics.getHeight() / 4f);
-
+        batch.flush();
         batch.end();
+
         if (transitionStateTime > 0.5f && !callbackCalled) {
             if (callback != null) {
                 callback.run();

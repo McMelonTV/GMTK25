@@ -33,5 +33,7 @@ public class LevelBackground extends Image {
         ShaderRegistry.BACKGROUND.setUniformf("u_viewportRes", Constants.VIEWPORT_WIDTH / Constants.UNIT_SCALE, Constants.VIEWPORT_HEIGHT / Constants.UNIT_SCALE);
 
         this.getDrawable().draw(batch, this.getX(), this.getY(), this.getWidth(), this.getHeight());
+
+        batch.setShader(null);
     }
 }

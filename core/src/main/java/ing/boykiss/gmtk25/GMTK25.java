@@ -156,23 +156,20 @@ public class GMTK25 extends ApplicationAdapter {
     public void render() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
-        try {
-            player.updateCameraPosition();
 
-            musicPlayer.update(Gdx.graphics.getDeltaTime());
+        player.updateCameraPosition();
 
-            screenViewport.apply();
-            backStage.draw();
+        musicPlayer.update(Gdx.graphics.getDeltaTime());
 
-            levelViewport.apply();
-            player.getLevel().getStage().draw();
+        screenViewport.apply();
+        backStage.draw();
+
+        levelViewport.apply();
+        player.getLevel().getStage().draw();
 //        debugRenderer.render(player.getLevel().getWorld(), camera.combined);
 
-            screenViewport.apply();
-            uiStage.draw();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+        screenViewport.apply();
+        uiStage.draw();
 
         synchronized (renderStack) {
             while (!renderStack.isEmpty()) {
@@ -183,7 +180,7 @@ public class GMTK25 extends ApplicationAdapter {
 
         Input.keyStack.update();
 
-        AnimationUtils.playTransitionAnimation(spriteBatch);
+        AnimationUtils.playTransitionAnimation();
     }
 
     @Override
