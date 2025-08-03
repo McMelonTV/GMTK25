@@ -7,6 +7,7 @@ import ing.boykiss.gmtk25.actor.level.Level;
 import ing.boykiss.gmtk25.actor.level.object.*;
 import lombok.Getter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class LevelRegistry {
@@ -16,6 +17,8 @@ public class LevelRegistry {
     public static final Level tutorial3;
     public static final Level level1;
     public static final Level level2;
+    public static final Level level3;
+    public static final Level level4;
 
     static {
         Switch musicSwitch = new Switch(new Vector2(32, 8), "Music", new InteractionTarget(null, (s) -> GMTK25.getMusicPlayer().toggleMusic()), GMTK25.getMusicPlayer()::isEnabled);
@@ -87,7 +90,7 @@ public class LevelRegistry {
     }
 
     static {
-        WinFlag winFlag = new WinFlag(new Vector2(35, 12), null, new InteractionTarget(null, (b) -> GMTK25.getPlayer().levelTransition(LevelAccessor.MENU.getLevel(), "Bounce on dat clone!")));
+        WinFlag winFlag = new WinFlag(new Vector2(35, 12), null, new InteractionTarget(null, (b) -> GMTK25.getPlayer().levelTransition(LevelAccessor.LEVEL3.getLevel(), "Wow so far!")));
 
         Replicator replicator = new Replicator(new Vector2(13.5f, 3), null, new InteractionTarget(null, (r) -> {
             GMTK25.renderStack.add(GMTK25.getPlayer()::startLoop);
@@ -100,13 +103,67 @@ public class LevelRegistry {
         );
     }
 
+    static {
+        WinFlag winFlag = new WinFlag(new Vector2(48, 15), null, new InteractionTarget(null, (b) -> GMTK25.getPlayer().levelTransition(LevelAccessor.LEVEL4.getLevel(), "Sideways doors!?")));
+
+        Replicator replicator = new Replicator(new Vector2(44.5f, 3), null, new InteractionTarget(null, (r) -> {
+            GMTK25.renderStack.add(GMTK25.getPlayer()::startLoop);
+        }));
+
+        Set<LevelObject> objects = new HashSet<>();
+        objects.add(winFlag);
+        objects.add(replicator);
+
+        for (int i = 0; i < 9; i++) {
+            TrapDoor door = new TrapDoor(new Vector2(14f + i * 3f, 15f), null, true);
+            Button doorButton = new Button(new Vector2(14 + i * 3f, 3), null, new InteractionTarget(door, null));
+
+            objects.add(door);
+            objects.add(doorButton);
+        }
+
+        level3 = new Level(
+            MapRegistry.LEVEL_3_MAP,
+            new Vector2(32 * Constants.UNIT_SCALE, 100 * Constants.UNIT_SCALE),
+            objects
+        );
+    }
+
+    static {
+        WinFlag winFlag = new WinFlag(new Vector2(35, 11), null, new InteractionTarget(null, (b) -> GMTK25.getPlayer().levelTransition(LevelAccessor.MENU.getLevel(), "Lasers are hot!")));
+
+        Replicator replicator = new Replicator(new Vector2(32.5f, 3), null, new InteractionTarget(null, (r) -> {
+            GMTK25.renderStack.add(GMTK25.getPlayer()::startLoop);
+        }));
+
+        Door door = new Door(new Vector2(10.5f, 13), null);
+        Button doorButton = new Button(new Vector2(10.5f, 3), null, new InteractionTarget(door, null));
+
+        Door door2 = new Door(new Vector2(16.5f, 13), null);
+        Button doorButton2 = new Button(new Vector2(16.5f, 3), null, new InteractionTarget(door2, null));
+
+        Door door3 = new Door(new Vector2(22.5f, 13), null);
+        Button doorButton3 = new Button(new Vector2(22.5f, 3), null, new InteractionTarget(door3, null));
+        Door door4 = new Door(new Vector2(28.5f, 13), null);
+        Button doorButton4 = new Button(new Vector2(28.5f, 3), null, new InteractionTarget(door4, null));
+
+        level4 = new Level(
+            MapRegistry.LEVEL_4_MAP,
+            new Vector2(32 * Constants.UNIT_SCALE, 100 * Constants.UNIT_SCALE),
+            Set.of(winFlag, replicator, door, doorButton, door2, doorButton2, door3, doorButton3, door4, doorButton4)
+        );
+    }
+
     private enum LevelAccessor {
         MENU(menu),
         TUTORIAL1(tutorial1),
         TUTORIAL2(tutorial2),
         TUTORIAL3(tutorial3),
         LEVEL1(level1),
-        LEVEL2(level2);
+        LEVEL2(level2),
+        LEVEL3(level3),
+        LEVEL4(level4),
+        ;
 
         @Getter
         private final Level level;

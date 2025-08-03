@@ -14,4 +14,6 @@ public class MapRegistry {
 
     public static final TiledMap LEVEL_1_MAP = mapLoader.load(AssetRegistry.LEVEL_1_MAP_PATH);
     public static final TiledMap LEVEL_2_MAP = mapLoader.load("tiledmaps/maps/level_2.tmx");
+    public static final TiledMap LEVEL_3_MAP = mapLoader.load("tiledmaps/maps/level_3.tmx");
+    public static final TiledMap LEVEL_4_MAP = mapLoader.load("tiledmaps/maps/level_4.tmx");
 }
