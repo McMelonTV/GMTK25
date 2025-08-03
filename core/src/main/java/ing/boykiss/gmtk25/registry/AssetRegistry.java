@@ -22,15 +22,16 @@ public class AssetRegistry {
     public static final Texture DOOR_TEXTURE = new Texture("textures/door.png");
     public static final Texture SWITCH_TEXTURE = new Texture("textures/lever.png");
 
+    public static final String TUTORIAL_MAP_PATH = "tiledmaps/tutorial_map.tmx";
+    public static final String TUTORIAL2_MAP_PATH = "tiledmaps/tutorial2_map.tmx";
+    public static final String TUTORIAL3_MAP_PATH = "tiledmaps/tutorial3_map.tmx";
     public static final String DEV_MAP_PATH = "tiledmaps/dev_map.tmx";
     public static final String EMPTY_MAP_PATH = "tiledmaps/empty_map.tmx";
     public static final String MENU_MAP_PATH = "tiledmaps/main_menu_map.tmx";
-<<<<<<< Updated upstream
     //24x34
     public static final Texture KEYBOARD_TEXTURE = new Texture("textures/tilesets/tilemap_white_packed.png");
-=======
+
     public static final String LEVEL_1_MAP_PATH = "tiledmaps/maps/level_1.tmx";
->>>>>>> Stashed changes
 
     public static final String FONT_PATH = "fonts/SegoeUI.ttf";
     public static final BitmapFont FONT;

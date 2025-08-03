@@ -13,10 +13,13 @@ public class LevelRegistry {
     public static final Level menu;
     public static final Level level0;
     public static final Level level1;
+    public static final Level tutorial1;
+    public static final Level tutorial2;
+    public static final Level tutorial3;
 
     static {
         Switch musicSwitch = new Switch(new Vector2(31, 8), "Music", new InteractionTarget(null, (s) -> GMTK25.getMusicPlayer().toggleMusic()), GMTK25.getMusicPlayer()::isEnabled);
-        Switch level0Switch = new Switch(new Vector2(8, 3), "Level 0", new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.LEVEL0.getLevel())));
+        Switch level0Switch = new Switch(new Vector2(8, 3), "Tutorial", new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.TUTORIAL.getLevel())));
         Switch level1Switch = new Switch(new Vector2(14, 3), "Level 1", new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.LEVEL1.getLevel())));
 
         menu = new Level(
@@ -56,8 +59,57 @@ public class LevelRegistry {
         );
     }
 
+    static {
+        WinFlag winFlag = new WinFlag(new Vector2(53, 3), null, new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.TUTORIAL2.getLevel(), "Nice!")));
+
+
+        tutorial1 = new Level(
+            MapRegistry.TUTORIAL_MAP,
+            new Vector2(32 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE),
+            Set.of(winFlag)
+        );
+    }
+
+    static {
+        Door door = new Door(new Vector2(27.5f, 5), null);
+        Switch doorSwitch = new Switch(new Vector2(22, 3), null, new InteractionTarget(door, null));
+
+        //50 17
+
+        WinFlag winFlag = new WinFlag(new Vector2(50, 17), null, new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.TUTORIAL3.getLevel(), "You win!")));
+
+        tutorial2 = new Level(
+            MapRegistry.TUTORIAL2_MAP,
+            new Vector2(32 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE),
+            Set.of(door, doorSwitch, winFlag)
+        );
+    }
+
+    static {
+        Door door = new Door(new Vector2(27.5f, 5), null);
+        Button doorButton = new Button(new Vector2(22, 3), null, new InteractionTarget(door, null));
+
+
+        Replicator replicator = new Replicator(new Vector2(18, 3), null, new InteractionTarget(null, (r) -> {
+            GMTK25.renderStack.add(GMTK25.getPlayer()::startLoop);
+        }), false);
+
+        //50 17
+
+        WinFlag winFlag = new WinFlag(new Vector2(50, 17), null, new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.MENU.getLevel(), "You win!")));
+
+        tutorial3 = new Level(
+            MapRegistry.TUTORIAL3_MAP,
+            new Vector2(32 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE),
+            Set.of(door, doorButton, winFlag, replicator)
+        );
+    }
+
     private enum LevelAccessor {
         MENU(menu),
+        TUTORIAL(tutorial1),
+        TUTORIAL2(tutorial2),
+        TUTORIAL3(tutorial3),
         LEVEL0(level0),
         LEVEL1(level1);
 
