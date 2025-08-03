@@ -34,6 +34,13 @@ import java.util.Queue;
  */
 public class GMTK25 extends ApplicationAdapter {
     @Getter
+    private static boolean isFullscreen = false;
+    @Getter
+    private static int windowedWidth = 1280;
+    @Getter
+    private static int windowedHeight = 720;
+
+    @Getter
     private static GMTK25 instance;
     @Getter
     private static Box2DDebugRenderer debugRenderer;
@@ -46,17 +53,15 @@ public class GMTK25 extends ApplicationAdapter {
     private static Viewport levelViewport;
     @Getter
     private static Player player;
-    private static boolean fullscreen = false;
-    private static int windowedWidth = 1280;
-    private static int windowedHeight = 720;
 
-    private MusicPlayer musicPlayer;
     @Getter
-    private SpriteBatch spriteBatch;
+    private static MusicPlayer musicPlayer;
     @Getter
-    private Viewport screenViewport;
+    private static SpriteBatch spriteBatch;
     @Getter
-    private BackStage backStage;
+    private static Viewport screenViewport;
+    @Getter
+    private static BackStage backStage;
 
     public static final Queue<Runnable> renderStack = new LinkedList<>();
     @Getter
@@ -84,11 +89,11 @@ public class GMTK25 extends ApplicationAdapter {
 
     public static void toggleFullscreen() {
         synchronized (renderStack) {
-            renderStack.add(fullscreen ?
+            renderStack.add(isFullscreen ?
                 () -> {
                     Gdx.graphics.setUndecorated(false);
                     Gdx.graphics.setWindowedMode(windowedWidth, windowedHeight);
-                    fullscreen = false;
+                    isFullscreen = false;
                 } :
                 () -> {
                     windowedWidth = Gdx.graphics.getWidth();
@@ -97,7 +102,7 @@ public class GMTK25 extends ApplicationAdapter {
                     Gdx.graphics.setUndecorated(true);
                     Graphics.DisplayMode displayMode = Gdx.graphics.getDisplayMode();
                     Gdx.graphics.setWindowedMode(displayMode.width, displayMode.height);
-                    fullscreen = true;
+                    isFullscreen = true;
                 }
             );
         }
@@ -105,20 +110,6 @@ public class GMTK25 extends ApplicationAdapter {
 
     public static void togglePaused() {
         isPaused = !isPaused;
-    }
-
-    public void tick(float deltaTime) {
-        if (isPaused) return;
-
-        AnimationUtils.tickAnimation(deltaTime);
-
-        player.getLevel().getWorld().step(deltaTime, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS);
-
-        ReplayManager.INSTANCE.update();
-
-        backStage.act(deltaTime);
-        player.getLevel().getStage().act(deltaTime);
-        uiStage.act(deltaTime);
     }
 
     @Override
@@ -147,6 +138,20 @@ public class GMTK25 extends ApplicationAdapter {
         Input.getEventHandler(InputEvent.class).addListener(new InputEventListener());
 
         tickThread.start();
+    }
+
+    public void tick(float deltaTime) {
+        if (isPaused) return;
+
+        AnimationUtils.tickAnimation(deltaTime);
+
+        player.getLevel().getWorld().step(deltaTime, Constants.VELOCITY_ITERATIONS, Constants.POSITION_ITERATIONS);
+
+        ReplayManager.INSTANCE.update();
+
+        backStage.act(deltaTime);
+        player.getLevel().getStage().act(deltaTime);
+        uiStage.act(deltaTime);
     }
 
     @Override

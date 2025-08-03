@@ -12,6 +12,13 @@ import java.util.List;
 
 public class MusicPlayer {
     @Getter
+    private boolean isEnabled = true;
+
+    public void toggleMusic() {
+        isEnabled = !isEnabled;
+    }
+
+    @Getter
     private Song currentSong;
     private SongPart currentPart;
 

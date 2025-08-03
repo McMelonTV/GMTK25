@@ -7,7 +7,11 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.GMTK25;
@@ -25,6 +29,7 @@ import ing.boykiss.gmtk25.registry.AnimationRegistry;
 import ing.boykiss.gmtk25.registry.AssetRegistry;
 import ing.boykiss.gmtk25.utils.AnimationUtils;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,11 +73,8 @@ public class Player extends Actor {
     public final List<PlayerDummy> dummies = new ArrayList<>();
 
     @Getter
+    @Setter
     private InteractableSwitch interactableSwitch; // has switch inside to interact with
-
-    public void setInteractableSwitch(InteractableSwitch interactableSwitch) {
-        this.interactableSwitch = interactableSwitch;
-    }
 
     public Player(Level level) {
         respawn(level);
@@ -149,13 +151,19 @@ public class Player extends Actor {
     }
 
     private void respawn() {
-        respawn(this.level);
+        respawnInternal(null);
     }
 
-    private void respawn(Level level) {
+    private void respawn(Level newLevel) {
+        Level oldLevel = this.level;
+        respawnInternal(newLevel);
+        if (oldLevel != null) oldLevel.reloadInteractables();
+    }
+
+    private void respawnInternal(Level newLevel) {
         if (body != null) this.level.getWorld().destroyBody(body);
         destroyDummies();
-        this.level = level;
+        if (newLevel != null) this.level = newLevel;
         reload();
         teleportToLevelStart();
     }
