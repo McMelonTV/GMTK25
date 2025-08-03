@@ -15,7 +15,7 @@ import lombok.Setter;
 import java.util.function.Supplier;
 
 public class Replicator extends Interactable {
-    private final static Animation<TextureRegion> TEXTURES = AnimationUtils.createAnimationSheet(AssetRegistry.SWITCH_TEXTURE, 2, 1, new int[]{0, 1}, 0.2f);
+    private final static Animation<TextureRegion> TEXTURES = AnimationUtils.createAnimationSheet(AssetRegistry.REPLICATOR_TEXTURE, 2, 1, new int[]{0, 1}, 0.2f);
 
     @Getter
     @Setter

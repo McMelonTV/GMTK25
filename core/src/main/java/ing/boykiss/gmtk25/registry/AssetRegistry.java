@@ -22,6 +22,9 @@ public class AssetRegistry {
     public static final Texture DOOR_TEXTURE = new Texture("textures/door.png");
     public static final Texture SWITCH_TEXTURE = new Texture("textures/lever.png");
 
+    public static final Texture WIN_FLAG_TEXTURE = new Texture("textures/winflag.png");
+    public static final Texture REPLICATOR_TEXTURE = new Texture("textures/replicator.png");
+
     public static final String TUTORIAL_MAP_PATH = "tiledmaps/tutorial_map.tmx";
     public static final String TUTORIAL2_MAP_PATH = "tiledmaps/tutorial2_map.tmx";
     public static final String TUTORIAL3_MAP_PATH = "tiledmaps/tutorial3_map.tmx";
