@@ -14,7 +14,7 @@ public class InputKeyStack extends HashSet<InputKeys> {
 
     public void update() {
         //handle escape key separately so that pause works
-        Input.PAUSE_KEYS.forEach(this::handleKeyUpdate);
+        Input.HANDLE_WHILE_PAUSED_KEYS.forEach(this::handleKeyUpdate);
 
         if (GMTK25.isPaused || Input.isLocked()) {
             this.releaseAllExceptPause();
@@ -22,7 +22,7 @@ public class InputKeyStack extends HashSet<InputKeys> {
         }
 
         for (InputKeys key : InputKeys.values()) {
-            if (Input.PAUSE_KEYS.contains(key)) continue;
+            if (Input.HANDLE_WHILE_PAUSED_KEYS.contains(key)) continue;
             handleKeyUpdate(key);
         }
     }
@@ -42,7 +42,7 @@ public class InputKeyStack extends HashSet<InputKeys> {
     }
 
     private Set<InputKeys> filterExceptPause() {
-        return Input.keyStack.stream().filter(k -> !Input.PAUSE_KEYS.contains(k)).collect(Collectors.toSet());
+        return Input.keyStack.stream().filter(k -> !Input.HANDLE_WHILE_PAUSED_KEYS.contains(k)).collect(Collectors.toSet());
     }
 
     private boolean isEmptyExceptPause() {

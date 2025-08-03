@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class Input {
-    public static final List<InputKeys> PAUSE_KEYS = List.of(InputKeys.ESCAPE);
+    public static final List<InputKeys> HANDLE_WHILE_PAUSED_KEYS = List.of(InputKeys.ESCAPE, InputKeys.F11);
 
     private static final Map<Class<? extends Event>, EventHandler<?>> eventHandlers = Map.of(
         InputEvent.class, new EventHandler<InputEvent>()

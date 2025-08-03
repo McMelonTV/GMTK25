@@ -1,11 +1,9 @@
 package ing.boykiss.gmtk25.audio;
 
-import com.badlogic.gdx.Files;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.utils.Timer;
 import ing.boykiss.gmtk25.Constants;
-import ing.boykiss.gmtk25.event.EventBus;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -16,6 +14,14 @@ public class MusicPlayer {
     @Getter
     private Song currentSong;
     private SongPart currentPart;
+
+    public MusicPlayer(Song initialSong) {
+        if (initialSong != null) playSong(initialSong);
+    }
+
+    public MusicPlayer() {
+        this(null);
+    }
 
     private final List<SongPart> partBucket = new ArrayList<>();
 

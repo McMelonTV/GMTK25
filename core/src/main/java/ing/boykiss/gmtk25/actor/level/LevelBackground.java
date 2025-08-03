@@ -5,19 +5,16 @@ import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
-import com.badlogic.gdx.utils.viewport.Viewport;
 import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.registry.AssetRegistry;
 
 public class LevelBackground extends Image {
-    private final Viewport viewport;
     private final ShaderProgram shader;
     private float time;
 
-    public LevelBackground(Viewport viewport) {
+    public LevelBackground() {
         super(AssetRegistry.FILL_TEXTURE);
         this.setColor(Color.DARK_GRAY);
-        this.viewport = viewport;
 
         ShaderProgram.pedantic = false; // less strict on uniforms
         shader = new ShaderProgram(

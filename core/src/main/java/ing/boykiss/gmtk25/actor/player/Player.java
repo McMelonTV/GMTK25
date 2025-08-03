@@ -1,6 +1,7 @@
 package ing.boykiss.gmtk25.actor.player;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Camera;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
@@ -34,8 +35,9 @@ import java.util.List;
 public class Player extends Actor {
     @Getter
     private final Vector2 velocity = new Vector2();
-    Animation<TextureRegion> currentAnimation = AnimationRegistry.PLAYER_IDLE;
-    boolean currentAnimationLooping = true;
+
+    private Animation<TextureRegion> currentAnimation = AnimationRegistry.PLAYER_IDLE;
+    private boolean currentAnimationLooping = true;
 
     @Getter
     private boolean isOnFloor;
@@ -312,5 +314,43 @@ public class Player extends Actor {
     private void onPlayerHitHazard(PlayerHitHazardEvent event) {
         if (event.player() != this) return;
         kill();
+    }
+
+    public void updateCameraPosition() {
+        Camera camera = GMTK25.getCamera();
+        Vector2 cameraMoveVector = body.getPosition().cpy().sub(camera.position.x, camera.position.y);
+        // if camera near enough, don't move
+        if (cameraMoveVector.len() < Constants.CAMERA_PLAYER_DISTANCE * Constants.UNIT_SCALE) {
+            cameraMoveVector.setZero();
+        }
+
+        cameraMoveVector = cameraMoveVector.lerp(cameraMoveVector, 0.1f);
+
+        // normalize the vector and scale it by camera speed
+        // also multiply by delta time to make it frame rate independent
+        if (cameraMoveVector.len() > Constants.CAMERA_SPEED * Gdx.graphics.getDeltaTime()) {
+            cameraMoveVector.nor().scl(Constants.CAMERA_SPEED * Gdx.graphics.getDeltaTime());
+        }
+        // if the vector is too small, set it to zero
+        if (cameraMoveVector.len() < 0.1f) {
+            cameraMoveVector.setZero();
+        }
+
+        Vector2 finalCameraPosition = new Vector2(camera.position.cpy().x + cameraMoveVector.x, camera.position.cpy().y + cameraMoveVector.y);
+
+        // snap camera to camera limits
+        if (finalCameraPosition.x < level.getCameraLeft()) {
+            finalCameraPosition.x = level.getCameraLeft();
+        } else if (finalCameraPosition.x > level.getCameraRight()) {
+            finalCameraPosition.x = level.getCameraRight();
+        }
+        if (finalCameraPosition.y < level.getCameraBottom()) {
+            finalCameraPosition.y = level.getCameraBottom();
+        } else if (finalCameraPosition.y > level.getCameraTop()) {
+            finalCameraPosition.y = level.getCameraTop();
+        }
+
+        camera.position.set(finalCameraPosition, 0);
+        camera.update();
     }
 }
