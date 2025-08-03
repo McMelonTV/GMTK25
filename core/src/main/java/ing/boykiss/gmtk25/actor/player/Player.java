@@ -198,7 +198,7 @@ public class Player extends Actor {
         teleportToLevelStart();
         ReplayManager.INSTANCE.replay(this);
         // start new recording
-        //ReplayManager.INSTANCE.startRecording();
+        ReplayManager.INSTANCE.startRecording();
     }
 
     private final float spriteHeightOffset = (sprite.getHeight() * Constants.UNIT_SCALE) * 0.25f;
