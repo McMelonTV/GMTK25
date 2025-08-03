@@ -16,10 +16,6 @@ public class InputEventListener implements EventListener<InputEvent> {
         if (event.released() && event.key().equals(InputKeys.ESCAPE)) {
             GMTK25.togglePaused();
         }
-        if (event.released() && event.key().equals(InputKeys.R)) {
-            if (GMTK25.isPaused()) return;
-            GMTK25.renderStack.add(player::startLoop);
-        }
         if (event.released() && event.key().equals(InputKeys.B)) {
             if (GMTK25.isPaused()) return;
             player.levelTransition(player.getLevel() == LevelRegistry.level0 ? LevelRegistry.level1 : LevelRegistry.level0);
