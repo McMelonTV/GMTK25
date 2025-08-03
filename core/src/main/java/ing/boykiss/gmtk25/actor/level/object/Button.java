@@ -17,6 +17,7 @@ import lombok.Getter;
 
 public class Button extends Interactable {
     private final static Animation<TextureRegion> TEXTURES = AnimationUtils.createAnimationSheet(AssetRegistry.BUTTON_TEXTURE, 2, 1, new int[]{0, 1}, 0.2f);
+
     @Getter
     private int collisions = 0;
 
