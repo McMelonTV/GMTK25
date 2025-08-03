@@ -19,8 +19,8 @@ public class LevelRegistry {
 
     static {
         Switch musicSwitch = new Switch(new Vector2(32, 8), "Music", new InteractionTarget(null, (s) -> GMTK25.getMusicPlayer().toggleMusic()), GMTK25.getMusicPlayer()::isEnabled);
-        Switch level0Switch = new Switch(new Vector2(8, 3), "Tutorial", new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.TUTORIAL1.getLevel())));
-        Switch level1Switch = new Switch(new Vector2(14, 3), "Game", new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.LEVEL1.getLevel())));
+        Switch level0Switch = new Switch(new Vector2(14, 3), "Tutorial", new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.TUTORIAL1.getLevel())));
+        Switch level1Switch = new Switch(new Vector2(22, 3), "Play", new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.LEVEL1.getLevel())));
 
         menu = new Level(
             MapRegistry.MENU_MAP,
