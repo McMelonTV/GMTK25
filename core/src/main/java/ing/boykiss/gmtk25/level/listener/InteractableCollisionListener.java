@@ -5,9 +5,8 @@ import com.badlogic.gdx.physics.box2d.ContactImpulse;
 import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import ing.boykiss.gmtk25.GMTK25;
-import ing.boykiss.gmtk25.actor.interactable.InteractableButton;
-import ing.boykiss.gmtk25.actor.interactable.InteractableSwitch;
-import ing.boykiss.gmtk25.event.Event;
+import ing.boykiss.gmtk25.actor.level.object.Button;
+import ing.boykiss.gmtk25.actor.level.object.Switch;
 
 import java.util.Arrays;
 import java.util.List;
@@ -19,25 +18,21 @@ public class InteractableCollisionListener implements ContactListener {
             List<String> fixtureA = contact.getFixtureA().getUserData() instanceof String ? Arrays.stream(((String) contact.getFixtureA().getUserData()).split(" ")).toList() : List.of();
             List<String> fixtureB = contact.getFixtureB().getUserData() instanceof String ? Arrays.stream(((String) contact.getFixtureB().getUserData()).split(" ")).toList() : List.of();
 
+            Button buttonObject = null;
             if (fixtureA.contains("button")) {
-                ((InteractableButton) contact.getFixtureA().getBody().getUserData()).getOnExit().call(new Event() {
-                });
+                buttonObject = (Button) contact.getFixtureA().getBody().getUserData();
             } else if (fixtureB.contains("button")) {
-                ((InteractableButton) contact.getFixtureB().getBody().getUserData()).getOnExit().call(new Event() {
-                });
+                buttonObject = (Button) contact.getFixtureB().getBody().getUserData();
             }
+            if (buttonObject != null) buttonObject.removeCollision();
 
-            // check for switch
-            if (fixtureA.contains("switch")) {
-                if (fixtureB.contains("player_sensor")) {
-                    GMTK25.getPlayer().setInteractableSwitch(null);
-
-                } else if (fixtureB.contains("switch")) {
-                    if (fixtureA.contains("player_sensor")) {
-                        GMTK25.getPlayer().setInteractableSwitch(null);
-                    }
-                }
+            Switch switchObject = null;
+            if (fixtureA.contains("switch") && fixtureB.contains("player_sensor")) {
+                switchObject = (Switch) contact.getFixtureA().getBody().getUserData();
+            } else if (fixtureB.contains("switch") && fixtureA.contains("player_sensor")) {
+                switchObject = (Switch) contact.getFixtureB().getBody().getUserData();
             }
+            if (switchObject != null) GMTK25.getPlayer().setInteractableSwitch(null);
         }
     }
 
@@ -47,24 +42,21 @@ public class InteractableCollisionListener implements ContactListener {
             List<String> fixtureA = contact.getFixtureA().getUserData() instanceof String ? Arrays.stream(((String) contact.getFixtureA().getUserData()).split(" ")).toList() : List.of();
             List<String> fixtureB = contact.getFixtureB().getUserData() instanceof String ? Arrays.stream(((String) contact.getFixtureB().getUserData()).split(" ")).toList() : List.of();
 
+            Button buttonObject = null;
             if (fixtureA.contains("button")) {
-                ((InteractableButton) contact.getFixtureA().getBody().getUserData()).getOnEnter().call(new Event() {
-                });
+                buttonObject = (Button) contact.getFixtureA().getBody().getUserData();
             } else if (fixtureB.contains("button")) {
-                ((InteractableButton) contact.getFixtureB().getBody().getUserData()).getOnEnter().call(new Event() {
-                });
+                buttonObject = (Button) contact.getFixtureB().getBody().getUserData();
             }
+            if (buttonObject != null) buttonObject.addCollision();
 
-            // check for switch
-            if (fixtureA.contains("switch")) {
-                if (fixtureB.contains("player_sensor")) {
-                    GMTK25.getPlayer().setInteractableSwitch(((InteractableSwitch) contact.getFixtureA().getBody().getUserData()));
-                }
-            } else if (fixtureB.contains("switch")) {
-                if (fixtureA.contains("player_sensor")) {
-                    GMTK25.getPlayer().setInteractableSwitch(((InteractableSwitch) contact.getFixtureB().getBody().getUserData()));
-                }
+            Switch switchObject = null;
+            if (fixtureA.contains("switch") && fixtureB.contains("player_sensor")) {
+                switchObject = (Switch) contact.getFixtureA().getBody().getUserData();
+            } else if (fixtureB.contains("switch") && fixtureA.contains("player_sensor")) {
+                switchObject = (Switch) contact.getFixtureB().getBody().getUserData();
             }
+            if (switchObject != null) GMTK25.getPlayer().setInteractableSwitch(switchObject);
         }
     }
 

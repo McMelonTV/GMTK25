@@ -4,42 +4,51 @@ import com.badlogic.gdx.math.Vector2;
 import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.GMTK25;
 import ing.boykiss.gmtk25.actor.level.Level;
-import ing.boykiss.gmtk25.actor.level.LevelObject;
-import ing.boykiss.gmtk25.actor.level.LevelObjectType;
+import ing.boykiss.gmtk25.actor.level.object.Button;
+import ing.boykiss.gmtk25.actor.level.object.Door;
+import ing.boykiss.gmtk25.actor.level.object.InteractionTarget;
+import ing.boykiss.gmtk25.actor.level.object.Switch;
 import lombok.Getter;
 
-import java.util.Map;
+import java.util.Set;
 
 public class LevelRegistry {
-    public static final Level menu = new Level(
-            MapRegistry.MENU_MAP,
-            new Vector2(32 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE),
-            Map.of(
-                    new LevelObject(LevelObjectType.SWITCH, new Vector2(31, 8), "Music"),
-                    new LevelObject(LevelObjectType.COMMAND, () -> GMTK25.getMusicPlayer().toggleMusic()),
-                    new LevelObject(LevelObjectType.SWITCH, new Vector2(8, 3), "Level 0"),
-                    new LevelObject(LevelObjectType.COMMAND, () -> GMTK25.getPlayer().levelTransition(LevelAccessor.LEVEL0.getLevel())),
-                    new LevelObject(LevelObjectType.SWITCH, new Vector2(14, 3), "Level 1"),
-                    new LevelObject(LevelObjectType.COMMAND, () -> GMTK25.getPlayer().levelTransition(LevelAccessor.LEVEL1.getLevel()))
-            )
-    );
+    public static final Level menu;
+    public static final Level level0;
+    public static final Level level1;
 
-    public static final Level level0 = new Level(
-            MapRegistry.DEV_MAP,
-            new Vector2(32 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE),
-            Map.of(
-                    new LevelObject(LevelObjectType.BUTTON, new Vector2(8, 3)),
-                    new LevelObject(LevelObjectType.DOOR, new Vector2(13, 5))
-            )
-    );
-    public static final Level level1 = new Level(
-            MapRegistry.EMPTY_MAP,
-            new Vector2(32 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE),
-            Map.of(
-                    new LevelObject(LevelObjectType.BUTTON, new Vector2(8, 3)),
-                    new LevelObject(LevelObjectType.COMMAND, () -> GMTK25.getPlayer().levelTransition(LevelAccessor.LEVEL0.getLevel()))
-            )
-    );
+    static {
+        Switch musicSwitch = new Switch(new Vector2(31, 8), "Music", new InteractionTarget(null, (s) -> GMTK25.getMusicPlayer().toggleMusic()));
+        Switch level0Switch = new Switch(new Vector2(8, 3), "Level 0", new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.LEVEL0.getLevel())));
+        Switch level1Switch = new Switch(new Vector2(14, 3), "Level 1", new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.LEVEL1.getLevel())));
+
+        menu = new Level(
+                MapRegistry.MENU_MAP,
+                new Vector2(32 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE),
+                Set.of(musicSwitch, level0Switch, level1Switch)
+        );
+    }
+
+    static {
+        Door door = new Door(new Vector2(13, 5), null);
+        Button doorButton = new Button(new Vector2(8, 3), null, new InteractionTarget(door, null));
+
+        level0 = new Level(
+                MapRegistry.DEV_MAP,
+                new Vector2(32 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE),
+                Set.of(door, doorButton)
+        );
+    }
+
+    static {
+        Button level0Button = new Button(new Vector2(8, 3), null, new InteractionTarget(null, (b) -> GMTK25.getPlayer().levelTransition(LevelAccessor.LEVEL0.getLevel())));
+
+        level1 = new Level(
+                MapRegistry.EMPTY_MAP,
+                new Vector2(32 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE),
+                Set.of(level0Button)
+        );
+    }
 
     private enum LevelAccessor {
         MENU(menu),

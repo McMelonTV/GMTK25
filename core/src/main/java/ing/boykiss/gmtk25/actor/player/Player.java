@@ -15,8 +15,8 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.GMTK25;
-import ing.boykiss.gmtk25.actor.interactable.InteractableSwitch;
 import ing.boykiss.gmtk25.actor.level.Level;
+import ing.boykiss.gmtk25.actor.level.object.Switch;
 import ing.boykiss.gmtk25.event.Event;
 import ing.boykiss.gmtk25.event.EventBus;
 import ing.boykiss.gmtk25.event.EventHandler;
@@ -74,7 +74,7 @@ public class Player extends Actor {
 
     @Getter
     @Setter
-    private InteractableSwitch interactableSwitch; // has switch inside to interact with
+    private Switch interactableSwitch; // has switch inside to interact with
 
     public Player(Level level) {
         respawn(level);
@@ -323,7 +323,7 @@ public class Player extends Actor {
         }
         if (event.key().equals(InputKeys.E) && event.released()) {
             if (interactableSwitch != null) {
-                interactableSwitch.getCallback().run();
+                interactableSwitch.interact();
             } else {
                 System.out.println("No interactable switch set for player.");
             }

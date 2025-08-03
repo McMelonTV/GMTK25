@@ -1,6 +1,5 @@
 package ing.boykiss.gmtk25.actor.level;
 
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
@@ -16,23 +15,16 @@ import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Label;
-import com.badlogic.gdx.utils.Align;
 import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.GMTK25;
-import ing.boykiss.gmtk25.actor.interactable.Door;
-import ing.boykiss.gmtk25.actor.interactable.IInteractionTarget;
-import ing.boykiss.gmtk25.actor.interactable.InteractableButton;
-import ing.boykiss.gmtk25.actor.interactable.InteractableSwitch;
-import ing.boykiss.gmtk25.actor.interactable.InteractionCommand;
+import ing.boykiss.gmtk25.actor.level.object.LevelObject;
 import ing.boykiss.gmtk25.actor.player.PlayerDummyRenderer;
 import ing.boykiss.gmtk25.level.listener.CollisionListener;
-import ing.boykiss.gmtk25.registry.AssetRegistry;
 import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 public class Level extends Actor {
     @Getter
@@ -64,11 +56,11 @@ public class Level extends Actor {
     @Getter
     private final float cameraBottom;
 
-    private final Map<LevelObject, LevelObject> interactables;
+    private final Set<LevelObject> levelObjects;
     private final List<Actor> interactableActors = new ArrayList<>();
 
-    public Level(TiledMap map, Vector2 startPos, Map<LevelObject, LevelObject> interactables) {
-        this.interactables = interactables;
+    public Level(TiledMap map, Vector2 startPos, Set<LevelObject> levelObjects) {
+        this.levelObjects = levelObjects;
 
         this.world = new World(new Vector2(0, -Constants.GRAVITY), true);
         this.stage = new Stage();
@@ -145,52 +137,14 @@ public class Level extends Actor {
     }
 
     public void reloadInteractables() {
-        interactableActors.forEach(Actor::remove);
-        // FIXME: remove bodies
-        interactableActors.clear();
+        levelObjects.forEach(LevelObject::remove);
+        levelObjects.forEach(LevelObject::tryRemoveLabel);
+        levelObjects.forEach(LevelObject::deleteBody);
 
-        for (Map.Entry<LevelObject, LevelObject> entry : interactables.entrySet()) {
-            if (entry.getKey().getType() == LevelObjectType.BUTTON || entry.getKey().getType() == LevelObjectType.SWITCH) {
-                IInteractionTarget target = null;
-                if (entry.getValue().getType() == LevelObjectType.DOOR) {
-                    Door door = new Door(world, entry.getValue().getPosition());
-                    stage.addActor(door);
-                    interactableActors.add(door);
-                    target = door;
-                }
-                if (entry.getValue().getType() == LevelObjectType.COMMAND) {
-                    target = new InteractionCommand(entry.getValue().getCommand(), GMTK25.renderStack);
-                }
-
-                if (entry.getKey().getType() == LevelObjectType.SWITCH) {
-                    InteractableSwitch switchActor = new InteractableSwitch(world, entry.getKey().getPosition(), target);
-                    stage.addActor(switchActor);
-                    interactableActors.add(switchActor);
-                } else if (entry.getKey().getType() == LevelObjectType.BUTTON) {
-                    InteractableButton button = new InteractableButton(world, entry.getKey().getPosition(), target);
-                    stage.addActor(button);
-                    interactableActors.add(button);
-                }
-
-
-                // if has label
-                if (entry.getKey().getLabel() != null && !entry.getKey().getLabel().isEmpty()) {
-                    float positionX = entry.getKey().getPosition().x;
-                    float positionY = entry.getKey().getPosition().y;
-                    // create a new label actor
-                    Label.LabelStyle style = new Label.LabelStyle();
-                    style.font = AssetRegistry.FONT;
-                    style.fontColor = Color.WHITE;
-                    Label label = new Label(entry.getKey().getLabel(), style);
-                    label.setFontScale(0.05f);
-                    label.setPosition(positionX, positionY + 1);
-                    label.setSize(1f, 1f);
-                    label.setAlignment(Align.center);
-                    // label.setSize(10f, 10f);
-                    stage.addActor(label);
-                    interactableActors.add(label);
-                }
-            }
+        for (LevelObject levelObject : levelObjects) {
+            levelObject.initBody(world);
+            stage.addActor(levelObject);
+            if (levelObject.getLabelWidget() != null) stage.addActor(levelObject.getLabelWidget());
         }
     }
 
