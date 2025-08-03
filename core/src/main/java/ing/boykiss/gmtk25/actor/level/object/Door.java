@@ -4,19 +4,29 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.BodyDef;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.FixtureDef;
+import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.World;
 import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.registry.AssetRegistry;
 import ing.boykiss.gmtk25.utils.AnimationUtils;
+import ing.boykiss.gmtk25.utils.Nullean;
 import lombok.Getter;
-import lombok.Setter;
+
+import java.util.function.Supplier;
 
 public class Door extends Targetable {
     private final static Animation<TextureRegion> TEXTURES = AnimationUtils.createAnimationSheet(AssetRegistry.DOOR_TEXTURE, 2, 1, new int[]{0, 1}, 0.2f);
 
     @Getter
-    @Setter
     private boolean isOpen = false;
+
+    private Nullean initialState = new Nullean(true, false);
+    private Supplier<Boolean> stateGetter;
+
     @Getter
     private Fixture doorFixture;
 
@@ -26,12 +36,19 @@ public class Door extends Targetable {
 
     public Door(Vector2 position, String label, boolean isOpen) {
         this(position, label);
+        this.initialState = new Nullean(false, isOpen);
         this.isOpen = isOpen;
+    }
+
+    public Door(Vector2 position, String label, Supplier<Boolean> stateGetter) {
+        this(position, label);
+        this.stateGetter = stateGetter;
+        this.isOpen = stateGetter.get();
     }
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        TextureRegion currentFrame = TEXTURES.getKeyFrame(isOpen ? 1 : 0, true);
+        TextureRegion currentFrame = TEXTURES.getKeyFrame(isOpen ? 1 : 0, false);
         batch.draw(currentFrame,
             getBody().getPosition().x - currentFrame.getRegionWidth() * Constants.UNIT_SCALE / 2,
             getBody().getPosition().y - currentFrame.getRegionHeight() * Constants.UNIT_SCALE / 2,
@@ -41,8 +58,7 @@ public class Door extends Targetable {
 
     @Override
     public void handleInteraction(Interactable interactable) {
-        isOpen = !isOpen;
-        doorFixture.setSensor(isOpen);
+        setIsOpen(!isOpen);
     }
 
     @Override
@@ -71,12 +87,21 @@ public class Door extends Targetable {
         return body;
     }
 
+    public void setIsOpen(boolean state) {
+        isOpen = state;
+        if (doorFixture != null) {
+            doorFixture.setSensor(state);
+        }
+    }
 
     @Override
     public void resetState() {
-        isOpen = false;
-        if (doorFixture != null) {
-            doorFixture.setSensor(false);
+        if (!initialState.isNull()) {
+            setIsOpen(initialState.state());
+        } else if (stateGetter != null) {
+            setIsOpen(stateGetter.get());
+        } else {
+            setIsOpen(false);
         }
     }
 }

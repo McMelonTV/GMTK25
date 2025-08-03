@@ -101,7 +101,7 @@ public class MusicPlayer {
         if (currentPart == null) {
             return;
         }
-        System.out.println(currentPart.sound);
+//        System.out.println(currentPart.sound);
         repeat = currentPart.repeat;
     }
 

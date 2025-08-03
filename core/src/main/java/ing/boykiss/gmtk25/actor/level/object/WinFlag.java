@@ -35,7 +35,7 @@ public class WinFlag extends Interactable {
 
     @Override
     public void draw(Batch batch, float parentOpacity) {
-        TextureRegion currentFrame = TEXTURES.getKeyFrame(collisions > 0 ? 1 : 0, true);
+        TextureRegion currentFrame = TEXTURES.getKeyFrame(collisions > 0 ? 1 : 0, false);
         batch.draw(currentFrame,
             getBody().getPosition().x - currentFrame.getRegionWidth() * Constants.UNIT_SCALE / 2,
             getBody().getPosition().y - 1 * Constants.UNIT_SCALE / 2,

@@ -4,12 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.registry.AssetRegistry;
 import ing.boykiss.gmtk25.utils.AnimationUtils;
@@ -47,7 +42,7 @@ public class Switch extends Interactable {
 
     @Override
     public void draw(Batch batch, float parentOpacity) {
-        TextureRegion currentFrame = TEXTURES.getKeyFrame(isActive ? 1 : 0, true);
+        TextureRegion currentFrame = TEXTURES.getKeyFrame(isActive ? 1 : 0, false);
         batch.draw(currentFrame,
             getBody().getPosition().x - currentFrame.getRegionWidth() * Constants.UNIT_SCALE / 2,
             getBody().getPosition().y - 4 * Constants.UNIT_SCALE,
@@ -58,7 +53,7 @@ public class Switch extends Interactable {
     @Override
     public void interact() {
         super.interact();
-        isActive = !isActive;
+        setActive(!isActive);
     }
 
     @Override
@@ -91,12 +86,12 @@ public class Switch extends Interactable {
 
     @Override
     public void resetState() {
-        if (!this.initialState.isNull()) {
-            this.isActive = initialState.state();
-        } else if (this.stateGetter != null) {
-            this.isActive = stateGetter.get();
+        if (!initialState.isNull()) {
+            setActive(initialState.state());
+        } else if (stateGetter != null) {
+            setActive(stateGetter.get());
         } else {
-            this.isActive = false;
+            setActive(false);
         }
     }
 }
