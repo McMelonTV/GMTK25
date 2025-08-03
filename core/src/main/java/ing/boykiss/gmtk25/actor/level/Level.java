@@ -146,6 +146,7 @@ public class Level extends Actor {
 
     public void reloadInteractables() {
         interactableActors.forEach(Actor::remove);
+        // FIXME: remove bodies
         interactableActors.clear();
 
         for (Map.Entry<LevelObject, LevelObject> entry : interactables.entrySet()) {
