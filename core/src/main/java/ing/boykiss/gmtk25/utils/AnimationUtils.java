@@ -3,6 +3,7 @@ package ing.boykiss.gmtk25.utils;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import ing.boykiss.gmtk25.input.Input;
@@ -34,13 +35,16 @@ public class AnimationUtils {
     static Runnable callback = null;
     static boolean callbackCalled = false;
 
-    public static void startTransitionAnimation(Runnable midTransitionCallback) {
+    static String transitionTextt = "";
+
+    public static void startTransitionAnimation(Runnable midTransitionCallback, String transitionText) {
         if (!transitionStarted) {
             Input.lock();
             callback = midTransitionCallback;
             callbackCalled = false;
             transitionStarted = true;
             transitionStateTime = 0f; // Reset state time for the new transition
+            transitionTextt = transitionText != null ? transitionText : "Transitioning..."; // Default text if none provided
         }
     }
 
@@ -48,7 +52,7 @@ public class AnimationUtils {
         if (!transitionStarted) {
             return; // No transition to play
         }
-        float posX = -(Gdx.graphics.getWidth()) + Gdx.graphics.getWidth() * ((float) Math.cos((transitionStateTime * Math.PI) - Math.PI) + 1);
+        float posX = (Gdx.graphics.getWidth()) - Gdx.graphics.getWidth() * ((float) Math.cos((transitionStateTime * Math.PI) - Math.PI) + 1);
         batch.begin();
         // Draw a black rectangle over the entire screen
         batch.setColor(0, 0, 0, 1f);
@@ -57,6 +61,13 @@ public class AnimationUtils {
             posX, 0,
             Gdx.graphics.getWidth(), Gdx.graphics.getHeight()
         );
+
+        GlyphLayout layout = new GlyphLayout();
+        layout.setText(AssetRegistry.FONT_LARGE, transitionTextt);
+        posX -= (layout.width / 2f);
+        posX += Gdx.graphics.getWidth() / 2f; // Center the text horizontally
+        AssetRegistry.FONT_LARGE.draw(batch, transitionTextt, posX, Gdx.graphics.getHeight() / 4f);
+
         batch.end();
         if (transitionStateTime > 0.5f && !callbackCalled) {
             if (callback != null) {

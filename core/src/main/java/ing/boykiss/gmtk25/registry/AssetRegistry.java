@@ -28,6 +28,7 @@ public class AssetRegistry {
 
     public static final String FONT_PATH = "fonts/SegoeUI.ttf";
     public static final BitmapFont FONT;
+    public static final BitmapFont FONT_LARGE;
 
     static {
         FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(FONT_PATH));
@@ -42,5 +43,20 @@ public class AssetRegistry {
         generator.dispose();
         font.setUseIntegerPositions(false);
         FONT = font;
+    }
+
+    static {
+        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(FONT_PATH));
+        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
+        parameter.size = 80;
+        parameter.borderWidth = 1;
+        parameter.color = Color.WHITE;
+        parameter.shadowOffsetX = 1;
+        parameter.shadowOffsetY = 1;
+        parameter.shadowColor = new Color(0.1f, 0.1f, 0.1f, 0.75f);
+        BitmapFont font = generator.generateFont(parameter); // font size 24 pixels
+        generator.dispose();
+        font.setUseIntegerPositions(false);
+        FONT_LARGE = font;
     }
 }
