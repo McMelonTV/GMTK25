@@ -67,7 +67,6 @@ public class Level extends Actor {
     private final Map<LevelObject, LevelObject> interactables;
     private final List<Actor> interactableActors = new ArrayList<>();
 
-    // interactables must be first button, second door
     public Level(TiledMap map, Vector2 startPos, Map<LevelObject, LevelObject> interactables) {
         this.interactables = interactables;
 
