@@ -64,8 +64,6 @@ public class Level extends Actor {
     @Getter
     private final float cameraBottom;
 
-    private final List<PolygonShape> shapes = new ArrayList<>();
-    private final List<PolygonShape> hazardShapes = new ArrayList<>();
     private final Map<LevelObject, LevelObject> interactables;
     private final List<Actor> interactableActors = new ArrayList<>();
 
@@ -89,6 +87,9 @@ public class Level extends Actor {
         this.cameraTop = height - Constants.VIEWPORT_HEIGHT / 2 - 0.75f;
         this.cameraBottom = Constants.VIEWPORT_HEIGHT / 2 + 0.75f;
 
+        List<PolygonShape> mapShapes = new ArrayList<>();
+        List<PolygonShape> mapHazardShapes = new ArrayList<>();
+
         for (MapLayer layer : this.map.getLayers()) {
             for (MapObject o : layer.getObjects()) {
                 if (o instanceof PolygonMapObject po) {
@@ -99,10 +100,10 @@ public class Level extends Actor {
                     }
                     shape.set(vertices);
                     if (layer.getName().equals("HazardCollision")) {
-                        hazardShapes.add(shape);
+                        mapHazardShapes.add(shape);
                         continue;
                     }
-                    this.shapes.add(shape);
+                    mapShapes.add(shape);
                 }
             }
         }
@@ -110,11 +111,11 @@ public class Level extends Actor {
         BodyDef bodyDef = new BodyDef();
         bodyDef.type = BodyDef.BodyType.StaticBody;
         this.body = world.createBody(bodyDef);
-        for (PolygonShape shape : this.shapes) {
+        for (PolygonShape shape : mapShapes) {
             body.createFixture(shape, 0.0f);
         }
 
-        for (PolygonShape shape : this.hazardShapes) {
+        for (PolygonShape shape : mapHazardShapes) {
             FixtureDef def = new FixtureDef();
             def.shape = shape;
             def.isSensor = true; // Make it a sensor
