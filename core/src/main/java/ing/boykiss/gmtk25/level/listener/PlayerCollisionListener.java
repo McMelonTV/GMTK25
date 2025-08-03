@@ -1,15 +1,11 @@
 package ing.boykiss.gmtk25.level.listener;
 
-import com.badlogic.gdx.physics.box2d.Contact;
-import com.badlogic.gdx.physics.box2d.ContactImpulse;
-import com.badlogic.gdx.physics.box2d.ContactListener;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.Manifold;
+import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.physics.box2d.*;
 import ing.boykiss.gmtk25.actor.player.Player;
 import ing.boykiss.gmtk25.actor.player.PlayerDummy;
 import ing.boykiss.gmtk25.event.EventBus;
 import ing.boykiss.gmtk25.event.player.PlayerHitHazardEvent;
-import ing.boykiss.gmtk25.event.player.PlayerJumpOnDummyEvent;
 
 import java.util.Arrays;
 import java.util.List;
@@ -49,13 +45,20 @@ public class PlayerCollisionListener implements ContactListener {
             List<String> fixtureB = contact.getFixtureB().getUserData() instanceof String ? Arrays.stream(((String) contact.getFixtureB().getUserData()).split(" ")).toList() : List.of();
 
             if (fixtureA.contains("player_sensor") || fixtureB.contains("player_sensor")) {
-                player.collisionCount++;
                 if (fixtureA.contains("dummy_player") || fixtureB.contains("dummy_player")) {
-                    Fixture dummyFixture = fixtureA.contains("dummy_player") ? contact.getFixtureA() : contact.getFixtureB();
-                    if (dummyFixture.getBody().getUserData() instanceof PlayerDummy dummyPlayer) {
-                        player.getOnJump().addListener(event -> EventBus.call(PlayerJumpOnDummyEvent.class, new PlayerJumpOnDummyEvent(player, dummyPlayer)));
+                    Body playerBody = fixtureA.contains("player_sensor") ? contact.getFixtureA().getBody() : contact.getFixtureB().getBody();
+                    Body dummyBody = fixtureA.contains("dummy_player") ? contact.getFixtureA().getBody() : contact.getFixtureB().getBody();
+                    Fixture playerFixture = fixtureA.contains("player_sensor") ? contact.getFixtureA() : contact.getFixtureB();
+
+                    if (playerBody.getPosition().y > dummyBody.getPosition().y - player.getHeight() / 2f) {
+                        if (dummyBody.getUserData() instanceof PlayerDummy dummyPlayer) {
+                            System.out.println("Player jumped on dummy player: " + dummyPlayer);
+                            playerBody.setLinearVelocity(new Vector2(0, Player.getJUMP_FORCE()));
+                        }
                     }
                 }
+                player.collisionCount++;
+
             }
             if (fixtureA.contains("player_hurtbox") || fixtureB.contains("player_hurtbox")) {
                 if (fixtureA.contains("hazard") || fixtureB.contains("hazard")) {
@@ -64,4 +67,4 @@ public class PlayerCollisionListener implements ContactListener {
             }
         }
     }
-};
+}

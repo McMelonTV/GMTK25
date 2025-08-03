@@ -7,11 +7,7 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.GMTK25;
@@ -48,6 +44,7 @@ public class Player extends Actor {
     private final EventHandler<Event> onJump = new EventHandler<>();
 
     private static final float SPEED = 1250; // Speed of the player
+    @Getter
     private static final float JUMP_FORCE = 40; // Jump force of the player
     private static final float MIN_JUMP_FORCE = 10; // Jump force of the player when jump is released
 
@@ -189,7 +186,7 @@ public class Player extends Actor {
 
     public void startLoop() {
         ReplayManager.INSTANCE.stopRecording();
-        teleportToLevelStart();
+        //teleportToLevelStart();
         ReplayManager.INSTANCE.replay(this);
     }
 

@@ -91,6 +91,7 @@ public class PlayerDummy {
     private void onPlayerJumpOnDummy(PlayerJumpOnDummyEvent event) {
         if (event.dummyPlayer() != this) return;
         renderStack.add(this::destroy);
+        System.out.println("Player jumped on dummy, destroying dummy player.");
     }
 
     private final float spriteHeightOffset = (sprite.getHeight() * Constants.UNIT_SCALE) * 0.25f;

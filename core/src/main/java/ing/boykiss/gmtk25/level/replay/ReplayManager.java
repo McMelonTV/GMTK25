@@ -79,6 +79,9 @@ public class ReplayManager {
      * @return true if there are more frames to replay, false if the end of the replay has been reached.
      */
     public boolean nextFrame(ReplayData data) {
+        if (!data.isReplaying) {
+            return false; // If not currently replaying, do nothing
+        }
         if (data.player.isDestroyed()) {
             return false;
         }
@@ -97,9 +100,9 @@ public class ReplayManager {
 
         // Check if there are more frames to replay
         if (data.currentFrame >= replayFrames.size() - 1) {
-            data.isReplaying = false; // Stop replaying if we reached the end
-            data.player.destroy();
-            return false;
+            data.currentFrame--;
+            //data.currentFrame = 0;
+            return true;
         }
         return true;
     }
