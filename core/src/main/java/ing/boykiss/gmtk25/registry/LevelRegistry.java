@@ -4,10 +4,7 @@ import com.badlogic.gdx.math.Vector2;
 import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.GMTK25;
 import ing.boykiss.gmtk25.actor.level.Level;
-import ing.boykiss.gmtk25.actor.level.object.Button;
-import ing.boykiss.gmtk25.actor.level.object.Door;
-import ing.boykiss.gmtk25.actor.level.object.InteractionTarget;
-import ing.boykiss.gmtk25.actor.level.object.Switch;
+import ing.boykiss.gmtk25.actor.level.object.*;
 import lombok.Getter;
 
 import java.util.Set;
@@ -23,9 +20,9 @@ public class LevelRegistry {
         Switch level1Switch = new Switch(new Vector2(14, 3), "Level 1", new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.LEVEL1.getLevel())));
 
         menu = new Level(
-                MapRegistry.MENU_MAP,
-                new Vector2(32 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE),
-                Set.of(musicSwitch, level0Switch, level1Switch)
+            MapRegistry.MENU_MAP,
+            new Vector2(32 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE),
+            Set.of(musicSwitch, level0Switch, level1Switch)
         );
     }
 
@@ -33,10 +30,12 @@ public class LevelRegistry {
         Door door = new Door(new Vector2(13, 5), null);
         Button doorButton = new Button(new Vector2(8, 3), null, new InteractionTarget(door, null));
 
+        WinFlag winFlag = new WinFlag(new Vector2(35, 8), null, new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.MENU.getLevel())));
+
         level0 = new Level(
-                MapRegistry.DEV_MAP,
-                new Vector2(32 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE),
-                Set.of(door, doorButton)
+            MapRegistry.DEV_MAP,
+            new Vector2(32 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE),
+            Set.of(door, doorButton, winFlag)
         );
     }
 
@@ -44,9 +43,9 @@ public class LevelRegistry {
         Button level0Button = new Button(new Vector2(8, 3), null, new InteractionTarget(null, (b) -> GMTK25.getPlayer().levelTransition(LevelAccessor.LEVEL0.getLevel())));
 
         level1 = new Level(
-                MapRegistry.EMPTY_MAP,
-                new Vector2(32 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE),
-                Set.of(level0Button)
+            MapRegistry.EMPTY_MAP,
+            new Vector2(32 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE),
+            Set.of(level0Button)
         );
     }
 
