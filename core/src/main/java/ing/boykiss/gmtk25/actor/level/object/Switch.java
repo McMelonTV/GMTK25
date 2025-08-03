@@ -13,8 +13,11 @@ import com.badlogic.gdx.physics.box2d.World;
 import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.registry.AssetRegistry;
 import ing.boykiss.gmtk25.utils.AnimationUtils;
+import ing.boykiss.gmtk25.utils.Nullean;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.util.function.Supplier;
 
 public class Switch extends Interactable {
     private final static Animation<TextureRegion> TEXTURES = AnimationUtils.createAnimationSheet(AssetRegistry.SWITCH_TEXTURE, 2, 1, new int[]{0, 1}, 0.2f);
@@ -23,13 +26,23 @@ public class Switch extends Interactable {
     @Setter
     private boolean isActive = false;
 
+    private Nullean initialState = new Nullean(true, false);
+    private Supplier<Boolean> stateGetter;
+
     public Switch(Vector2 position, String label, InteractionTarget target) {
         super(position, label, target);
     }
 
     public Switch(Vector2 position, String label, InteractionTarget target, boolean isActive) {
         this(position, label, target);
+        this.initialState = new Nullean(false, isActive);
         this.isActive = isActive;
+    }
+
+    public Switch(Vector2 position, String label, InteractionTarget target, Supplier<Boolean> stateGetter) {
+        this(position, label, target);
+        this.stateGetter = stateGetter;
+        this.isActive = stateGetter.get();
     }
 
     @Override
@@ -74,5 +87,16 @@ public class Switch extends Interactable {
         sensor.setUserData("switch");
 
         return body;
+    }
+
+    @Override
+    public void resetState() {
+        if (!this.initialState.isNull()) {
+            this.isActive = initialState.state();
+        } else if (this.stateGetter != null) {
+            this.isActive = stateGetter.get();
+        } else {
+            this.isActive = false;
+        }
     }
 }

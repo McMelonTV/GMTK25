@@ -157,7 +157,7 @@ public class Player extends Actor {
     private void respawn(Level newLevel) {
         Level oldLevel = this.level;
         respawnInternal(newLevel);
-        if (oldLevel != null) oldLevel.reloadInteractables();
+        if (oldLevel != null) oldLevel.resetInteractables();
     }
 
     private void respawnInternal(Level newLevel) {

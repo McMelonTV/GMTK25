@@ -53,13 +53,6 @@ public abstract class LevelObject extends Actor {
         }
     }
 
-    public void deleteBody() {
-        if (this.body == null) return;
-        body.getWorld().destroyBody(body);
-        this.body = null;
-    }
-
-    public void tryRemoveLabel() {
-        if (this.labelWidget != null) this.labelWidget.remove();
+    public void resetState() {
     }
 }

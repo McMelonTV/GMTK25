@@ -55,7 +55,7 @@ public class GMTK25 extends ApplicationAdapter {
     private static Player player;
 
     @Getter
-    private static MusicPlayer musicPlayer;
+    private static final MusicPlayer musicPlayer = new MusicPlayer(SongRegistry.MAIN_SONG);
     @Getter
     private static SpriteBatch spriteBatch;
     @Getter
@@ -129,8 +129,6 @@ public class GMTK25 extends ApplicationAdapter {
 
         uiStage = new UIStage();
         uiStage.setViewport(screenViewport);
-
-        musicPlayer = new MusicPlayer(SongRegistry.MAIN_SONG);
 
         CollisionListener.INSTANCE.getListeners().add(new PlayerCollisionListener(player));
         CollisionListener.INSTANCE.getListeners().add(new InteractableCollisionListener());

@@ -57,7 +57,6 @@ public class Level extends Actor {
     private final float cameraBottom;
 
     private final Set<LevelObject> levelObjects;
-    private final List<Actor> interactableActors = new ArrayList<>();
 
     public Level(TiledMap map, Vector2 startPos, Set<LevelObject> levelObjects) {
         this.levelObjects = levelObjects;
@@ -125,27 +124,23 @@ public class Level extends Actor {
         dummyPlayerRenderer = new PlayerDummyRenderer();
         stage.addActor(dummyPlayerRenderer);
 
-        reloadInteractables();
+        for (LevelObject levelObject : levelObjects) {
+            levelObject.initBody(world);
+            stage.addActor(levelObject);
+            if (levelObject.getLabelWidget() != null) stage.addActor(levelObject.getLabelWidget());
+        }
 
         world.setContactListener(CollisionListener.INSTANCE); // Set the contact listener for onFloor detection
+    }
+
+    public void resetInteractables() {
+        levelObjects.forEach(LevelObject::resetState);
     }
 
     @Override
     public void draw(Batch batch, float parentOpacity) {
         renderer.setView(GMTK25.getCamera());
         renderer.render();
-    }
-
-    public void reloadInteractables() {
-        levelObjects.forEach(LevelObject::remove);
-        levelObjects.forEach(LevelObject::tryRemoveLabel);
-        levelObjects.forEach(LevelObject::deleteBody);
-
-        for (LevelObject levelObject : levelObjects) {
-            levelObject.initBody(world);
-            stage.addActor(levelObject);
-            if (levelObject.getLabelWidget() != null) stage.addActor(levelObject.getLabelWidget());
-        }
     }
 
     public void dispose() {
