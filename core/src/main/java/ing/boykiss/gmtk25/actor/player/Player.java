@@ -37,6 +37,8 @@ public class Player extends Actor {
     private Animation<TextureRegion> currentAnimation = AnimationRegistry.PLAYER_IDLE;
     private boolean currentAnimationLooping = true;
 
+    private final Animation<TextureRegion> keyboardKeymap = AnimationUtils.createAnimationSheet(AssetRegistry.KEYBOARD_TEXTURE, 34, 24, new int[]{359}, 0.2f);
+
     @Getter
     private boolean isOnFloor;
 
@@ -232,6 +234,17 @@ public class Player extends Actor {
             spriteWidthScaled * spriteScale.x,
             spriteHeightScaled * spriteScale.y
         );
+
+        // if switch available, draw help
+        if (nearestInteractable != null) {
+            batch.flush();
+            batch.draw(keyboardKeymap.getKeyFrame(0f, true),
+                body.getPosition().x - keyboardKeymap.getKeyFrame(0f, true).getRegionWidth() * Constants.UNIT_SCALE * 0.35f,
+                body.getPosition().y + keyboardKeymap.getKeyFrame(0f, true).getRegionHeight() * Constants.UNIT_SCALE * 0.75f,
+                keyboardKeymap.getKeyFrame(0f, true).getRegionWidth() * Constants.UNIT_SCALE * 0.75f,
+                keyboardKeymap.getKeyFrame(0f, true).getRegionHeight() * Constants.UNIT_SCALE * 0.75f
+            );
+        }
     }
 
     @Override
