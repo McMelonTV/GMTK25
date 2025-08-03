@@ -192,7 +192,7 @@ public class Player extends Actor {
 
     public void startLoop() {
         ReplayManager.INSTANCE.stopRecording();
-        //teleportToLevelStart();
+        teleportToLevelStart();
         ReplayManager.INSTANCE.replay(this);
     }
 

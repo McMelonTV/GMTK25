@@ -33,7 +33,7 @@ public class LevelRegistry {
         WinFlag winFlag = new WinFlag(new Vector2(35, 8), null, new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.MENU.getLevel(), "You win!")));
 
         Replicator replicator = new Replicator(new Vector2(6, 3), null, new InteractionTarget(null, (r) -> {
-            System.out.println("Replicator activated!");
+            GMTK25.renderStack.add(GMTK25.getPlayer()::startLoop);
         }), false);
 
         level0 = new Level(

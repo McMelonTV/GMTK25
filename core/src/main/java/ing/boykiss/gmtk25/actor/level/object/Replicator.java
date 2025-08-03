@@ -52,8 +52,10 @@ public class Replicator extends Interactable {
 
     @Override
     public void interact() {
-        super.interact();
-        isActive = !isActive;
+        if (!isActive) {
+            super.interact();
+            isActive = true;
+        }
     }
 
     @Override
