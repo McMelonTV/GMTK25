@@ -1,10 +1,8 @@
 package ing.boykiss.gmtk25.registry;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 
 public class AssetRegistry {
     public static final Texture PLAYER_TEXTURE = new Texture("textures/player/player.png");
@@ -36,37 +34,11 @@ public class AssetRegistry {
 
     public static final String LEVEL_1_MAP_PATH = "tiledmaps/maps/level_1.tmx";
 
-    public static final String FONT_PATH = "fonts/SegoeUI.ttf";
-    public static final BitmapFont FONT;
-    public static final BitmapFont FONT_LARGE;
+    public static final BitmapFont FONT = new BitmapFont(Gdx.files.internal("fonts/SegoeUI.fnt"));
+    public static final BitmapFont FONT_LARGE = new BitmapFont(Gdx.files.internal("fonts/SegoeUIlarge.fnt"));
 
     static {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(FONT_PATH));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 16;
-        parameter.borderWidth = 1;
-        parameter.color = Color.WHITE;
-        parameter.shadowOffsetX = 1;
-        parameter.shadowOffsetY = 1;
-        parameter.shadowColor = new Color(0.1f, 0.1f, 0.1f, 0.75f);
-        BitmapFont font = generator.generateFont(parameter); // font size 24 pixels
-        generator.dispose();
-        font.setUseIntegerPositions(false);
-        FONT = font;
-    }
-
-    static {
-        FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal(FONT_PATH));
-        FreeTypeFontGenerator.FreeTypeFontParameter parameter = new FreeTypeFontGenerator.FreeTypeFontParameter();
-        parameter.size = 80;
-        parameter.borderWidth = 1;
-        parameter.color = Color.WHITE;
-        parameter.shadowOffsetX = 1;
-        parameter.shadowOffsetY = 1;
-        parameter.shadowColor = new Color(0.1f, 0.1f, 0.1f, 0.75f);
-        BitmapFont font = generator.generateFont(parameter); // font size 24 pixels
-        generator.dispose();
-        font.setUseIntegerPositions(false);
-        FONT_LARGE = font;
+        FONT.setUseIntegerPositions(false);
+        FONT_LARGE.setUseIntegerPositions(false);
     }
 }
