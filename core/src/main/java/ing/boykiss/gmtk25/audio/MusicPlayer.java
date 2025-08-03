@@ -2,11 +2,9 @@ package ing.boykiss.gmtk25.audio;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.utils.Timer;
 import ing.boykiss.gmtk25.Constants;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,8 +14,8 @@ public class MusicPlayer {
     @Getter
     private boolean isEnabled = true;
 
-    public void toggleMusic() {
-        isEnabled = !isEnabled;
+    public MusicPlayer(Song initialSong) {
+        playSong(initialSong);
     }
 
     @Getter
@@ -26,6 +24,7 @@ public class MusicPlayer {
 
     @Getter
     private float volume = Constants.VOLUME;
+
     public void setVolume(float value) {
         volume = value;
         for (Music music : activeMusics) {
@@ -33,12 +32,17 @@ public class MusicPlayer {
         }
     }
 
-    public MusicPlayer(Song initialSong) {
-        if (initialSong != null) playSong(initialSong);
+    public void toggleMusic() {
+        isEnabled = !isEnabled;
+
+        if (isEnabled) {
+            setVolume(Constants.VOLUME);
+        } else {
+            setVolume(0f);
+        }
     }
 
     public MusicPlayer() {
-        this(null);
     }
 
     private final List<SongPart> partBucket = new ArrayList<>();
