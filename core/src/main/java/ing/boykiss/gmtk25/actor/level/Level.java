@@ -20,7 +20,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.utils.Align;
 import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.GMTK25;
-import ing.boykiss.gmtk25.actor.interactable.*;
+import ing.boykiss.gmtk25.actor.interactable.Door;
+import ing.boykiss.gmtk25.actor.interactable.IInteractionTarget;
+import ing.boykiss.gmtk25.actor.interactable.InteractableButton;
+import ing.boykiss.gmtk25.actor.interactable.InteractableSwitch;
+import ing.boykiss.gmtk25.actor.interactable.InteractionCommand;
 import ing.boykiss.gmtk25.actor.player.PlayerDummyRenderer;
 import ing.boykiss.gmtk25.level.listener.CollisionListener;
 import ing.boykiss.gmtk25.registry.AssetRegistry;
@@ -62,9 +66,13 @@ public class Level extends Actor {
 
     private final List<PolygonShape> shapes = new ArrayList<>();
     private final List<PolygonShape> hazardShapes = new ArrayList<>();
+    private final Map<LevelObject, LevelObject> interactables;
+    private final List<Actor> interactableActors = new ArrayList<>();
 
     // interactables must be first button, second door
     public Level(TiledMap map, Vector2 startPos, Map<LevelObject, LevelObject> interactables) {
+        this.interactables = interactables;
+
         this.world = new World(new Vector2(0, -Constants.GRAVITY), true);
         this.stage = new Stage();
         stage.setViewport(GMTK25.getLevelViewport());
@@ -125,12 +133,28 @@ public class Level extends Actor {
         dummyPlayerRenderer = new PlayerDummyRenderer();
         stage.addActor(dummyPlayerRenderer);
 
+        reloadInteractables();
+
+        world.setContactListener(CollisionListener.INSTANCE); // Set the contact listener for onFloor detection
+    }
+
+    @Override
+    public void draw(Batch batch, float parentOpacity) {
+        renderer.setView(GMTK25.getCamera());
+        renderer.render();
+    }
+
+    public void reloadInteractables() {
+        interactableActors.forEach(Actor::remove);
+        interactableActors.clear();
+
         for (Map.Entry<LevelObject, LevelObject> entry : interactables.entrySet()) {
             if (entry.getKey().getType() == LevelObjectType.BUTTON || entry.getKey().getType() == LevelObjectType.SWITCH) {
                 IInteractionTarget target = null;
                 if (entry.getValue().getType() == LevelObjectType.DOOR) {
                     Door door = new Door(world, entry.getValue().getPosition());
                     stage.addActor(door);
+                    interactableActors.add(door);
                     target = door;
                 }
                 if (entry.getValue().getType() == LevelObjectType.COMMAND) {
@@ -140,9 +164,11 @@ public class Level extends Actor {
                 if (entry.getKey().getType() == LevelObjectType.SWITCH) {
                     InteractableSwitch switchActor = new InteractableSwitch(world, entry.getKey().getPosition(), target);
                     stage.addActor(switchActor);
+                    interactableActors.add(switchActor);
                 } else if (entry.getKey().getType() == LevelObjectType.BUTTON) {
                     InteractableButton button = new InteractableButton(world, entry.getKey().getPosition(), target);
                     stage.addActor(button);
+                    interactableActors.add(button);
                 }
 
 
@@ -161,22 +187,10 @@ public class Level extends Actor {
                     label.setAlignment(Align.center);
                     // label.setSize(10f, 10f);
                     stage.addActor(label);
+                    interactableActors.add(label);
                 }
             }
         }
-
-        //Door door = new Door(world, new Vector2(12, 5));
-        //stage.addActor(door);
-
-        //stage.addActor(new InteractableButton(world, new Vector2(8, 3), door));
-
-        world.setContactListener(CollisionListener.INSTANCE); // Set the contact listener for onFloor detection
-    }
-
-    @Override
-    public void draw(Batch batch, float parentOpacity) {
-        renderer.setView(GMTK25.getCamera());
-        renderer.render();
     }
 
     public void dispose() {
