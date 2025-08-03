@@ -165,7 +165,7 @@ public class GMTK25 extends ApplicationAdapter {
 
         levelViewport.apply();
         player.getLevel().getStage().draw();
-        //debugRenderer.render(player.getLevel().getWorld(), camera.combined);
+        debugRenderer.render(player.getLevel().getWorld(), camera.combined);
 
         screenViewport.apply();
         uiStage.draw();

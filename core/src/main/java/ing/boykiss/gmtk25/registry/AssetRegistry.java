@@ -23,16 +23,15 @@ public class AssetRegistry {
     public static final Texture WIN_FLAG_TEXTURE = new Texture("textures/winflag.png");
     public static final Texture REPLICATOR_TEXTURE = new Texture("textures/replicator.png");
 
-    public static final String TUTORIAL_MAP_PATH = "tiledmaps/tutorial_map.tmx";
-    public static final String TUTORIAL2_MAP_PATH = "tiledmaps/tutorial2_map.tmx";
-    public static final String TUTORIAL3_MAP_PATH = "tiledmaps/tutorial3_map.tmx";
-    public static final String DEV_MAP_PATH = "tiledmaps/dev_map.tmx";
-    public static final String EMPTY_MAP_PATH = "tiledmaps/empty_map.tmx";
-    public static final String MENU_MAP_PATH = "tiledmaps/main_menu_map.tmx";
-    //24x34
-    public static final Texture KEYBOARD_TEXTURE = new Texture("textures/tilesets/tilemap_white_packed.png");
+    public static final String MENU_MAP_PATH = "tiledmaps/maps/main_menu_map.tmx";
+
+    public static final String TUTORIAL_MAP_PATH = "tiledmaps/maps/tutorial/tutorial1_map.tmx";
+    public static final String TUTORIAL2_MAP_PATH = "tiledmaps/maps/tutorial/tutorial2_map.tmx";
+    public static final String TUTORIAL3_MAP_PATH = "tiledmaps/maps/tutorial/tutorial3_map.tmx";
 
     public static final String LEVEL_1_MAP_PATH = "tiledmaps/maps/level_1.tmx";
+
+    public static final Texture KEYBOARD_TEXTURE = new Texture("textures/tilesets/tilemap_white_packed.png");
 
     public static final BitmapFont FONT = new BitmapFont(Gdx.files.internal("fonts/SegoeUI.fnt"));
     public static final BitmapFont FONT_LARGE = new BitmapFont(Gdx.files.internal("fonts/SegoeUIlarge.fnt"));
