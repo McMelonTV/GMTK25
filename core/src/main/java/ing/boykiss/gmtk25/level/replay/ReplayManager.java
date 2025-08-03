@@ -7,6 +7,7 @@ import ing.boykiss.gmtk25.actor.player.Player;
 import ing.boykiss.gmtk25.actor.player.PlayerDummy;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ReplayManager {
@@ -40,13 +41,13 @@ public class ReplayManager {
 
     // Return the recorded replay data
     @Getter
-    private final List<ReplayFrame> replayFrames = new java.util.ArrayList<>();
+    private List<ReplayFrame> replayFrames = new java.util.ArrayList<>();
     private final List<ReplayData> replayData = new java.util.ArrayList<>();
 
     public void startRecording() {
         // Logic to start recording the replay
         isRecording = true;
-        replayFrames.clear(); // Clear previous data if any
+        replayFrames = new ArrayList<>();//.clear(); // Clear previous data if any
     }
 
     public void recordFrame(Vector2 playerPosition, Vector2 playerVelocity, Vector2 playerScale, Animation<TextureRegion> animation, boolean animationLooping) {
@@ -99,7 +100,7 @@ public class ReplayManager {
         data.player.setAnimationLooping(data.frames.get(data.currentFrame).animationLooping);
 
         // Check if there are more frames to replay
-        if (data.currentFrame >= replayFrames.size() - 1) {
+        if (data.currentFrame >= data.frames.size() - 1) {
             data.currentFrame = 0;
             return true;
         }
