@@ -6,14 +6,11 @@ import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.GMTK25;
+import ing.boykiss.gmtk25.actor.interactable.InteractableSwitch;
 import ing.boykiss.gmtk25.actor.level.Level;
 import ing.boykiss.gmtk25.event.Event;
 import ing.boykiss.gmtk25.event.EventBus;
@@ -67,6 +64,14 @@ public class Player extends Actor {
     private boolean coyoteTimeActive = false;
 
     public final List<PlayerDummy> dummies = new ArrayList<>();
+
+    @Getter
+    private InteractableSwitch interactableSwitch; // has switch inside to interact with
+
+    public void setInteractableSwitch(InteractableSwitch interactableSwitch) {
+        System.out.println("Setting interactable switch: " + interactableSwitch);
+        this.interactableSwitch = interactableSwitch;
+    }
 
     public Player(Level level) {
         respawn(level);
@@ -293,6 +298,13 @@ public class Player extends Actor {
         if (Input.keyStack.contains(InputKeys.LEFT) || Input.keyStack.contains(InputKeys.A)) {
             velocity.x += -SPEED * deltaTime;
             spriteScale.x = -1; // Face left
+        }
+        if (Input.keyStack.contains(InputKeys.E)) {
+            if (interactableSwitch != null) {
+                interactableSwitch.getCallback().run();
+            } else {
+                System.out.println("No interactable switch set for player.");
+            }
         }
     }
 

@@ -12,8 +12,10 @@ import java.util.Map;
 public class LevelRegistry {
     public static final Level menu = new Level(MapRegistry.MENU_MAP, new Vector2(32 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE),
         Map.of(
-            new LevelObject(LevelObjectType.BUTTON, new Vector2(8, 3)),
-            new LevelObject(LevelObjectType.COMMAND, () -> GMTK25.getInstance().transitionToLevel("level0"))
+            new LevelObject(LevelObjectType.SWITCH, new Vector2(8, 3), "Level 0"),
+            new LevelObject(LevelObjectType.COMMAND, () -> GMTK25.getInstance().transitionToLevel("level0")),
+            new LevelObject(LevelObjectType.SWITCH, new Vector2(14, 3), "Level 1"),
+            new LevelObject(LevelObjectType.COMMAND, () -> GMTK25.getInstance().transitionToLevel("level1"))
         )
     );
 

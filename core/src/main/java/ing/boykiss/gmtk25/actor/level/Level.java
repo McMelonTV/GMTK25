@@ -1,5 +1,6 @@
 package ing.boykiss.gmtk25.actor.level;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
@@ -10,14 +11,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.utils.Align;
 import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.GMTK25;
-import ing.boykiss.gmtk25.actor.interactable.Door;
-import ing.boykiss.gmtk25.actor.interactable.IInteractionTarget;
-import ing.boykiss.gmtk25.actor.interactable.InteractableButton;
-import ing.boykiss.gmtk25.actor.interactable.InteractionCommand;
+import ing.boykiss.gmtk25.actor.interactable.*;
 import ing.boykiss.gmtk25.actor.player.PlayerDummyRenderer;
 import ing.boykiss.gmtk25.level.listener.CollisionListener;
+import ing.boykiss.gmtk25.registry.AssetRegistry;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -120,7 +121,7 @@ public class Level extends Actor {
         stage.addActor(dummyPlayerRenderer);
 
         for (Map.Entry<LevelObject, LevelObject> entry : interactables.entrySet()) {
-            if (entry.getKey().getType() == LevelObjectType.BUTTON) {
+            if (entry.getKey().getType() == LevelObjectType.BUTTON || entry.getKey().getType() == LevelObjectType.SWITCH) {
                 IInteractionTarget target = null;
                 if (entry.getValue().getType() == LevelObjectType.DOOR) {
                     Door door = new Door(world, entry.getValue().getPosition());
@@ -131,8 +132,31 @@ public class Level extends Actor {
                     target = new InteractionCommand(entry.getValue().getCommand(), GMTK25.renderStack);
                 }
 
-                InteractableButton button = new InteractableButton(world, entry.getKey().getPosition(), target);
-                stage.addActor(button);
+                if (entry.getKey().getType() == LevelObjectType.SWITCH) {
+                    InteractableSwitch switchActor = new InteractableSwitch(world, entry.getKey().getPosition(), target);
+                    stage.addActor(switchActor);
+                } else if (entry.getKey().getType() == LevelObjectType.BUTTON) {
+                    InteractableButton button = new InteractableButton(world, entry.getKey().getPosition(), target);
+                    stage.addActor(button);
+                }
+
+
+                // if has label
+                if (entry.getKey().getLabel() != null && !entry.getKey().getLabel().isEmpty()) {
+                    float positionX = entry.getKey().getPosition().x;
+                    float positionY = entry.getKey().getPosition().y;
+                    // create a new label actor
+                    Label.LabelStyle style = new Label.LabelStyle();
+                    style.font = AssetRegistry.FONT;
+                    style.fontColor = Color.WHITE;
+                    Label label = new Label(entry.getKey().getLabel(), style);
+                    label.setFontScale(0.05f);
+                    label.setPosition(positionX, positionY + 1);
+                    label.setSize(1f, 1f);
+                    label.setAlignment(Align.center);
+                    // label.setSize(10f, 10f);
+                    stage.addActor(label);
+                }
             }
         }
 
