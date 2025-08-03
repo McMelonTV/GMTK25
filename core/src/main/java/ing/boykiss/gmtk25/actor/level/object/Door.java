@@ -31,7 +31,7 @@ public class Door extends Targetable {
 
     @Override
     public void draw(Batch batch, float parentAlpha) {
-        TextureRegion currentFrame = TEXTURES.getKeyFrame(isOpen ? 1 : 0, true);
+        TextureRegion currentFrame = TEXTURES.getKeyFrame(isOpen ? 1 : 0, false);
         batch.draw(currentFrame,
             getBody().getPosition().x - currentFrame.getRegionWidth() * Constants.UNIT_SCALE / 2,
             getBody().getPosition().y - currentFrame.getRegionHeight() * Constants.UNIT_SCALE / 2,
