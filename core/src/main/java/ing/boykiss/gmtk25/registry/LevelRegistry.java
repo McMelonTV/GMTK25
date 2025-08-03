@@ -4,7 +4,12 @@ import com.badlogic.gdx.math.Vector2;
 import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.GMTK25;
 import ing.boykiss.gmtk25.actor.level.Level;
-import ing.boykiss.gmtk25.actor.level.object.*;
+import ing.boykiss.gmtk25.actor.level.object.Button;
+import ing.boykiss.gmtk25.actor.level.object.Door;
+import ing.boykiss.gmtk25.actor.level.object.InteractionTarget;
+import ing.boykiss.gmtk25.actor.level.object.Replicator;
+import ing.boykiss.gmtk25.actor.level.object.Switch;
+import ing.boykiss.gmtk25.actor.level.object.WinFlag;
 import lombok.Getter;
 
 import java.util.Set;
@@ -37,7 +42,7 @@ public class LevelRegistry {
 
         Replicator replicator = new Replicator(new Vector2(6, 3), null, new InteractionTarget(null, (r) -> {
             GMTK25.renderStack.add(GMTK25.getPlayer()::startLoop);
-        }), false);
+        }));
 
         level0 = new Level(
             MapRegistry.DEV_MAP,
@@ -62,7 +67,6 @@ public class LevelRegistry {
     static {
         WinFlag winFlag = new WinFlag(new Vector2(53, 3), null, new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.TUTORIAL2.getLevel(), "Nice!")));
 
-
         tutorial1 = new Level(
             MapRegistry.TUTORIAL_MAP,
             new Vector2(32 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE),
@@ -73,8 +77,6 @@ public class LevelRegistry {
     static {
         Door door = new Door(new Vector2(27.5f, 5), null);
         Switch doorSwitch = new Switch(new Vector2(22, 3), null, new InteractionTarget(door, null));
-
-        //50 17
 
         WinFlag winFlag = new WinFlag(new Vector2(50, 17), null, new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.TUTORIAL3.getLevel(), "Just one more!")));
 
@@ -89,12 +91,9 @@ public class LevelRegistry {
         Door door = new Door(new Vector2(27.5f, 5), null);
         Button doorButton = new Button(new Vector2(22, 3), null, new InteractionTarget(door, null));
 
-
         Replicator replicator = new Replicator(new Vector2(18.5f, 3), null, new InteractionTarget(null, (r) -> {
             GMTK25.renderStack.add(GMTK25.getPlayer()::startLoop);
-        }), false);
-
-        //50 17
+        }));
 
         WinFlag winFlag = new WinFlag(new Vector2(50, 17), null, new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.MENU.getLevel(), "Congrats!")));
 

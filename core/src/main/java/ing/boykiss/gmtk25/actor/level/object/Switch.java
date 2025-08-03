@@ -58,7 +58,7 @@ public class Switch extends Interactable {
     @Override
     public void interact() {
         super.interact();
-        isActive = !isActive;
+        setActive(!isActive);
     }
 
     @Override
@@ -91,12 +91,12 @@ public class Switch extends Interactable {
 
     @Override
     public void resetState() {
-        if (!this.initialState.isNull()) {
-            this.isActive = initialState.state();
-        } else if (this.stateGetter != null) {
-            this.isActive = stateGetter.get();
+        if (!initialState.isNull()) {
+            setActive(initialState.state());
+        } else if (stateGetter != null) {
+            setActive(stateGetter.get());
         } else {
-            this.isActive = false;
+            setActive(false);
         }
     }
 }

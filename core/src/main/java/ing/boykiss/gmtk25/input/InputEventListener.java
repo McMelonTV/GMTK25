@@ -32,5 +32,9 @@ public class InputEventListener implements EventListener<InputEvent> {
             if (GMTK25.isPaused()) return;
             player.levelTransition(LevelRegistry.menu);
         }
+        if (event.released() && event.key().equals(InputKeys.H)) {
+            if (GMTK25.isPaused()) return;
+            player.getLevel().resetInteractables();
+        }
     }
 }
