@@ -27,6 +27,11 @@ public class Switch extends Interactable {
         super(position, label, target);
     }
 
+    public Switch(Vector2 position, String label, InteractionTarget target, boolean isActive) {
+        this(position, label, target);
+        this.isActive = isActive;
+    }
+
     @Override
     public void draw(Batch batch, float parentOpacity) {
         TextureRegion currentFrame = TEXTURES.getKeyFrame(isActive ? 1 : 0, true);

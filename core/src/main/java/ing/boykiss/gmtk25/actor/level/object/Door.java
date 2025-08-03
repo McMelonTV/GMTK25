@@ -29,6 +29,11 @@ public class Door extends Targetable {
         super(position, label);
     }
 
+    public Door(Vector2 position, String label, boolean isOpen) {
+        this(position, label);
+        this.isOpen = isOpen;
+    }
+
     @Override
     public void draw(Batch batch, float parentAlpha) {
         TextureRegion currentFrame = TEXTURES.getKeyFrame(isOpen ? 1 : 0, true);
