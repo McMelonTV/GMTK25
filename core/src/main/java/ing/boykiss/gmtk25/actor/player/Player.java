@@ -69,7 +69,6 @@ public class Player extends Actor {
     private InteractableSwitch interactableSwitch; // has switch inside to interact with
 
     public void setInteractableSwitch(InteractableSwitch interactableSwitch) {
-        System.out.println("Setting interactable switch: " + interactableSwitch);
         this.interactableSwitch = interactableSwitch;
     }
 
@@ -299,13 +298,6 @@ public class Player extends Actor {
             velocity.x += -SPEED * deltaTime;
             spriteScale.x = -1; // Face left
         }
-        if (Input.keyStack.contains(InputKeys.E)) {
-            if (interactableSwitch != null) {
-                interactableSwitch.getCallback().run();
-            } else {
-                System.out.println("No interactable switch set for player.");
-            }
-        }
     }
 
     private void onInputEvent(InputEvent event) {
@@ -318,6 +310,13 @@ public class Player extends Actor {
                 return;
             }
             jumpBuffer = JUMP_BUFFER_DURATION;
+        }
+        if (event.key().equals(InputKeys.E) && event.released()) {
+            if (interactableSwitch != null) {
+                interactableSwitch.getCallback().run();
+            } else {
+                System.out.println("No interactable switch set for player.");
+            }
         }
     }
 
