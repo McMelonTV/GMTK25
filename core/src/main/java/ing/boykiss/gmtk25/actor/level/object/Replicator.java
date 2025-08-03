@@ -88,12 +88,6 @@ public class Replicator extends Interactable {
 
     @Override
     public void resetState() {
-        if (!this.initialState.isNull()) {
-            this.isActive = initialState.state();
-        } else if (this.stateGetter != null) {
-            this.isActive = stateGetter.get();
-        } else {
-            this.isActive = false;
-        }
+        isActive = false;
     }
 }

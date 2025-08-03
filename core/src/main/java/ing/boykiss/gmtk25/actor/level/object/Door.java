@@ -4,12 +4,7 @@ import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.Fixture;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
-import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.physics.box2d.*;
 import ing.boykiss.gmtk25.Constants;
 import ing.boykiss.gmtk25.registry.AssetRegistry;
 import ing.boykiss.gmtk25.utils.AnimationUtils;
@@ -74,5 +69,14 @@ public class Door extends Targetable {
         doorFixture = body.createFixture(fixtureDef);
 
         return body;
+    }
+
+
+    @Override
+    public void resetState() {
+        isOpen = false;
+        if (doorFixture != null) {
+            doorFixture.setSensor(false);
+        }
     }
 }
