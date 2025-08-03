@@ -100,9 +100,7 @@ public class ReplayManager {
 
         // Check if there are more frames to replay
         if (data.currentFrame >= replayFrames.size() - 1) {
-            data.currentFrame--;
-            //data.currentFrame = 0;
-            // make them hang out for a little bit and then reset to start
+            data.currentFrame = 0;
             return true;
         }
         return true;
