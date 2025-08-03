@@ -15,6 +15,7 @@ public class AssetRegistry {
     public static final Texture FILL_TEXTURE = new Texture("textures/fill.png");
 
     public static final Texture PAUSED_TEXT_TEXTURE = new Texture("textures/paused.png");
+    public static final Texture CONTROLS_TEXTURE = new Texture("textures/controls.png");
 
     public static final Texture BUTTON_TEXTURE = new Texture("textures/button.png");
     public static final Texture DOOR_TEXTURE = new Texture("textures/door.png");
