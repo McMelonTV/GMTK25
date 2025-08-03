@@ -50,7 +50,8 @@ public class GMTK25 extends ApplicationAdapter {
     private static int windowedWidth = 1280;
     private static int windowedHeight = 720;
 
-    private MusicPlayer musicPlayer;
+    @Getter
+    private static MusicPlayer musicPlayer;
     @Getter
     private SpriteBatch spriteBatch;
     @Getter
