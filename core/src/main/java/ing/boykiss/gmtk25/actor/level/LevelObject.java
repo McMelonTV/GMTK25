@@ -14,11 +14,23 @@ public class LevelObject {
     @Getter
     private final Runnable command;
 
+    @Getter
+    private String label;
+
+    @Getter
+    private boolean rotated;
 
     public LevelObject(LevelObjectType type, Vector2 position) {
         this.type = type;
         this.position = position;
         this.command = null;
+    }
+
+    public LevelObject(LevelObjectType type, Vector2 position, String label) {
+        this.type = type;
+        this.position = position;
+        this.command = null;
+        this.label = label;
     }
 
     public LevelObject(LevelObjectType type, Runnable command) {
