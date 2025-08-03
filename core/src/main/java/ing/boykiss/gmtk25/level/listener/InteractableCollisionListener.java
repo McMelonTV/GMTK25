@@ -6,6 +6,7 @@ import com.badlogic.gdx.physics.box2d.ContactListener;
 import com.badlogic.gdx.physics.box2d.Manifold;
 import ing.boykiss.gmtk25.GMTK25;
 import ing.boykiss.gmtk25.actor.level.object.Button;
+import ing.boykiss.gmtk25.actor.level.object.Replicator;
 import ing.boykiss.gmtk25.actor.level.object.Switch;
 import ing.boykiss.gmtk25.actor.level.object.WinFlag;
 import ing.boykiss.gmtk25.utils.Tuple;
@@ -75,6 +76,8 @@ public class InteractableCollisionListener implements ContactListener {
 
         Switch switchObject = tryGet(Switch.class, "switch", "player_sensor", contact);
         if (switchObject != null) GMTK25.getPlayer().setNearestInteractable(switchObject);
+        Replicator replicatorObject = tryGet(Replicator.class, "replicator", "player_sensor", contact);
+        if (replicatorObject != null) GMTK25.getPlayer().setNearestInteractable(replicatorObject);
     }
 
     @Override
@@ -88,6 +91,8 @@ public class InteractableCollisionListener implements ContactListener {
 
         Switch switchObject = tryGet(Switch.class, "switch", "player_sensor", contact);
         if (switchObject != null) GMTK25.getPlayer().setNearestInteractable(null);
+        Replicator replicatorObject = tryGet(Replicator.class, "replicator", "player_sensor", contact);
+        if (replicatorObject != null) GMTK25.getPlayer().setNearestInteractable(null);
     }
 
     @Override

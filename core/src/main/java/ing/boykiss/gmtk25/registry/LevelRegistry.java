@@ -32,10 +32,14 @@ public class LevelRegistry {
 
         WinFlag winFlag = new WinFlag(new Vector2(35, 8), null, new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.MENU.getLevel(), "You win!")));
 
+        Replicator replicator = new Replicator(new Vector2(6, 3), null, new InteractionTarget(null, (r) -> {
+            System.out.println("Replicator activated!");
+        }), false);
+
         level0 = new Level(
             MapRegistry.DEV_MAP,
             new Vector2(32 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE),
-            Set.of(door, doorButton, winFlag)
+            Set.of(door, doorButton, winFlag, replicator)
         );
     }
 
