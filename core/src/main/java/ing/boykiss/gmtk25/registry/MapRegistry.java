@@ -13,4 +13,5 @@ public class MapRegistry {
     public static final TiledMap TUTORIAL3_MAP = mapLoader.load(AssetRegistry.TUTORIAL3_MAP_PATH);
 
     public static final TiledMap LEVEL_1_MAP = mapLoader.load(AssetRegistry.LEVEL_1_MAP_PATH);
+    public static final TiledMap LEVEL_2_MAP = mapLoader.load("tiledmaps/maps/level_2.tmx");
 }
