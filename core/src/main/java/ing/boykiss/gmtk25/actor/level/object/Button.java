@@ -87,8 +87,10 @@ public class Button extends Interactable {
 
     @Override
     public void resetState() {
-        collisions = 0;
-        interact();
-        // not correct but fixes shit
+        if (collisions != 0) {
+            // not correct but fixes shit
+            collisions = 0;
+            interact();
+        }
     }
 }
