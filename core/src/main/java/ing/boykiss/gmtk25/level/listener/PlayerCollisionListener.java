@@ -50,7 +50,7 @@ public class PlayerCollisionListener implements ContactListener {
                     Body dummyBody = fixtureA.contains("dummy_player") ? contact.getFixtureA().getBody() : contact.getFixtureB().getBody();
                     Fixture playerFixture = fixtureA.contains("player_sensor") ? contact.getFixtureA() : contact.getFixtureB();
 
-                    if (playerBody.getPosition().y > dummyBody.getPosition().y - player.getHeight() / 2f) {
+                    if (playerBody.getPosition().y + (player.getHeight() / 2) > dummyBody.getPosition().y && playerBody.getLinearVelocity().y < 0) {
                         if (dummyBody.getUserData() instanceof PlayerDummy dummyPlayer) {
                             System.out.println("Player jumped on dummy player: " + dummyPlayer);
                             playerBody.setLinearVelocity(new Vector2(0, Player.getJUMP_FORCE()));

@@ -173,11 +173,11 @@ public class Player extends Actor {
     }
 
     public void levelTransition(Level level) {
-        AnimationUtils.startTransitionAnimation(() -> respawn(level));
+        AnimationUtils.startTransitionAnimation(() -> respawn(level), "Loading Level...");
     }
 
     public void kill() {
-        AnimationUtils.startTransitionAnimation(this::respawn);
+        AnimationUtils.startTransitionAnimation(this::respawn, "You died! Respawning...");
     }
 
     public void teleportToLevelStart() {
