@@ -90,7 +90,7 @@ public class LevelRegistry {
         Button doorButton = new Button(new Vector2(22, 3), null, new InteractionTarget(door, null));
 
 
-        Replicator replicator = new Replicator(new Vector2(18, 3), null, new InteractionTarget(null, (r) -> {
+        Replicator replicator = new Replicator(new Vector2(18.5f, 3), null, new InteractionTarget(null, (r) -> {
             GMTK25.renderStack.add(GMTK25.getPlayer()::startLoop);
         }), false);
 
