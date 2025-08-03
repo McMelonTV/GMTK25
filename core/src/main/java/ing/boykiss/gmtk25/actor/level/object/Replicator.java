@@ -47,7 +47,7 @@ public class Replicator extends Interactable {
 
     @Override
     public void draw(Batch batch, float parentOpacity) {
-        TextureRegion currentFrame = TEXTURES.getKeyFrame(isActive ? 1 : 0, true);
+        TextureRegion currentFrame = TEXTURES.getKeyFrame(isActive ? 1 : 0, false);
         batch.draw(currentFrame,
             getBody().getPosition().x - currentFrame.getRegionWidth() * Constants.UNIT_SCALE / 2,
             getBody().getPosition().y - 4 * Constants.UNIT_SCALE,
