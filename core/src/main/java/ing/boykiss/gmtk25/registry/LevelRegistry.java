@@ -44,12 +44,15 @@ public class LevelRegistry {
     }
 
     static {
-        Button level0Button = new Button(new Vector2(8, 3), null, new InteractionTarget(null, (b) -> GMTK25.getPlayer().levelTransition(LevelAccessor.LEVEL0.getLevel())));
+        WinFlag winFlag = new WinFlag(new Vector2(45, 7), null, new InteractionTarget(null, (b) -> GMTK25.getPlayer().levelTransition(LevelAccessor.MENU.getLevel(), "Winner, winner I lost my chicken dinner!")));
+
+        Door door = new Door(new Vector2(31.5f, 9), null);
+        Button doorButton = new Button(new Vector2(21, 7), null, new InteractionTarget(door, null));
 
         level1 = new Level(
-            MapRegistry.EMPTY_MAP,
+            MapRegistry.LEVEL_1_MAP,
             new Vector2(32 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE),
-            Set.of(level0Button)
+            Set.of(winFlag, door, doorButton)
         );
     }
 
