@@ -87,7 +87,10 @@ public class Door extends Targetable {
         return body;
     }
 
+    private long ignoreUntil = 0;
+
     public void setIsOpen(boolean state) {
+        if (System.currentTimeMillis() < ignoreUntil) return; // hack
         isOpen = state;
         if (doorFixture != null) {
             doorFixture.setSensor(state);
@@ -103,5 +106,6 @@ public class Door extends Targetable {
         } else {
             setIsOpen(false);
         }
+        ignoreUntil = System.currentTimeMillis() + 200;
     }
 }
