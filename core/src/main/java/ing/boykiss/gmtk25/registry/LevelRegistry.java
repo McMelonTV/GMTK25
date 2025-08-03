@@ -76,7 +76,7 @@ public class LevelRegistry {
 
         //50 17
 
-        WinFlag winFlag = new WinFlag(new Vector2(50, 17), null, new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.TUTORIAL3.getLevel(), "You win!")));
+        WinFlag winFlag = new WinFlag(new Vector2(50, 17), null, new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.TUTORIAL3.getLevel(), "Just one more!")));
 
         tutorial2 = new Level(
             MapRegistry.TUTORIAL2_MAP,
@@ -96,7 +96,7 @@ public class LevelRegistry {
 
         //50 17
 
-        WinFlag winFlag = new WinFlag(new Vector2(50, 17), null, new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.MENU.getLevel(), "You win!")));
+        WinFlag winFlag = new WinFlag(new Vector2(50, 17), null, new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.MENU.getLevel(), "Congrats!")));
 
         tutorial3 = new Level(
             MapRegistry.TUTORIAL3_MAP,
