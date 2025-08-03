@@ -30,7 +30,7 @@ public class LevelRegistry {
         Door door = new Door(new Vector2(13, 5), null);
         Button doorButton = new Button(new Vector2(8, 3), null, new InteractionTarget(door, null));
 
-        WinFlag winFlag = new WinFlag(new Vector2(35, 8), null, new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.MENU.getLevel())));
+        WinFlag winFlag = new WinFlag(new Vector2(35, 8), null, new InteractionTarget(null, (s) -> GMTK25.getPlayer().levelTransition(LevelAccessor.MENU.getLevel(), "You win!")));
 
         level0 = new Level(
             MapRegistry.DEV_MAP,
