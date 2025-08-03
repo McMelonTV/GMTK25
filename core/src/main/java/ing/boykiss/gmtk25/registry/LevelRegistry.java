@@ -74,15 +74,19 @@ public class LevelRegistry {
     }
 
     static {
-        WinFlag winFlag = new WinFlag(new Vector2(45, 7), null, new InteractionTarget(null, (b) -> GMTK25.getPlayer().levelTransition(LevelAccessor.MENU.getLevel(), "Winner, winner I lost my chicken dinner!")));
+        WinFlag winFlag = new WinFlag(new Vector2(35, 14), null, new InteractionTarget(null, (b) -> GMTK25.getPlayer().levelTransition(LevelAccessor.MENU.getLevel(), "Bounce on dat clone!")));
 
-        Door door = new Door(new Vector2(31.5f, 9), null);
-        Button doorButton = new Button(new Vector2(21, 7), null, new InteractionTarget(door, null));
+        Door door = new Door(new Vector2(25.5f, 16), null);
+        Button doorButton = new Button(new Vector2(16, 7), null, new InteractionTarget(door, null));
+
+        Replicator replicator = new Replicator(new Vector2(22.5f, 7), null, new InteractionTarget(null, (r) -> {
+            GMTK25.renderStack.add(GMTK25.getPlayer()::startLoop);
+        }));
 
         level1 = new Level(
                 MapRegistry.LEVEL_1_MAP,
                 new Vector2(32 * Constants.UNIT_SCALE, 50 * Constants.UNIT_SCALE),
-                Set.of(winFlag, door, doorButton)
+                Set.of(winFlag, door, doorButton, replicator)
         );
     }
 
