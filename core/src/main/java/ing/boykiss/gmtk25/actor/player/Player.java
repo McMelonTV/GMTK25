@@ -51,7 +51,7 @@ public class Player extends Actor {
 
     private static final float SPEED = 800; // Speed of the player
     @Getter
-    private static final float JUMP_FORCE = 39; // Jump force of the player
+    private static final float JUMP_FORCE = 40; // Jump force of the player
     private static final float MIN_JUMP_FORCE = 20; // Jump force of the player when jump is released
 
     private static final int COYOTE_TIME_DURATION = 6; // Duration of coyote time in ticks
